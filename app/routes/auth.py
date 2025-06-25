@@ -27,6 +27,24 @@ async def logout():
     response.delete_cookie("admin_logged")
     return response
 
+from fastapi import Form, status
+from fastapi.responses import RedirectResponse
+
+@router.post("/login")
+async def login_post(request: Request, username: str = Form(...), password: str = Form(...)):
+    if username == "admin" and password == "admin":
+        response = RedirectResponse(url="/admin", status_code=status.HTTP_303_SEE_OTHER)
+        response.set_cookie(key="user", value=username)
+        return response
+    else:
+        return templates.TemplateResponse(
+            "login.html",
+            {
+                "request": request,
+                "error": "Usuario o contraseña incorrectos"
+            }
+        )
+
 def check_admin_logged(request: Request):
     return request.cookies.get("admin_logged") == "true"
 
@@ -85,3 +103,4 @@ def login_post(request: Request, email: str = Form(...), password: str = Form(..
         response.set_cookie("authenticated", "yes")  # Cookie simple para validar sesión
         return response
     return templates.TemplateResponse("login.html", {"request": request, "error": "Credenciales incorrectas"})
+
