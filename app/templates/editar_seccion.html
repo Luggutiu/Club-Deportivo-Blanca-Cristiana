@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar {{ seccion|capitalize }}</title>
+</head>
+<body>
+    <h1>Editar {{ seccion|capitalize }}</h1>
+    <form method="post">
+        <textarea name="contenido" rows="15" cols="100">{{ contenido.contenido if contenido else '' }}</textarea><br><br>
+        <button type="submit">Guardar</button>
+    </form>
+</body>
+</html>
