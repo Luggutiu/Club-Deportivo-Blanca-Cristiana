@@ -15,3 +15,17 @@ class SeccionInformativa(Base):
     id = Column(Integer, primary_key=True, index=True)
     titulo = Column(String, unique=True, index=True)
     contenido = Column(Text)
+    
+    from sqlalchemy import Column, Integer, String
+    from main import Base
+
+class Horario(Base):
+    __tablename__ = "horarios"
+    id = Column(Integer, primary_key=True, index=True)
+    dia = Column(String, nullable=False)
+    hora_inicio = Column(String, nullable=False)
+    hora_fin = Column(String, nullable=False)
+    actividad = Column(String, nullable=False)
+    
+   
+

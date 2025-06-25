@@ -1,5 +1,14 @@
 {% extends "base.html" %}
+
+{% block title %}Misión{% endblock %}
+
 {% block content %}
-<h1>Misión</h1>
-<p>La misión del Club Deportivo Blanca Cristiana es...</p>
+<div class="bg-black text-white py-12 px-4 min-h-screen">
+  <div class="max-w-4xl mx-auto bg-[#fce4ec] text-black p-8 rounded-2xl shadow-lg">
+    <h1 class="text-3xl font-bold text-[#e91e63] mb-6 text-center">Nuestra Misión</h1>
+    <div class="text-lg leading-relaxed text-justify">
+      {{ contenido }}
+    </div>
+  </div>
+</div>
 {% endblock %}

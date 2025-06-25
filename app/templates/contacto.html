@@ -1,5 +1,18 @@
 {% extends "base.html" %}
+{% block title %}Contáctenos{% endblock %}
+
 {% block content %}
-<h1>Contacto</h1>
-<p>Nuestro canales de contacto son</p>
+<div class="section-container">
+  <h2>Contáctenos</h2>
+  <p>{{ contenido if contenido else "Contenido no disponible" }}</p>
+
+  <div class="nav-buttons">
+    <a href="/" class="btn-nav">Volver al inicio</a>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<!-- Puedes reutilizar el estilo anterior -->
+{% include "partials/estilo_seccion.html" %}
 {% endblock %}

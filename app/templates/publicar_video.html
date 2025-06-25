@@ -2,14 +2,14 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Editar Sección</title>
+    <title>Publicar Video</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         body {
-            margin: 0;
             font-family: 'Segoe UI', sans-serif;
             background-color: #0d0d0d;
             color: white;
+            margin: 0;
             padding: 0;
         }
 
@@ -21,13 +21,13 @@
 
         header h1 {
             margin: 0;
-            font-size: 1.8rem;
+            font-size: 2rem;
         }
 
         main {
+            max-width: 700px;
+            margin: 2rem auto;
             padding: 2rem;
-            max-width: 800px;
-            margin: auto;
             background-color: #1a1a1a;
             border-radius: 15px;
         }
@@ -39,29 +39,28 @@
             color: #ffafcc;
         }
 
+        input[type="text"],
         textarea {
             width: 100%;
-            min-height: 250px;
-            padding: 1rem;
-            border-radius: 10px;
+            padding: 0.75rem;
+            margin-top: 0.5rem;
             border: 2px solid #f72585;
+            border-radius: 10px;
             background-color: #333;
             color: white;
             font-size: 1rem;
-            margin-top: 0.5rem;
         }
 
         button {
             margin-top: 1.5rem;
-            padding: 0.75rem 2rem;
+            padding: 0.8rem 2rem;
             background-color: #ff595e;
             color: white;
+            font-weight: bold;
             border: none;
             border-radius: 10px;
-            font-size: 1rem;
-            font-weight: bold;
             cursor: pointer;
-            transition: 0.3s;
+            transition: background 0.3s ease;
         }
 
         button:hover {
@@ -86,14 +85,21 @@
 </head>
 <body>
     <header>
-        <h1>Editar Sección: {{ titulo }}</h1>
+        <h1>Publicar Video</h1>
     </header>
 
     <main>
         <form method="post">
-            <label for="contenido">Contenido:</label>
-            <textarea id="contenido" name="contenido" required>{{ contenido }}</textarea>
-            <button type="submit">Guardar</button>
+            <label for="titulo">Título del video:</label>
+            <input type="text" id="titulo" name="titulo" required>
+
+            <label for="url">URL del video (YouTube, Facebook, Instagram...):</label>
+            <input type="text" id="url" name="url" required>
+
+            <label for="descripcion">Descripción (opcional):</label>
+            <textarea id="descripcion" name="descripcion" rows="4"></textarea>
+
+            <button type="submit">Publicar</button>
         </form>
 
         <a href="/admin" class="btn-back">← Volver al Panel</a>

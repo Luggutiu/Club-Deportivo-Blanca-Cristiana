@@ -2,54 +2,62 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <title>{% block title %}Club Deportivo{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Club Deportivo Blanca Cristiana</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
         body {
-            background-color: #f5f5f5;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            background-color: #fff;
+            color: #000;
         }
-        header {
-            background-color: #003366;
-            color: white;
+
+        nav {
+            background-color: #000;
             padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
         }
+
+        nav .nav-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
         nav a {
-            color: white;
-            margin-right: 1rem;
+            text-decoration: none;
+            color: #FDA8A8;
+            font-weight: bold;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: background 0.3s ease;
         }
-        footer {
-            background-color: #003366;
+
+        nav a:hover {
+            background-color: #F76C6C;
             color: white;
-            text-align: center;
-            padding: 1rem;
-            margin-top: 2rem;
+        }
+
+        main {
+            padding: 2rem;
         }
     </style>
 </head>
 <body>
 
-    <header class="container-fluid">
-        <div class="d-flex justify-content-between align-items-center">
-            <h1 class="h4">🏆 Club Deportivo Blanca Cristiana</h1>
-            <nav>
-                <a href="/">Inicio</a>
-                <a href="/mision">Misión</a>
-                <a href="/vision">Visión</a>
-                <a href="/quienes-somos">¿Quiénes somos?</a>
-                <a href="/contacto">Contáctenos</a>
-            </nav>
+    <nav>
+        <div class="nav-buttons">
+            <a href="javascript:history.back()">← Atrás</a>
+            <a href="/">🏠 Inicio</a>
         </div>
-    </header>
+    </nav>
 
-    <main class="container mt-4">
+    <main>
         {% block content %}
         {% endblock %}
     </main>
-
-    <footer>
-        &copy; 2025 Club Deportivo Blanca Cristiana - Todos los derechos reservados
-    </footer>
 
 </body>
 </html>

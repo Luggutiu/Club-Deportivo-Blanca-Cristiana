@@ -1,41 +1,69 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from app.database import engine, Base
+from app.routes import auth, info, admin_info, admin, posts, dev
+import os
+from fastapi import Form
+from fastapi.responses import RedirectResponse
+from fastapi import FastAPI, Request, Depends
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+from sqlalchemy.orm import Session
+from app.database import SessionLocal
+from app.models import Horario
 
-from app.routes import posts, auth, admin, dev
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
-from app.database import engine
-from app import models
-
-# Crear tablas si no existen
-models.Base.metadata.create_all(bind=engine)
+# Crear tablas en la base de datos (si no existen)
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-# Configurar archivos estáticos y templates
+# Montar archivos estáticos (CSS, imágenes)
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
+# Templates
 templates = Jinja2Templates(directory="app/templates")
 
-# Ruta raíz redirige a /posts
-from fastapi.responses import RedirectResponse
-
-from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
-
-@app.get("/", response_class=HTMLResponse)
-def index(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
-
 # Incluir routers
-app.include_router(posts.router, prefix="/posts")
-app.include_router(auth.router, prefix="/admin")
+app.include_router(auth.router)
+app.include_router(info.router)
+app.include_router(admin_info.router)
 app.include_router(admin.router)
+app.include_router(posts.router)
 app.include_router(dev.router)
 
-from app.routes import info
-app.include_router(info.router)
 
-from app.routes import admin_info
-app.include_router(admin_info.router)
+
+@app.get("/admin/gestionar-horarios", response_class=HTMLResponse)
+async def mostrar_formulario_horario(request: Request, db: Session = Depends(get_db)):
+    horarios = db.query(Horario).all()
+    return templates.TemplateResponse("gestionar_horarios.html", {
+        "request": request,
+        "horarios": horarios
+    })
+
+@app.post("/admin/guardar-horario")
+async def guardar_horario(
+    request: Request,
+    dia: str = Form(...),
+    hora_inicio: str = Form(...),
+    hora_fin: str = Form(...),
+    actividad: str = Form(...),
+    db: Session = Depends(get_db)
+    ):
+    nuevo_horario = Horario(
+        dia=dia,
+        hora_inicio=hora_inicio,
+        hora_fin=hora_fin,
+        actividad=actividad
+    )
+    db.add(nuevo_horario)
+    db.commit()
+    return RedirectResponse(url="/admin/gestionar-horarios", status_code=303)

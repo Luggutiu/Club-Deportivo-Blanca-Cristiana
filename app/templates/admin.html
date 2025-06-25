@@ -1,21 +1,92 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
     <title>Panel de Administración</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #0d0d0d;
+            color: #fff;
+        }
+
+        header {
+            background-color: #f72585; /* fucsia */
+            padding: 1rem;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            background-color: #7209b7; /* morado */
+            padding: 1rem;
+        }
+
+        nav a {
+            background-color: #ffafcc; /* rosado suave */
+            color: #000;
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        nav a:hover {
+            background-color: #f72585; /* fucsia fuerte */
+            color: white;
+        }
+
+        main {
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .btn-back {
+            display: inline-block;
+            margin-top: 2rem;
+            background-color: #ff595e; /* guayaba */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn-back:hover {
+            background-color: #d90429;
+        }
+    </style>
 </head>
 <body>
-    <h1>Publicar contenido</h1>
-    <form method="post" action="/admin/publicar">
-        <input type="text" name="url" placeholder="URL del video o post" required>
-        <button type="submit">Publicar</button>
-    </form>
+    <header>
+        <h1>Panel de Administración</h1>
+    </header>
 
-    <h2>Publicaciones</h2>
-    {% for post in publicaciones %}
-        <div style="margin-bottom: 30px;">
-            <iframe src="{{ post.embed_url }}" width="560" height="315" frameborder="0" allowfullscreen></iframe>
-            <p><strong>Plataforma:</strong> {{ post.plataforma }}</p>
-        </div>
-    {% endfor %}
+    <nav>
+        <a href="/admin/editar/mision">Editar Misión</a>
+        <a href="/admin/editar/vision">Editar Visión</a>
+        <a href="/admin/editar/quienes-somos">Editar ¿Quiénes Somos?</a>
+        <a href="/admin/editar/contacto">Editar Contáctenos</a>
+        <a href="/admin/publicar-video">Publicar Video</a>
+        <a href="/admin/horarios">Gestionar Horarios</a>
+    </nav>
+
+    <main>
+        <p>Selecciona una opción del menú para administrar el contenido del sitio.</p>
+        <a href="/" class="btn-back">Ir al inicio</a>
+    </main>
 </body>
 </html>
