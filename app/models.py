@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Text
 from app.database import Base
 
 class Post(Base):
@@ -8,9 +8,6 @@ class Post(Base):
     url = Column(String, nullable=False)
     embed_url = Column(String, nullable=False)
     plataforma = Column(String, nullable=True)
-    
-    
-    from sqlalchemy import Column, Integer, String, Text
 
 class SeccionInformativa(Base):
     __tablename__ = "secciones"
