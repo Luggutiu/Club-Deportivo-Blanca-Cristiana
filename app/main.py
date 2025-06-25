@@ -39,7 +39,7 @@ app.include_router(auth.router, prefix="/admin")
 from app.database import engine
 from app import models
 
-models.Base.metadata.create_all(bind=engine)
+'models.Base.metadata.create_all(bind=engine)'
 
 from app.routes import auth  # importa la ruta nueva
 
