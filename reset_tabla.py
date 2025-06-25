@@ -1,16 +1,20 @@
-from sqlalchemy import create_engine
-from app.database import Base  # Asegúrate que este importa bien tu Base
-from app.models import Post    # Importa el modelo Post
+from app.database import engine, SessionLocal
+from app import models
 
-# Usa la misma URL de conexión que usas en tu entorno local
-DATABASE_URL = "postgresql://usuario:contraseña@localhost:5432/tu_base_de_datos"
+print("Creando tablas...")
+models.Base.metadata.create_all(bind=engine)
+print("¡Tablas creadas correctamente!")
 
-engine = create_engine(DATABASE_URL)
+print("Agregando post de prueba...")
+db = SessionLocal()
 
-# 🔥 Borrar la tabla (cuidado: se borra TODO su contenido)
-Base.metadata.drop_all(bind=engine, tables=[Post.__table__])
+nuevo_post = models.Post(
+    url="https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    embed_url="https://www.youtube.com/embed/dQw4w9WgXcQ",
+    plataforma="YouTube"
+)
 
-# ✅ Volver a crearla con las columnas correctas
-Base.metadata.create_all(bind=engine, tables=[Post.__table__])
-
-print("La tabla 'posts' fue borrada y recreada exitosamente.")
+db.add(nuevo_post)
+db.commit()
+db.close()
+print("¡Post agregado exitosamente!")

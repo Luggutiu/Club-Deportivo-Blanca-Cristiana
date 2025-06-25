@@ -45,7 +45,7 @@
         <h1>Publicaciones del Club Deportivo Blanca Cristiana</h1>
         {% for post in posts %}
             <div class="post">
-                <div class="title">{{ post.title }} ({{ post.platform }})</div>
+                <div class="title">{{ post.url }} ({{ post.plataforma }})</div>
                 <iframe src="{{ post.embed_url }}" allowfullscreen></iframe>
             </div>
         {% endfor %}
