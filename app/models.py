@@ -17,7 +17,7 @@ class SeccionInformativa(Base):
     contenido = Column(Text)
     
     from sqlalchemy import Column, Integer, String
-    from main import Base
+    from .database import Base
 
 class Horario(Base):
     __tablename__ = "horarios"
