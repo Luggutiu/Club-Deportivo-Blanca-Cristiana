@@ -3,7 +3,7 @@ from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from app.database import SessionLocal
 from app.models import Post
-from app.utils.embedder import generar_embed
+from app.embedder import generar_embed
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
