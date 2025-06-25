@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Panel de Administración</title>
+</head>
+<body>
+    <h2>Bienvenido al panel de administración</h2>
+    <a href="/admin/logout">Cerrar sesión</a>
+
+    <h3>Crear nueva publicación</h3>
+    <form method="post" action="/admin/create">
+        <label>Título:</label><br>
+        <input type="text" name="title" required><br>
+        <label>URL del video o post (YouTube, Facebook, Instagram, TikTok):</label><br>
+        <input type="text" name="url" required><br>
+        <button type="submit">Publicar</button>
+    </form>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Publicaciones</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .post {
+            margin-bottom: 40px;
+        }
+        iframe, blockquote {
+            max-width: 100%;
+            width: 100%;
+            margin: auto;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Últimas Publicaciones</h1>
+
+    {% for post in publicaciones %}
+        <div class="post">
+            <h2>{{ post.plataforma }}</h2>
+
+            {% if post.plataforma == "YouTube" or post.plataforma == "Facebook" or post.plataforma == "TikTok" or post.plataforma == "Instagram" %}
+                <iframe src="{{ post.embed_url }}"
+                        height="400"
+                        frameborder="0"
+                        allowfullscreen
+                        loading="lazy"></iframe>
+
+            {% elif post.plataforma == "Twitter" %}
+                <blockquote class="twitter-tweet">
+                    <a href="{{ post.url }}"></a>
+                </blockquote>
+            {% else %}
+                <p>Plataforma no soportada.</p>
+            {% endif %}
+        </div>
+    {% endfor %}
+
+    <!-- Scripts necesarios para renderizado dinámico -->
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    <script async src="https://www.tiktok.com/embed.js"></script>
+
+</body>
+</html>
