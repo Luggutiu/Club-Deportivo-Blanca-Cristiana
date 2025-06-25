@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Request
-from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from app.embedder import generar_embed
+from fastapi.responses import HTMLResponse
 from app.database import SessionLocal
 from app import models
 
