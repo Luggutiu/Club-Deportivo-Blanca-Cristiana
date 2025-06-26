@@ -1,16 +1,21 @@
-from fastapi import FastAPI, Request, Depends, Form, HTTPException, Path
+from fastapi import FastAPI, Request, Depends, Form, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.status import HTTP_303_SEE_OTHER
 from sqlalchemy.orm import Session
+from starlette.middleware.sessions import SessionMiddleware
 
 from app.database import engine, Base, SessionLocal
 from app.models import Horario, SeccionInformativa, Post
 from app.routes import auth, info, admin_info, admin, posts, dev
+from app.routes.auth import check_admin_logged  # ✅ Import correcto
 
 # Inicialización de la app
 app = FastAPI()
+
+# Middleware de sesiones
+app.add_middleware(SessionMiddleware, secret_key="una_clave_secreta_segura")
 
 # Archivos estáticos y plantillas
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
@@ -62,6 +67,21 @@ async def home(request: Request, db: Session = Depends(get_db)):
         "posts": posts,
         "horarios": horarios,
         "secciones": secciones
+    })
+
+@app.get("/admin", response_class=HTMLResponse)
+def admin_panel(request: Request):
+    if not check_admin_logged(request):
+        return RedirectResponse(url="/login", status_code=302)
+
+    db = SessionLocal()
+    publicaciones = db.query(Post).all()
+    horarios = db.query(Horario).all()
+
+    return templates.TemplateResponse("admin.html", {
+        "request": request,
+        "publicaciones": publicaciones,
+        "horarios": horarios
     })
 
 @app.get("/test-embed", response_class=HTMLResponse)
@@ -145,4 +165,3 @@ async def eliminar_post(post_id: int, db: Session = Depends(get_db)):
     db.delete(post)
     db.commit()
     return RedirectResponse(url="/admin", status_code=HTTP_303_SEE_OTHER)
-

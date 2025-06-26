@@ -31,3 +31,4 @@ from fastapi import Request
 
 def check_admin_logged(request: Request):
     return request.session.get("admin_logged", False)
+
