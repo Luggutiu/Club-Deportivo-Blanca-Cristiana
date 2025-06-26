@@ -33,7 +33,7 @@
     <ul class="horario-list" style="list-style: none; padding: 0;">
       {% for h in horarios %}
         <li style="margin-bottom: 10px;">
-          <strong>{{ h.dia }}</strong> – {{ h.hora }} – {{ h.actividad }}
+          <strong>{{ h.dia }}</strong>: {{ h.hora_inicio }} - {{ h.hora_fin }} – {{ h.actividad }}
         </li>
       {% endfor %}
     </ul>
@@ -41,7 +41,9 @@
   {% endif %}
 
   <!-- Sección de publicaciones -->
-  <h2>📣 Últimas Publicaciones</h2>
+  <h2 style="color: #ff5e78; margin-top: 30px;">📣 Últimas Publicaciones</h2>
+  <p style="color: #ccc;">Total de publicaciones: {{ posts|length }}</p>
+
   {% for post in posts %}
     <div class="post" style="
       margin-bottom: 40px;
