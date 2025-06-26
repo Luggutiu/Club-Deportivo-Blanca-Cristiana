@@ -1,135 +1,144 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{% block title %}Panel Administrativo - Club Deportivo Blanca Cristiana{% endblock %}</title>
+{% extends "base_admin.html" %}
+{% block title %}Panel de Administración{% endblock %}
 
-  <!-- Favicon -->
-  <link rel="icon" href="{{ url_for('static', path='favicon.ico') }}" type="image/x-icon" />
+{% block content %}
+<div class="admin-container">
+  <h2>Panel de Administración</h2>
 
-  <!-- Estilo global -->
-  <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}" />
-
-  <!-- Estilo personalizado -->
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #000;
-      color: #fff;
-    }
-
-    .admin-layout {
-      display: flex;
-      min-height: 100vh;
-    }
-
-    aside {
-      width: 250px;
-      background: linear-gradient(to bottom, #ff41b4, #ff91a4);
-      padding: 20px;
-      box-shadow: 4px 0 15px rgba(0, 0, 0, 0.4);
-    }
-
-    aside h2 {
-      font-size: 1.2em;
-      color: #fff;
-      margin-bottom: 25px;
-      text-align: center;
-    }
-
-    aside a {
-      display: block;
-      color: white;
-      text-decoration: none;
-      margin: 10px 0;
-      padding: 10px 15px;
-      border-radius: 10px;
-      font-weight: bold;
-      transition: background-color 0.3s;
-    }
-
-    aside a:hover {
-      background-color: #ff5e78;
-    }
-
-    main {
-      flex: 1;
-      padding: 40px;
-      background: linear-gradient(to bottom right, #1c1c1c, #000);
-    }
-
-    @media (max-width: 768px) {
-      .admin-layout {
-        flex-direction: column;
-      }
-
-      aside {
-        width: 100%;
-        text-align: center;
-        border-bottom: 3px solid #ff5e78;
-      }
-
-      aside a {
-        display: inline-block;
-        margin: 8px;
-      }
-
-      main {
-        padding: 20px;
-      }
-    }
-
-    .whatsapp-float {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background-color: #25d366;
-      color: white;
-      border-radius: 50%;
-      width: 55px;
-      height: 55px;
-      text-align: center;
-      font-size: 28px;
-      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-      z-index: 1000;
-    }
-
-    .whatsapp-float:hover {
-      background-color: #1ebe5d;
-    }
-
-    .whatsapp-float i {
-      line-height: 55px;
-    }
-  </style>
-
-  {% block extra_css %}{% endblock %}
-</head>
-<body>
-  <div class="admin-layout">
-    <aside>
-      <h2>Administración</h2>
-      <a href="/admin" title="Ir al panel principal">Inicio Admin</a>
-      <a href="/admin/publicar-video" title="Publicar nuevo video">Publicar Video</a>
-      <a href="/admin/gestionar-horarios" title="Ver y editar horarios">Gestionar Horarios</a>
-      <a href="/admin/editar/mision" title="Editar sección Misión">Editar Misión</a>
-      <a href="/admin/editar/vision" title="Editar sección Visión">Editar Visión</a>
-      <a href="/admin/editar/quienes-somos" title="Editar sección ¿Quiénes Somos?">Editar ¿Quiénes Somos?</a>
-      <a href="/admin/editar/contacto" title="Editar sección Contacto">Editar Contacto</a>
-      <a href="/logout" title="Cerrar sesión como administrador">Cerrar Sesión</a>
-    </aside>
-
-    <main id="main-content">
-      {% block content %}{% endblock %}
-    </main>
+  <!-- Publicaciones -->
+  <div class="publicaciones-section">
+    <h3>Publicaciones recientes</h3>
+    {% if publicaciones %}
+      <ul class="publicaciones-list">
+        {% for post in publicaciones %}
+          <li class="publicacion-item">
+            <span>{{ post.title or "Video" }} - {{ post.plataforma|capitalize }}</span>
+            <small>ID: {{ post.id }}</small>
+            <div class="acciones-post">
+              <form method="post" action="/admin/eliminar-post/{{ post.id }}" style="display:inline;">
+                <button type="submit" class="btn-eliminar" onclick="return confirm('¿Eliminar esta publicación?')">🗑️ Eliminar</button>
+              </form>
+              <a href="/admin/editar-post/{{ post.id }}" class="btn-editar">✏️ Editar</a>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="no-items">No hay publicaciones aún.</p>
+    {% endif %}
   </div>
 
-  <a href="https://wa.me/573001112233" target="_blank" class="whatsapp-float" title="Contáctanos por WhatsApp">
-    <i class="fab fa-whatsapp"></i>
-  </a>
+  <!-- Horarios -->
+  <div class="horarios-section">
+    <h3>Horarios registrados</h3>
+    <a href="/admin/gestionar-horarios" class="btn-agregar">➕ Agregar nuevo horario</a>
+    {% if horarios %}
+      <ul class="horarios-list">
+        {% for horario in horarios %}
+          <li class="horario-item">
+            <strong>{{ horario.dia }}:</strong> {{ horario.hora_inicio }} - {{ horario.hora_fin }} → {{ horario.actividad }}
+            <div class="acciones-horario">
+              <a href="/admin/editar-horario/{{ horario.id }}" class="btn-editar">✏️ Editar</a>
+              <a href="/admin/eliminar-horario/{{ horario.id }}" class="btn-eliminar" onclick="return confirm('¿Eliminar este horario?')">🗑️ Eliminar</a>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="no-items">No hay horarios registrados.</p>
+    {% endif %}
+  </div>
 
-  <script src="https://kit.fontawesome.com/0c4e2df15f.js" crossorigin="anonymous"></script>
-</body>
-</html>
+  <!-- Secciones informativas -->
+  <div class="secciones-section">
+    <h3>Secciones informativas</h3>
+    <ul class="secciones-list">
+      {% for titulo in ['mision', 'vision', 'quienes-somos', 'contacto'] %}
+        <li class="seccion-item">
+          <strong>{{ titulo|replace('-', ' ')|title }}</strong>
+          <a href="/admin/editar/{{ titulo }}" class="btn-editar">✏️ Editar</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  .admin-container {
+    padding: 30px;
+    background-color: #1c1c1c;
+    border-radius: 15px;
+    color: #f2f2f2;
+  }
+
+  h2, h3 {
+    color: #ff91a4;
+    margin-bottom: 15px;
+  }
+
+  .publicaciones-list,
+  .horarios-list,
+  .secciones-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .publicacion-item,
+  .horario-item,
+  .seccion-item {
+    background: #2e2e2e;
+    margin-bottom: 10px;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #ff5e78;
+  }
+
+  .acciones-post,
+  .acciones-horario {
+    margin-top: 8px;
+  }
+
+  .btn-eliminar, .btn-editar, .btn-agregar {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 8px;
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background 0.3s;
+    margin-right: 8px;
+  }
+
+  .btn-eliminar {
+    background-color: #e74c3c;
+  }
+
+  .btn-eliminar:hover {
+    background-color: #c0392b;
+  }
+
+  .btn-editar {
+    background-color: #ff41b4;
+  }
+
+  .btn-editar:hover {
+    background-color: #ff91a4;
+  }
+
+  .btn-agregar {
+    background-color: #25d366;
+    margin-bottom: 10px;
+  }
+
+  .btn-agregar:hover {
+    background-color: #1ebe5d;
+  }
+
+  .no-items {
+    color: #bbb;
+    font-style: italic;
+  }
+</style>
+{% endblock %}

@@ -69,11 +69,11 @@
       <div class="post" data-plataforma="{{ post.plataforma }}" data-id="{{ post.id }}">
         {% if post.plataforma in ["YouTube", "Facebook", "TikTok", "Instagram"] %}
           <iframe src="{{ post.embed_url }}"
-                  height="400"
-                  allowfullscreen
-                  loading="lazy"
-                  title="Publicación en {{ post.plataforma }}"
-                  style="width:100%; border-radius:8px;"></iframe>
+            height="250"
+            allowfullscreen
+            loading="lazy"
+            title="Publicación en {{ post.plataforma }}"
+            style="width:100%; border-radius:8px;"></iframe>
         {% elif post.plataforma == "Twitter" %}
           <blockquote class="twitter-tweet">
             <a href="{{ post.url }}"></a>
