@@ -1,0 +1,26 @@
+{% extends "base_admin.html" %}
+{% block title %}Editar Horario{% endblock %}
+
+{% block content %}
+<h2>Editar Horario</h2>
+
+<form method="post" action="/admin/actualizar-horario/{{ horario.id }}">
+  <label for="dia">Día</label>
+  <input type="text" name="dia" value="{{ horario.dia }}" required>
+
+  <label for="hora_inicio">Hora de inicio</label>
+  <input type="time" name="hora_inicio" value="{{ horario.hora_inicio }}" required>
+
+  <label for="hora_fin">Hora de fin</label>
+  <input type="time" name="hora_fin" value="{{ horario.hora_fin }}" required>
+
+  <label for="actividad">Actividad</label>
+  <input type="text" name="actividad" value="{{ horario.actividad }}" required>
+
+  <button type="submit" class="btn-submit">Actualizar</button>
+</form>
+
+<div class="nav-buttons">
+  <a href="/admin/gestionar-horarios" class="btn-nav">Cancelar</a>
+</div>
+{% endblock %}

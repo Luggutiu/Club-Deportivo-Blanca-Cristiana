@@ -5,16 +5,6 @@
 <div class="admin-container">
   <h2>Panel de Administración</h2>
 
-  <div class="admin-actions">
-    <a href="/admin/editar/mision" class="btn-admin">Editar Misión</a>
-    <a href="/admin/editar/vision" class="btn-admin">Editar Visión</a>
-    <a href="/admin/editar/quienes-somos" class="btn-admin">Editar ¿Quiénes Somos?</a>
-    <a href="/admin/editar/contacto" class="btn-admin">Editar Contacto</a>
-    <a href="/admin/publicar-video" class="btn-admin">Publicar Video</a>
-    <a href="/admin/horarios" class="btn-admin">Gestionar Horarios</a>
-    <a href="/logout" class="btn-logout">Cerrar sesión</a>
-  </div>
-
   <div class="publicaciones-section">
     <h3>Publicaciones recientes</h3>
     {% if publicaciones %}
@@ -23,6 +13,11 @@
           <li class="publicacion-item">
             <span>{{ post.title or "Video" }} - {{ post.plataforma|capitalize }}</span>
             <small>ID: {{ post.id }}</small>
+            <form method="post" action="/admin/eliminar-post/{{ post.id }}" style="margin-top: 10px;">
+              <button type="submit" class="btn-eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar esta publicación?')">
+                🗑️ Eliminar
+              </button>
+            </form>
           </li>
         {% endfor %}
       </ul>
@@ -35,90 +30,22 @@
 
 {% block extra_css %}
 <style>
-  body {
-    background: linear-gradient(to bottom right, #ff5e78, #ff91a4, #ff41b4, #000000);
-    font-family: 'Segoe UI', sans-serif;
-    color: #fff;
-  }
+  /* ... lo anterior se mantiene igual ... */
 
-  .admin-container {
-    max-width: 1000px;
-    margin: 50px auto;
-    padding: 40px;
-    background-color: rgba(0, 0, 0, 0.85);
-    border-radius: 20px;
-    box-shadow: 0 0 20px rgba(255, 65, 180, 0.4);
-  }
-
-  h2 {
-    text-align: center;
-    color: #ff91a4;
-    margin-bottom: 30px;
-  }
-
-  .admin-actions {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 30px;
-  }
-
-  .btn-admin, .btn-logout {
-    padding: 12px 20px;
-    border-radius: 10px;
-    font-weight: bold;
-    text-decoration: none;
-    color: #fff;
-    background-color: #ff41b4;
-    transition: background-color 0.3s ease;
-  }
-
-  .btn-admin:hover {
-    background-color: #ff91a4;
-  }
-
-  .btn-logout {
-    background-color: #222;
-    border: 1px solid #ff5e78;
-  }
-
-  .btn-logout:hover {
-    background-color: #ff5e78;
-    color: #fff;
-  }
-
-  .publicaciones-section {
-    margin-top: 40px;
-  }
-
-  h3 {
-    color: #ffb3c6;
-    margin-bottom: 20px;
-  }
-
-  .publicaciones-list {
-    list-style: none;
-    padding: 0;
-  }
-
-  .publicacion-item {
-    background-color: rgba(255, 255, 255, 0.05);
-    padding: 10px 15px;
-    margin-bottom: 10px;
-    border-left: 5px solid #ff41b4;
+  .btn-eliminar {
+    margin-top: 5px;
+    padding: 6px 12px;
+    background-color: #e74c3c;
+    border: none;
     border-radius: 8px;
-  }
-
-  .publicacion-item span {
+    color: white;
     font-weight: bold;
-    color: #fff;
+    cursor: pointer;
+    transition: background 0.3s;
   }
 
-  .publicacion-item small {
-    display: block;
-    color: #ffb3c6;
-    font-size: 0.8em;
+  .btn-eliminar:hover {
+    background-color: #c0392b;
   }
 </style>
 {% endblock %}

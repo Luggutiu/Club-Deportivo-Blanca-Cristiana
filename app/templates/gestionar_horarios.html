@@ -4,35 +4,40 @@
 {% block content %}
 <div class="horario-container">
   <h2>Gestionar Horarios</h2>
-  <<form method="post" action="/admin/guardar-horario">
-  <label for="dia">Día</label>
-  <select id="dia" name="dia" required>
-    <option value="">-- Selecciona un día --</option>
-    <option value="Lunes">Lunes</option>
-    <option value="Martes">Martes</option>
-    <option value="Miércoles">Miércoles</option>
-    <option value="Jueves">Jueves</option>
-    <option value="Viernes">Viernes</option>
-    <option value="Sábado">Sábado</option>
-    <option value="Domingo">Domingo</option>
-  </select>
 
-  <label for="hora_inicio">Hora de inicio</label>
-  <input type="time" id="hora_inicio" name="hora_inicio" required>
+  <form method="post" action="/admin/guardar-horario">
+    <label for="dia">Día</label>
+    <select id="dia" name="dia" required>
+      <option value="">-- Selecciona un día --</option>
+      <option>Lunes</option>
+      <option>Martes</option>
+      <option>Miércoles</option>
+      <option>Jueves</option>
+      <option>Viernes</option>
+      <option>Sábado</option>
+      <option>Domingo</option>
+    </select>
 
-  <label for="hora_fin">Hora de fin</label>
-  <input type="time" id="hora_fin" name="hora_fin" required>
+    <label for="hora_inicio">Hora de inicio</label>
+    <input type="time" id="hora_inicio" name="hora_inicio" required>
 
-  <label for="actividad">Actividad</label>
-  <input type="text" id="actividad" name="actividad" placeholder="Ej: Entrenamiento sub-15" required>
+    <label for="hora_fin">Hora de fin</label>
+    <input type="time" id="hora_fin" name="hora_fin" required>
 
-  <button type="submit" class="btn-submit">Agregar</button>
-</form>
+    <label for="actividad">Actividad</label>
+    <input type="text" id="actividad" name="actividad" required>
+
+    <button type="submit" class="btn-submit">Agregar</button>
+  </form>
 
   <h3>Horarios Actuales</h3>
   <ul class="horario-list">
     {% for h in horarios %}
-      <li><strong>{{ h.dia }}</strong> - {{ h.hora }} - {{ h.actividad }}</li>
+      <li>
+        <strong>{{ h.dia }}</strong> - {{ h.hora_inicio }} a {{ h.hora_fin }} - {{ h.actividad }}
+        <a href="/admin/editar-horario/{{ h.id }}" class="btn-editar">Editar</a>
+        <a href="/admin/eliminar-horario/{{ h.id }}" class="btn-eliminar" onclick="return confirm('¿Seguro que deseas eliminar este horario?')">Eliminar</a>
+      </li>
     {% endfor %}
   </ul>
 
@@ -40,89 +45,4 @@
     <a href="/admin" class="btn-nav">Volver al Panel</a>
   </div>
 </div>
-{% endblock %}
-
-{% block extra_css %}
-<style>
-  select {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 20px;
-  border: 1px solid #ff5e78;
-  border-radius: 10px;
-  background-color: #1c1c1c;
-  color: #fff;
-  font-size: 1em;
-}
-
-  h2, h3 {
-    text-align: center;
-    color: #ff91a4;
-    margin-bottom: 20px;
-  }
-
-  label {
-    display: block;
-    margin-bottom: 8px;
-    color: #ffb3c6;
-  }
-
-  input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 20px;
-    border: 1px solid #ff5e78;
-    border-radius: 10px;
-    background-color: #1c1c1c;
-    color: #fff;
-  }
-
-  .btn-submit {
-    width: 100%;
-    padding: 12px;
-    background-color: #ff41b4;
-    border: none;
-    border-radius: 10px;
-    font-weight: bold;
-    color: white;
-    cursor: pointer;
-  }
-
-  .btn-submit:hover {
-    background-color: #ff91a4;
-  }
-
-  .horario-list {
-    list-style: none;
-    padding-left: 0;
-  }
-
-  .horario-list li {
-    padding: 10px;
-    background-color: rgba(255, 255, 255, 0.05);
-    border: 1px solid #ff5e78;
-    border-radius: 10px;
-    margin-bottom: 10px;
-  }
-
-  .nav-buttons {
-    text-align: center;
-    margin-top: 20px;
-  }
-
-  .btn-nav {
-    background-color: transparent;
-    border: 1px solid #ff5e78;
-    color: #ff91a4;
-    padding: 10px 20px;
-    border-radius: 10px;
-    text-decoration: none;
-    transition: all 0.3s ease;
-  }
-
-  .btn-nav:hover {
-    background-color: #ff5e78;
-    color: #fff;
-  }
-</style>
 {% endblock %}

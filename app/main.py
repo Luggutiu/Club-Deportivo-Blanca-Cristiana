@@ -95,3 +95,76 @@ async def guardar_horario(
 @app.get("/test-embed", response_class=HTMLResponse)
 def test_embed(request: Request):
     return templates.TemplateResponse("test_embed.html", {"request": request})
+
+from fastapi import HTTPException
+from starlette.status import HTTP_303_SEE_OTHER
+
+@app.post("/admin/eliminar-post/{post_id}")
+async def eliminar_post(post_id: int, db: Session = Depends(get_db)):
+    post = db.query(Post).filter(Post.id == post_id).first()
+    if not post:
+        raise HTTPException(status_code=404, detail="Publicación no encontrada")
+
+    db.delete(post)
+    db.commit()
+    return RedirectResponse(url="/admin", status_code=HTTP_303_SEE_OTHER)
+
+@app.get("/admin/gestionar-horarios", response_class=HTMLResponse)
+async def mostrar_formulario_horario(request: Request, db: Session = Depends(get_db)):
+    horarios = db.query(Horario).order_by(Horario.dia).all()
+    return templates.TemplateResponse("gestionar_horarios.html", {
+        "request": request,
+        "horarios": horarios
+    })
+
+@app.post("/admin/guardar-horario")
+async def guardar_horario(
+    request: Request,
+    dia: str = Form(...),
+    hora_inicio: str = Form(...),
+    hora_fin: str = Form(...),
+    actividad: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    nuevo_horario = Horario(
+        dia=dia,
+        hora_inicio=hora_inicio,
+        hora_fin=hora_fin,
+        actividad=actividad
+    )
+    db.add(nuevo_horario)
+    db.commit()
+    return RedirectResponse(url="/admin/gestionar-horarios", status_code=303)
+
+@app.get("/admin/editar-horario/{horario_id}", response_class=HTMLResponse)
+async def editar_horario(request: Request, horario_id: int, db: Session = Depends(get_db)):
+    horario = db.query(Horario).get(horario_id)
+    if not horario:
+        return RedirectResponse(url="/admin/gestionar-horarios", status_code=302)
+    return templates.TemplateResponse("editar_horario.html", {"request": request, "horario": horario})
+
+@app.post("/admin/actualizar-horario/{horario_id}")
+async def actualizar_horario(
+    horario_id: int,
+    dia: str = Form(...),
+    hora_inicio: str = Form(...),
+    hora_fin: str = Form(...),
+    actividad: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    horario = db.query(Horario).get(horario_id)
+    if horario:
+        horario.dia = dia
+        horario.hora_inicio = hora_inicio
+        horario.hora_fin = hora_fin
+        horario.actividad = actividad
+        db.commit()
+    return RedirectResponse(url="/admin/gestionar-horarios", status_code=303)
+
+@app.get("/admin/eliminar-horario/{horario_id}")
+async def eliminar_horario(horario_id: int, db: Session = Depends(get_db)):
+    horario = db.query(Horario).get(horario_id)
+    if horario:
+        db.delete(horario)
+        db.commit()
+    return RedirectResponse(url="/admin/gestionar-horarios", status_code=303)
