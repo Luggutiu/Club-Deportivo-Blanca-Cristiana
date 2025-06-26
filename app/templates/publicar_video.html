@@ -4,7 +4,7 @@
 {% block content %}
 <div class="form-container">
   <h2>Publicar nuevo video</h2>
-  <form method="post" action="/admin/publicar-video">
+  <form method="post" action="/admin/publicar-video" autocomplete="off">
     <label for="title">Título</label>
     <input type="text" id="title" name="title" placeholder="Ej: Entrenamiento sub-15" required>
 
@@ -31,7 +31,7 @@
   .form-container {
     max-width: 500px;
     margin: 60px auto;
-    padding: 40px;
+    padding: 40px 30px;
     background-color: rgba(0, 0, 0, 0.85);
     border-radius: 20px;
     box-shadow: 0 0 20px rgba(255, 65, 180, 0.5);
@@ -59,6 +59,10 @@
     background-color: #1c1c1c;
     color: #fff;
     font-size: 1em;
+  }
+
+  input::placeholder {
+    color: #bbb;
   }
 
   .btn-submit {
@@ -96,6 +100,16 @@
   .btn-nav:hover {
     background-color: #ff5e78;
     color: #fff;
+  }
+
+  @media (max-width: 480px) {
+    .form-container {
+      padding: 30px 20px;
+    }
+
+    input, .btn-submit {
+      font-size: 0.95em;
+    }
   }
 </style>
 {% endblock %}

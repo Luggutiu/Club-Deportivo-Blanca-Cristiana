@@ -28,7 +28,7 @@ async def vision(request: Request, db: Session = Depends(get_db)):
 
 @router.get("/quienes-somos", response_class=HTMLResponse)
 async def quienes_somos(request: Request, db: Session = Depends(get_db)):
-    contenido = db.query(SeccionInformativa).filter_by(titulo="quienes somos").first()
+    contenido = db.query(SeccionInformativa).filter_by(titulo="quienes-somos").first()
     return templates.TemplateResponse("ver_seccion.html", {
         "request": request,
         "titulo": "¿Quiénes Somos?",

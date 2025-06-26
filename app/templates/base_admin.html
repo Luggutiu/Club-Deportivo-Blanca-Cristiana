@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{% block title %}Panel Administrativo - Club Deportivo Blanca Cristiana{% endblock %}</title>
 
   <!-- Favicon -->
-  <link rel="icon" href="{{ url_for('static', path='favicon.ico') }}" type="image/x-icon">
+  <link rel="icon" href="{{ url_for('static', path='favicon.ico') }}" type="image/x-icon" />
 
   <!-- Estilo global -->
-  <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}" />
 
   <!-- Estilo personalizado -->
   <style>
@@ -92,7 +92,7 @@
       height: 55px;
       text-align: center;
       font-size: 28px;
-      box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
       z-index: 1000;
     }
 
@@ -111,14 +111,14 @@
   <div class="admin-layout">
     <aside>
       <h2>Administración</h2>
-      <a href="/admin">Inicio Admin</a>
-      <a href="/admin/publicar-video">Publicar Video</a>
-      <a href="/admin/horarios">Gestionar Horarios</a>
-      <a href="/admin/editar/mision">Editar Misión</a>
-      <a href="/admin/editar/vision">Editar Visión</a>
-      <a href="/admin/editar/quienes-somos">Editar ¿Quiénes Somos?</a>
-      <a href="/admin/editar/contacto">Editar Contacto</a>
-      <a href="/logout">Cerrar Sesión</a>
+      <a href="/admin" title="Ir al panel principal">Inicio Admin</a>
+      <a href="/admin/publicar-video" title="Publicar nuevo video">Publicar Video</a>
+      <a href="/admin/horarios" title="Ver y editar horarios">Gestionar Horarios</a>
+      <a href="/admin/editar/mision" title="Editar sección Misión">Editar Misión</a>
+      <a href="/admin/editar/vision" title="Editar sección Visión">Editar Visión</a>
+      <a href="/admin/editar/quienes-somos" title="Editar sección ¿Quiénes Somos?">Editar ¿Quiénes Somos?</a>
+      <a href="/admin/editar/contacto" title="Editar sección Contacto">Editar Contacto</a>
+      <a href="/logout" title="Cerrar sesión como administrador">Cerrar Sesión</a>
     </aside>
 
     <main id="main-content">

@@ -7,13 +7,9 @@
   <form method="post" action="/admin/editar-horario/{{ horario.id }}">
     <label for="dia">Día</label>
     <select id="dia" name="dia" required>
-      <option value="Lunes" {% if horario.dia == "Lunes" %}selected{% endif %}>Lunes</option>
-      <option value="Martes" {% if horario.dia == "Martes" %}selected{% endif %}>Martes</option>
-      <option value="Miércoles" {% if horario.dia == "Miércoles" %}selected{% endif %}>Miércoles</option>
-      <option value="Jueves" {% if horario.dia == "Jueves" %}selected{% endif %}>Jueves</option>
-      <option value="Viernes" {% if horario.dia == "Viernes" %}selected{% endif %}>Viernes</option>
-      <option value="Sábado" {% if horario.dia == "Sábado" %}selected{% endif %}>Sábado</option>
-      <option value="Domingo" {% if horario.dia == "Domingo" %}selected{% endif %}>Domingo</option>
+      {% for d in ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'] %}
+        <option value="{{ d }}" {% if horario.dia == d %}selected{% endif %}>{{ d }}</option>
+      {% endfor %}
     </select>
 
     <label for="hora_inicio">Hora de inicio</label>
@@ -29,7 +25,7 @@
   </form>
 
   <div class="nav-buttons">
-    <a href="/admin/horarios" class="btn-nav">Volver</a>
+    <a href="/admin/gestionar-horarios" class="btn-nav">Volver</a>
   </div>
 </div>
 {% endblock %}

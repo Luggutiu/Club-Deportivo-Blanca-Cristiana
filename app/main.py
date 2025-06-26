@@ -10,6 +10,7 @@ from app.database import engine, Base, SessionLocal
 from app.models import Horario, SeccionInformativa, Post
 from app.routes import auth, info, admin_info, admin, posts, dev
 from app.routes.auth import check_admin_logged  # ✅ Import correcto
+from starlette.middleware.sessions import SessionMiddleware
 
 # Inicialización de la app
 app = FastAPI()

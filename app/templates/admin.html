@@ -5,6 +5,7 @@
 <div class="admin-container">
   <h2>Panel de Administración</h2>
 
+  <!-- Publicaciones -->
   <div class="publicaciones-section">
     <h3>Publicaciones recientes</h3>
     {% if publicaciones %}
@@ -13,11 +14,12 @@
           <li class="publicacion-item">
             <span>{{ post.title or "Video" }} - {{ post.plataforma|capitalize }}</span>
             <small>ID: {{ post.id }}</small>
-            <form method="post" action="/admin/eliminar-post/{{ post.id }}" style="margin-top: 10px;">
-              <button type="submit" class="btn-eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar esta publicación?')">
-                🗑️ Eliminar
-              </button>
-            </form>
+            <div class="acciones-post">
+              <form method="post" action="/admin/eliminar-post/{{ post.id }}" style="display:inline;">
+                <button type="submit" class="btn-eliminar" onclick="return confirm('¿Eliminar esta publicación?')">🗑️ Eliminar</button>
+              </form>
+              <a href="/admin/editar-post/{{ post.id }}" class="btn-editar">✏️ Editar</a>
+            </div>
           </li>
         {% endfor %}
       </ul>
@@ -25,27 +27,111 @@
       <p>No hay publicaciones aún.</p>
     {% endif %}
   </div>
+
+  <!-- Horarios -->
+  <div class="horarios-section">
+    <h3>Horarios registrados</h3>
+    <a href="/admin/gestionar-horarios" class="btn-agregar">➕ Agregar nuevo horario</a>
+    {% if horarios %}
+      <ul class="horarios-list">
+        {% for horario in horarios %}
+          <li class="horario-item">
+            <strong>{{ horario.dia }}:</strong> {{ horario.hora_inicio }} - {{ horario.hora_fin }} → {{ horario.actividad }}
+            <div class="acciones-horario">
+              <a href="/admin/editar-horario/{{ horario.id }}" class="btn-editar">✏️ Editar</a>
+              <a href="/admin/eliminar-horario/{{ horario.id }}" class="btn-eliminar" onclick="return confirm('¿Eliminar este horario?')">🗑️ Eliminar</a>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No hay horarios registrados.</p>
+    {% endif %}
+  </div>
+
+  <!-- Secciones informativas -->
+  <div class="secciones-section">
+    <h3>Secciones informativas</h3>
+    <ul class="secciones-list">
+      {% for titulo in ['mision', 'vision', 'quienes-somos', 'contacto'] %}
+        <li class="seccion-item">
+          <strong>{{ titulo|replace('-', ' ')|title }}</strong>
+          <a href="/admin/editar/{{ titulo }}" class="btn-editar">✏️ Editar</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
 </div>
 {% endblock %}
 
 {% block extra_css %}
 <style>
-  /* ... lo anterior se mantiene igual ... */
+  .admin-container {
+    padding: 30px;
+    background-color: #fdfdfd;
+    border-radius: 15px;
+  }
 
-  .btn-eliminar {
-    margin-top: 5px;
+  h2, h3 {
+    color: #c2185b;
+  }
+
+  .publicaciones-list,
+  .horarios-list,
+  .secciones-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .publicacion-item,
+  .horario-item,
+  .seccion-item {
+    background: #fff0f5;
+    margin-bottom: 10px;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #e91e63;
+  }
+
+  .acciones-post,
+  .acciones-horario {
+    margin-top: 8px;
+  }
+
+  .btn-eliminar, .btn-editar, .btn-agregar {
+    display: inline-block;
     padding: 6px 12px;
-    background-color: #e74c3c;
-    border: none;
     border-radius: 8px;
     color: white;
     font-weight: bold;
-    cursor: pointer;
+    text-decoration: none;
     transition: background 0.3s;
+    margin-right: 8px;
+  }
+
+  .btn-eliminar {
+    background-color: #e74c3c;
   }
 
   .btn-eliminar:hover {
     background-color: #c0392b;
+  }
+
+  .btn-editar {
+    background-color: #f39c12;
+  }
+
+  .btn-editar:hover {
+    background-color: #d68910;
+  }
+
+  .btn-agregar {
+    background-color: #8e44ad;
+    margin-bottom: 10px;
+  }
+
+  .btn-agregar:hover {
+    background-color: #6c3483;
   }
 </style>
 {% endblock %}
