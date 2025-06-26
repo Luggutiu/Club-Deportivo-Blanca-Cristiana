@@ -11,6 +11,17 @@
     <label for="url">URL del video</label>
     <input type="url" id="url" name="url" placeholder="https://..." required>
 
+    <label for="plataforma">Plataforma</label>
+    <select id="plataforma" name="plataforma" required>
+      <option value="">Selecciona una</option>
+      <option value="YouTube">YouTube</option>
+      <option value="Facebook">Facebook</option>
+      <option value="Instagram">Instagram</option>
+      <option value="Twitter">Twitter</option>
+      <option value="TikTok">TikTok</option>
+      <option value="Twitch">Twitch</option>
+    </select>
+
     <button type="submit" class="btn-submit">Publicar</button>
   </form>
 
@@ -50,7 +61,8 @@
     font-weight: bold;
   }
 
-  input {
+  input,
+  select {
     width: 100%;
     padding: 12px;
     margin-bottom: 25px;
@@ -107,7 +119,7 @@
       padding: 30px 20px;
     }
 
-    input, .btn-submit {
+    input, select, .btn-submit {
       font-size: 0.95em;
     }
   }

@@ -25,6 +25,8 @@ templates = Jinja2Templates(directory="app/templates")
 # Crear las tablas
 Base.metadata.create_all(bind=engine)
 
+
+
 # Incluir routers
 app.include_router(auth.router)
 app.include_router(info.router)
@@ -61,6 +63,7 @@ crear_secciones_predeterminadas()
 async def home(request: Request, db: Session = Depends(get_db)):
     posts = db.query(Post).order_by(Post.id.desc()).all()
     horarios = db.query(Horario).all()
+    print("HORARIOS EN INDEX:", horarios)    
     secciones_query = db.query(SeccionInformativa).all()
     secciones = {s.titulo: s.contenido for s in secciones_query}
     return templates.TemplateResponse("index.html", {
@@ -166,3 +169,33 @@ async def eliminar_post(post_id: int, db: Session = Depends(get_db)):
     db.delete(post)
     db.commit()
     return RedirectResponse(url="/admin", status_code=HTTP_303_SEE_OTHER)
+
+from fastapi.responses import JSONResponse
+
+@app.get("/ping")
+def ping():
+    return JSONResponse(content={"status": "ok", "message": "pong"})
+
+from fastapi import Form
+from app.embedder import generar_embed  # Asegúrate de tener esta función
+
+@app.post("/admin/publicar-video")
+def publicar_video(
+    request: Request,
+    url: str = Form(...),
+    plataforma: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    try:
+        embed_url = generar_embed(url)
+    except Exception as e:
+        return templates.TemplateResponse("publicar_video.html", {
+            "request": request,
+            "error": "URL inválida o plataforma no soportada."
+        })
+
+    nuevo_post = Post(url=url, plataforma=plataforma, embed_url=embed_url)
+    db.add(nuevo_post)
+    db.commit()
+
+    return RedirectResponse(url="/admin", status_code=303)

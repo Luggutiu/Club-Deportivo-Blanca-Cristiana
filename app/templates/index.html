@@ -11,19 +11,11 @@
     <input type="text" id="busqueda" placeholder="Escribe una palabra clave..." style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ff5e78; background-color: #1c1c1c; color: #fff;">
   </div>
 
-  <!-- FILTRO DE HORARIOS -->
+  <!-- HORARIOS PUBLICADOS -->
   <h2>📅 Horarios de Actividades</h2>
-  <label for="filtro-dia" style="color:#ffb3c6; font-weight: bold;">Filtrar por día:</label>
-  <select id="filtro-dia">
-    <option value="todos">Todos</option>
-    {% for dia in ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"] %}
-      <option value="{{ dia }}">{{ dia }}</option>
-    {% endfor %}
-  </select>
-
-  <div class="horarios-grid" id="horarios-container">
+  <div class="horarios-grid">
     {% for h in horarios %}
-      <div class="horario-card" data-dia="{{ h.dia|capitalize }}">
+      <div class="horario-card">
         <h3>{{ h.dia|capitalize }}</h3>
         <p><strong>{{ h.hora_inicio }} - {{ h.hora_fin }}</strong></p>
         <p>{{ h.actividad }}</p>
@@ -34,10 +26,6 @@
   {% if horarios|length == 0 %}
     <p style="text-align:center; color:#ff91a4;">Aún no se han registrado horarios.</p>
   {% endif %}
-
-  <p id="no-horarios" style="display:none; text-align:center; color:#ff91a4; margin-top:10px;">
-    No hay horarios disponibles para este día.
-  </p>
 
   <hr style="margin: 40px 0; border-color: #ff5e78;">
 
@@ -165,31 +153,10 @@
 
 {% block extra_js %}
 <script>
-  function getQueryParams() {
-    const params = new URLSearchParams(window.location.search);
-    return {
-      dia: params.get("dia") || "todos",
-      plataforma: params.get("plataforma") || "todas"
-    };
-  }
-
   function applyFilters() {
-    const { dia, plataforma } = getQueryParams();
+    const plataforma = document.getElementById("filtro-plataforma").value;
     const orden = document.getElementById("orden-posts").value;
 
-    // Filtro día
-    document.getElementById("filtro-dia").value = dia;
-    const horarios = document.querySelectorAll(".horario-card");
-    let horariosVisibles = 0;
-    horarios.forEach(card => {
-      const mostrar = (dia === "todos" || card.dataset.dia === dia);
-      card.style.display = mostrar ? "block" : "none";
-      if (mostrar) horariosVisibles++;
-    });
-    document.getElementById("no-horarios").style.display = (horariosVisibles === 0) ? "block" : "none";
-
-    // Filtro plataforma
-    document.getElementById("filtro-plataforma").value = plataforma;
     const posts = Array.from(document.querySelectorAll(".post"));
     let postsVisibles = [];
 
@@ -212,24 +179,8 @@
     postsVisibles.forEach(p => container.appendChild(p));
   }
 
-  function updateURLParams(key, value) {
-    const url = new URL(window.location);
-    if (value === "todos" || value === "todas") {
-      url.searchParams.delete(key);
-    } else {
-      url.searchParams.set(key, value);
-    }
-    history.replaceState(null, "", url);
-    applyFilters();
-  }
-
-  document.getElementById("filtro-dia").addEventListener("change", function () {
-    updateURLParams("dia", this.value);
-  });
-
-  document.getElementById("filtro-plataforma").addEventListener("change", function () {
-    updateURLParams("plataforma", this.value);
-  });
+  document.getElementById("filtro-plataforma").addEventListener("change", applyFilters);
+  document.getElementById("orden-posts").addEventListener("change", applyFilters);
 
   applyFilters();
 </script>
