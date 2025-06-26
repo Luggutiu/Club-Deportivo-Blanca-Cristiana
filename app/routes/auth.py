@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, Form, status
+from fastapi import APIRouter, Request, Form
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from starlette.status import HTTP_302_FOUND
@@ -16,19 +16,15 @@ async def login_form(request: Request):
 @router.post("/login")
 async def login_post(request: Request, username: str = Form(...), password: str = Form(...)):
     if username == ADMIN_USER and password == ADMIN_PASS:
-        response = RedirectResponse(url="/admin", status_code=HTTP_302_FOUND)
-        response.set_cookie("admin_logged", "true")
-        return response
+        request.session["admin_logged"] = True
+        return RedirectResponse(url="/admin", status_code=HTTP_302_FOUND)
     return templates.TemplateResponse("login.html", {"request": request, "error": "Usuario o contraseña incorrectos"})
 
 @router.get("/logout")
-async def logout():
-    response = RedirectResponse(url="/", status_code=HTTP_302_FOUND)
-    response.delete_cookie("admin_logged")
-    return response
+async def logout(request: Request):
+    request.session.clear()
+    return RedirectResponse(url="/", status_code=HTTP_302_FOUND)
 
-from fastapi import Request
-
+# Función para verificar sesión activa
 def check_admin_logged(request: Request):
     return request.session.get("admin_logged", False)
-
