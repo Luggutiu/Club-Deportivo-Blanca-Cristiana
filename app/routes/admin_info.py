@@ -74,3 +74,53 @@ def ver_horarios(request: Request):
         "request": request,
         "horarios": horarios
     })
+    
+
+    from fastapi import APIRouter, Request, Form
+from fastapi.responses import RedirectResponse
+from fastapi.templating import Jinja2Templates
+from sqlalchemy.orm import Session
+
+from app.database import SessionLocal
+from app.models import Horario
+from app.routes.auth import check_admin_logged  # Asegúrate que esta ruta es correcta
+
+router = APIRouter()
+templates = Jinja2Templates(directory="app/templates")
+
+
+@router.get("/admin/gestionar-horarios")
+def gestionar_horarios(request: Request):
+    if not check_admin_logged(request):
+        return RedirectResponse(url="/login", status_code=302)
+
+    db: Session = SessionLocal()
+    horarios = db.query(Horario).all()
+    return templates.TemplateResponse("gestionar_horarios.html", {
+        "request": request,
+        "horarios": horarios
+    })
+
+
+@router.post("/admin/guardar-horario")
+def guardar_horario(
+    request: Request,
+    dia: str = Form(...),
+    hora_inicio: str = Form(...),
+    hora_fin: str = Form(...),
+    actividad: str = Form(...)
+):
+    if not check_admin_logged(request):
+        return RedirectResponse(url="/login", status_code=302)
+
+    db: Session = SessionLocal()
+    nuevo_horario = Horario(
+        dia=dia,
+        hora_inicio=hora_inicio,
+        hora_fin=hora_fin,
+        actividad=actividad,
+        publicado=True  # Se publica por defecto
+    )
+    db.add(nuevo_horario)
+    db.commit()
+    return RedirectResponse(url="/admin/gestionar-horarios", status_code=302)

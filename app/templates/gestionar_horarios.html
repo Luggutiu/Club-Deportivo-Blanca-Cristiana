@@ -24,6 +24,11 @@
     <label for="actividad">Actividad</label>
     <input type="text" id="actividad" name="actividad" placeholder="Ej: Entrenamiento sub-15" required>
 
+    <label>
+      <input type="checkbox" name="publicado" checked>
+      Publicar en el sitio web
+    </label>
+
     <button type="submit" class="btn-submit">➕ Agregar Horario</button>
   </form>
 
@@ -34,6 +39,9 @@
       <li>
         <div class="info">
           <strong>{{ h.dia }}</strong> — {{ h.hora_inicio }} a {{ h.hora_fin }} — {{ h.actividad }}
+          {% if not h.publicado %}
+            <span style="color: #ff5e78; font-weight: bold;">(No publicado)</span>
+          {% endif %}
         </div>
         <div class="acciones">
           <a href="/admin/editar-horario/{{ h.id }}" class="btn-editar">✏️ Editar</a>
@@ -67,7 +75,9 @@
     color: #ffb3c6;
   }
 
-  input, select {
+  input[type="text"],
+  input[type="time"],
+  select {
     width: 100%;
     padding: 10px;
     margin-bottom: 20px;
@@ -75,6 +85,10 @@
     border-radius: 10px;
     background-color: #1c1c1c;
     color: #fff;
+  }
+
+  input[type="checkbox"] {
+    margin-right: 10px;
   }
 
   .btn-submit {

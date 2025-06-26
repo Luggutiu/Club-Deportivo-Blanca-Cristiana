@@ -145,3 +145,4 @@ async def eliminar_post(post_id: int, db: Session = Depends(get_db)):
     db.delete(post)
     db.commit()
     return RedirectResponse(url="/admin", status_code=HTTP_303_SEE_OTHER)
+

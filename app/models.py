@@ -19,13 +19,18 @@ class SeccionInformativa(Base):
     from sqlalchemy import Column, Integer, String
     from .database import Base
 
+from sqlalchemy import Column, Integer, String, Boolean
+from .database import Base
+
 class Horario(Base):
     __tablename__ = "horarios"
+    
     id = Column(Integer, primary_key=True, index=True)
     dia = Column(String, nullable=False)
     hora_inicio = Column(String, nullable=False)
     hora_fin = Column(String, nullable=False)
     actividad = Column(String, nullable=False)
+    publicado = Column(Boolean, default=True)  # Nuevo campo para mostrar u ocultar
     
    
 
