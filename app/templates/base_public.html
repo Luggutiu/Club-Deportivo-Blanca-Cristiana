@@ -1,27 +1,95 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}Club Deportivo Blanca Cristiana{% endblock %}</title>
 
   <!-- Favicon -->
-  <link rel="icon" href="{{ url_for('static', path='favicon.ico') }}" type="image/x-icon" />
+  <link rel="icon" href="{{ url_for('static', path='favicon.ico') }}" type="image/x-icon">
 
-  <!-- Estilos principales -->
-  <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}" />
-
-  <!-- Font Awesome sin integrity -->
+  <!-- Estilos -->
+  <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" />
 
   {% block extra_css %}{% endblock %}
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #000;
+      color: #fff;
+      display: flex;
+    }
+
+    aside {
+      width: 230px;
+      background-color: #1c1c1c;
+      height: 100vh;
+      padding: 20px;
+      box-shadow: 2px 0 10px rgba(255, 105, 180, 0.3);
+      position: fixed;
+    }
+
+    aside h2 {
+      color: #ff5e78;
+      margin-top: 0;
+      font-size: 1.3rem;
+    }
+
+    aside nav a {
+      display: block;
+      color: #fff;
+      padding: 10px 0;
+      text-decoration: none;
+    }
+
+    aside nav a:hover {
+      color: #ff91a4;
+    }
+
+    main {
+      margin-left: 250px;
+      padding: 30px;
+      flex-grow: 1;
+    }
+
+    .whatsapp-float {
+      position: fixed;
+      width: 60px;
+      height: 60px;
+      bottom: 20px;
+      right: 20px;
+      background-color: #25D366;
+      color: white;
+      border-radius: 50%;
+      text-align: center;
+      font-size: 30px;
+      box-shadow: 2px 2px 5px #000;
+      z-index: 100;
+      line-height: 60px;
+    }
+  </style>
 </head>
-<body style="margin: 0; font-family: 'Segoe UI', sans-serif; background-color: #000; color: #fff;">
+<body>
+
+  <!-- Panel lateral izquierdo -->
+  <aside>
+    <h2>🏠 Navegación</h2>
+    <nav>
+      <a href="/">Inicio</a>
+      <a href="/mision">Misión</a>
+      <a href="/vision">Visión</a>
+      <a href="/quienes-somos">¿Quiénes somos?</a>
+      <a href="/contacto">Contáctenos</a>
+    </nav>
+  </aside>
 
   <!-- Contenido principal -->
-  <div id="main-content">
+  <main id="main-content">
     {% block content %}{% endblock %}
-  </div>
+  </main>
 
   <!-- WhatsApp flotante -->
   <a href="https://wa.me/573001112233" target="_blank" class="whatsapp-float" title="Contáctanos por WhatsApp">
@@ -29,6 +97,33 @@
   </a>
 
   <!-- Scripts -->
+  <script src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+  <script>
+    // Navegación dinámica AJAX
+    document.querySelectorAll("aside a").forEach(link => {
+      link.addEventListener("click", function (e) {
+        const url = this.getAttribute("href");
+
+        if (url.startsWith("/admin") || url.startsWith("/login")) return;
+
+        e.preventDefault();
+        fetch(url)
+          .then(response => response.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, "text/html");
+            const newContent = doc.querySelector("#main-content").innerHTML;
+            document.querySelector("#main-content").innerHTML = newContent;
+            window.history.pushState({}, "", url);
+          })
+          .catch(error => {
+            console.error("Error al cargar contenido:", error);
+          });
+      });
+    });
+  </script>
+
   {% block extra_js %}{% endblock %}
 </body>
 </html>

@@ -54,10 +54,13 @@ crear_secciones_predeterminadas()
 async def home(request: Request, db: Session = Depends(get_db)):
     posts = db.query(Post).order_by(Post.id.desc()).all()
     horarios = db.query(Horario).all()
+    secciones_query = db.query(SeccionInformativa).all()
+    secciones = {s.titulo: s.contenido for s in secciones_query}
     return templates.TemplateResponse("index.html", {
         "request": request,
         "posts": posts,
-        "horarios": horarios
+        "horarios": horarios,
+        "secciones": secciones
     })
 
 # Vista para gestionar horarios
