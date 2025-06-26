@@ -3,19 +3,16 @@
 
 {% block content %}
 <div class="horario-container">
-  <h2>Gestionar Horarios</h2>
+  <h2>📅 Gestionar Horarios</h2>
 
-  <form method="post" action="/admin/guardar-horario">
+  <!-- Formulario para agregar nuevo horario -->
+  <form method="post" action="/admin/guardar-horario" class="formulario-horario">
     <label for="dia">Día</label>
     <select id="dia" name="dia" required>
       <option value="">-- Selecciona un día --</option>
-      <option>Lunes</option>
-      <option>Martes</option>
-      <option>Miércoles</option>
-      <option>Jueves</option>
-      <option>Viernes</option>
-      <option>Sábado</option>
-      <option>Domingo</option>
+      {% for d in ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'] %}
+        <option value="{{ d }}">{{ d }}</option>
+      {% endfor %}
     </select>
 
     <label for="hora_inicio">Hora de inicio</label>
@@ -25,24 +22,149 @@
     <input type="time" id="hora_fin" name="hora_fin" required>
 
     <label for="actividad">Actividad</label>
-    <input type="text" id="actividad" name="actividad" required>
+    <input type="text" id="actividad" name="actividad" placeholder="Ej: Entrenamiento sub-15" required>
 
-    <button type="submit" class="btn-submit">Agregar</button>
+    <button type="submit" class="btn-submit">➕ Agregar Horario</button>
   </form>
 
-  <h3>Horarios Actuales</h3>
+  <!-- Lista de horarios actuales -->
+  <h3>🗓️ Horarios Actuales</h3>
   <ul class="horario-list">
     {% for h in horarios %}
       <li>
-        <strong>{{ h.dia }}</strong> - {{ h.hora_inicio }} a {{ h.hora_fin }} - {{ h.actividad }}
-        <a href="/admin/editar-horario/{{ h.id }}" class="btn-editar">Editar</a>
-        <a href="/admin/eliminar-horario/{{ h.id }}" class="btn-eliminar" onclick="return confirm('¿Seguro que deseas eliminar este horario?')">Eliminar</a>
+        <div class="info">
+          <strong>{{ h.dia }}</strong> — {{ h.hora_inicio }} a {{ h.hora_fin }} — {{ h.actividad }}
+        </div>
+        <div class="acciones">
+          <a href="/admin/editar-horario/{{ h.id }}" class="btn-editar">✏️ Editar</a>
+          <form method="post" action="/admin/eliminar-horario/{{ h.id }}" onsubmit="return confirm('¿Eliminar este horario?');">
+            <button type="submit" class="btn-eliminar">🗑️ Eliminar</button>
+          </form>
+        </div>
       </li>
+    {% else %}
+      <li>No hay horarios registrados.</li>
     {% endfor %}
   </ul>
 
   <div class="nav-buttons">
-    <a href="/admin" class="btn-nav">Volver al Panel</a>
+    <a href="/admin" class="btn-nav">← Volver al Panel</a>
   </div>
 </div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  h2, h3 {
+    text-align: center;
+    color: #ff91a4;
+    margin-bottom: 20px;
+  }
+
+  .formulario-horario label {
+    display: block;
+    margin-bottom: 8px;
+    color: #ffb3c6;
+  }
+
+  input, select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ff5e78;
+    border-radius: 10px;
+    background-color: #1c1c1c;
+    color: #fff;
+  }
+
+  .btn-submit {
+    width: 100%;
+    padding: 12px;
+    background-color: #ff41b4;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+  }
+
+  .btn-submit:hover {
+    background-color: #ff91a4;
+  }
+
+  .horario-list {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .horario-list li {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid #ff5e78;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .horario-list .info {
+    flex: 1;
+    color: #fff;
+  }
+
+  .acciones {
+    display: flex;
+    gap: 10px;
+  }
+
+  .btn-editar,
+  .btn-eliminar {
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-weight: bold;
+    border: none;
+    text-decoration: none;
+    cursor: pointer;
+    transition: 0.3s ease;
+  }
+
+  .btn-editar {
+    background-color: #ffb3c6;
+    color: #000;
+  }
+
+  .btn-editar:hover {
+    background-color: #ffc9d6;
+  }
+
+  .btn-eliminar {
+    background-color: #ff5e78;
+    color: white;
+  }
+
+  .btn-eliminar:hover {
+    background-color: #ff1c4e;
+  }
+
+  .btn-nav {
+    display: inline-block;
+    margin-top: 30px;
+    background-color: transparent;
+    border: 1px solid #ff5e78;
+    color: #ff91a4;
+    padding: 10px 20px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    text-align: center;
+  }
+
+  .btn-nav:hover {
+    background-color: #ff5e78;
+    color: #fff;
+  }
+</style>
 {% endblock %}

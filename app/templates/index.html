@@ -4,11 +4,65 @@
 
 {% block content %}
 <div class="publicaciones-wrapper">
-  <!-- Noticias y horarios aquí arriba si quieres -->
 
-  <h2>📣 Últimas Publicaciones</h2>
+  <!-- Buscador -->
+<div style="margin-bottom: 20px;">
+  <label for="busqueda" style="color:#ffb3c6; font-weight:bold;">🔍 Buscar:</label><br>
+  <input type="text" id="busqueda" placeholder="Escribe una palabra clave..." style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ff5e78; background-color: #1c1c1c; color: #fff;">
+</div>
+
+  <!-- FILTRO DE HORARIOS -->
+  <h2>📅 Horarios de Actividades</h2>
+  <label for="filtro-dia" style="color:#ffb3c6; font-weight: bold;">Filtrar por día:</label>
+  <select id="filtro-dia">
+    <option value="todos">Todos</option>
+    {% for dia in ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"] %}
+      <option value="{{ dia }}">{{ dia }}</option>
+    {% endfor %}
+  </select>
+
+  <div class="horarios-grid" id="horarios-container">
+    {% for h in horarios %}
+      <div class="horario-card" data-dia="{{ h.dia }}">
+        <h3>{{ h.dia }}</h3>
+        <p><strong>{{ h.hora_inicio }} - {{ h.hora_fin }}</strong></p>
+        <p>{{ h.actividad }}</p>
+      </div>
+    {% endfor %}
+  </div>
+  <p id="no-horarios" style="display:none; text-align:center; color:#ff91a4; margin-top:10px;">
+    No hay horarios disponibles para este día.
+  </p>
+
+  <hr style="margin: 40px 0; border-color: #ff5e78;">
+
+  <!-- FILTRO DE PUBLICACIONES -->
+  <!-- FILTRO Y ORDEN DE PUBLICACIONES -->
+<h2>📣 Últimas Publicaciones</h2>
+
+<div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center; margin-bottom: 20px;">
+  <div>
+    <label for="filtro-plataforma" style="color:#ffb3c6; font-weight: bold;">Filtrar por plataforma:</label><br>
+    <select id="filtro-plataforma">
+      <option value="todas">Todas</option>
+      {% for p in ["YouTube", "Facebook", "Instagram", "TikTok", "Twitter"] %}
+        <option value="{{ p }}">{{ p }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div>
+    <label for="orden-posts" style="color:#ffb3c6; font-weight: bold;">Ordenar por:</label><br>
+    <select id="orden-posts">
+      <option value="recientes">Más recientes</option>
+      <option value="plataforma">Plataforma (A-Z)</option>
+    </select>
+  </div>
+</div>
+
+<div id="posts-container">
   {% for post in posts %}
-    <div class="post">
+    <div class="post" data-plataforma="{{ post.plataforma }}" data-id="{{ post.id }}">
       {% if post.plataforma in ["YouTube", "Facebook", "TikTok", "Instagram"] %}
         <iframe src="{{ post.embed_url }}"
                 height="400"
@@ -23,8 +77,155 @@
       {% else %}
         <p>Plataforma no soportada.</p>
       {% endif %}
-      <div class="plataforma">{{ post.plataforma }}</div>
+      <div class="plataforma">Plataforma: {{ post.plataforma }}</div>
     </div>
   {% endfor %}
 </div>
+<p id="no-posts" style="display:none; text-align:center; color:#ff91a4; margin-top:10px;">
+  No hay publicaciones disponibles para esta plataforma.
+</p>
+
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  .publicaciones-wrapper {
+    padding: 20px;
+  }
+
+  h2 {
+    color: #ff91a4;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    border-left: 5px solid #ff5e78;
+    padding-left: 15px;
+  }
+
+  select {
+    padding: 10px;
+    margin-bottom: 30px;
+    background-color: #1c1c1c;
+    color: white;
+    border: 1px solid #ff5e78;
+    border-radius: 8px;
+  }
+
+  .post {
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+    box-shadow: 0 0 10px rgba(255, 65, 180, 0.3);
+  }
+
+  .plataforma {
+    margin-top: 10px;
+    color: #ffb3c6;
+    font-size: 0.9em;
+    text-align: right;
+  }
+
+  .horarios-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+  }
+
+  .horario-card {
+    background-color: #1c1c1c;
+    border: 1px solid #ff5e78;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(255, 65, 180, 0.2);
+    text-align: center;
+    transition: 0.3s ease;
+  }
+
+  .horario-card:hover {
+    background-color: #2b2b2b;
+  }
+
+  .horario-card h3 {
+    color: #ffb3c6;
+    margin-bottom: 10px;
+  }
+
+  .horario-card p {
+    margin: 5px 0;
+    color: #fff;
+  }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function getQueryParams() {
+    const params = new URLSearchParams(window.location.search);
+    return {
+      dia: params.get("dia") || "todos",
+      plataforma: params.get("plataforma") || "todas"
+    };
+  }
+
+  function applyFilters() {
+  const { dia, plataforma } = getQueryParams();
+  const orden = document.getElementById("orden-posts").value;
+
+  // Filtro día
+  document.getElementById("filtro-dia").value = dia;
+  const horarios = document.querySelectorAll(".horario-card");
+  let horariosVisibles = 0;
+  horarios.forEach(card => {
+    const mostrar = (dia === "todos" || card.dataset.dia === dia);
+    card.style.display = mostrar ? "block" : "none";
+    if (mostrar) horariosVisibles++;
+  });
+  document.getElementById("no-horarios").style.display = (horariosVisibles === 0) ? "block" : "none";
+
+  // Filtro plataforma
+  document.getElementById("filtro-plataforma").value = plataforma;
+  const posts = Array.from(document.querySelectorAll(".post"));
+  let postsVisibles = [];
+
+  posts.forEach(post => {
+    const mostrar = (plataforma === "todas" || post.dataset.plataforma === plataforma);
+    post.style.display = mostrar ? "block" : "none";
+    if (mostrar) postsVisibles.push(post);
+  });
+
+  document.getElementById("no-posts").style.display = (postsVisibles.length === 0) ? "block" : "none";
+
+  // Ordenar publicaciones
+  if (orden === "plataforma") {
+    postsVisibles.sort((a, b) => a.dataset.plataforma.localeCompare(b.dataset.plataforma));
+  } else {
+    postsVisibles.sort((a, b) => parseInt(b.dataset.id) - parseInt(a.dataset.id)); // Más recientes
+  }
+
+  const container = document.getElementById("posts-container");
+  postsVisibles.forEach(p => container.appendChild(p));
+}
+
+  function updateURLParams(key, value) {
+    const url = new URL(window.location);
+    if (value === "todos" || value === "todas") {
+      url.searchParams.delete(key);
+    } else {
+      url.searchParams.set(key, value);
+    }
+    history.replaceState(null, "", url);
+    applyFilters();
+  }
+
+  document.getElementById("filtro-dia").addEventListener("change", function () {
+    updateURLParams("dia", this.value);
+  });
+
+  document.getElementById("filtro-plataforma").addEventListener("change", function () {
+    updateURLParams("plataforma", this.value);
+  });
+
+  applyFilters();  // Aplicar filtros al cargar
+</script>
 {% endblock %}
