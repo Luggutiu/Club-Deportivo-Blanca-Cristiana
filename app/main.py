@@ -88,3 +88,7 @@ async def guardar_horario(
     db.add(nuevo_horario)
     db.commit()
     return RedirectResponse(url="/admin/gestionar-horarios", status_code=303)
+
+@app.get("/test-embed", response_class=HTMLResponse)
+def test_embed(request: Request):
+    return templates.TemplateResponse("test_embed.html", {"request": request})
