@@ -3,7 +3,45 @@
 {% block title %}Inicio - Club Deportivo Blanca Cristiana{% endblock %}
 
 {% block content %}
-  <h2>Últimas Publicaciones</h2>
+<div id="main-content">
+
+  <!-- Sección de noticias -->
+  <section style="
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #fff;
+    color: #000;
+    border-left: 5px solid #ff5e78;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  ">
+    <h3 style="margin-top: 0;">🗞️ Noticias del Club</h3>
+    <p>¡Este fin de semana tendremos jornada deportiva en la sede central! No olvides asistir con tu camiseta del club 💪</p>
+  </section>
+
+  <!-- Sección de horarios -->
+  {% if horarios %}
+  <section class="horario-container" style="
+    margin-bottom: 40px;
+    background-color: #ffffff;
+    color: #000000;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  ">
+    <h2 style="color: #ff5e78;">🕒 Horarios de Actividades</h2>
+    <ul class="horario-list" style="list-style: none; padding: 0;">
+      {% for h in horarios %}
+        <li style="margin-bottom: 10px;">
+          <strong>{{ h.dia }}</strong> – {{ h.hora }} – {{ h.actividad }}
+        </li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+  <!-- Sección de publicaciones -->
+  <h2>📣 Últimas Publicaciones</h2>
   {% for post in posts %}
     <div class="post" style="
       margin-bottom: 40px;
@@ -17,6 +55,7 @@
                 height="400"
                 allowfullscreen
                 loading="lazy"
+                title="Publicación en {{ post.plataforma }}"
                 style="width:100%; border-radius:8px;"></iframe>
       {% elif post.plataforma == "Twitter" %}
         <blockquote class="twitter-tweet">
@@ -30,4 +69,6 @@
       </div>
     </div>
   {% endfor %}
+
+</div>
 {% endblock %}
