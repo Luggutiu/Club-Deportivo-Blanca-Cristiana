@@ -8,26 +8,27 @@
   <!-- Favicon -->
   <link rel="icon" href="{{ url_for('static', path='favicon.ico') }}" type="image/x-icon" />
 
-  <!-- Estilos CSS -->
+  <!-- Estilos principales -->
   <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}" />
 
-  <!-- Font Awesome (CDN público) -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-dV2HIl93cfdfz0UwF7xkD3FSxP8E9eXBd+4r1LFqZkcmLSWuWbF4U8vBVP+7tdQ3A5yF20eoz9YFCh5LtL9DUg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- Font Awesome sin integrity -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" />
 
   {% block extra_css %}{% endblock %}
 </head>
 <body style="margin: 0; font-family: 'Segoe UI', sans-serif; background-color: #000; color: #fff;">
 
-  <!-- Contenido dinámico -->
+  <!-- Contenido principal -->
   <div id="main-content">
     {% block content %}{% endblock %}
   </div>
 
-  <!-- Botón flotante de WhatsApp -->
+  <!-- WhatsApp flotante -->
   <a href="https://wa.me/573001112233" target="_blank" class="whatsapp-float" title="Contáctanos por WhatsApp">
     <i class="fab fa-whatsapp"></i>
   </a>
 
+  <!-- Scripts -->
   {% block extra_js %}{% endblock %}
-
 </body>
+</html>
