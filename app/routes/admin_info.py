@@ -27,9 +27,14 @@ def editar_seccion(seccion: str, request: Request, db: Session = Depends(get_db)
     })
 
 @router.post("/admin/editar/{seccion}")
-def guardar_seccion(seccion: str, contenido: str = Form(...), db: Session = Depends(get_db), request: Request = None):
+def guardar_seccion(
+    seccion: str,
+    contenido: str = Form(...),
+    db: Session = Depends(get_db),
+    request: Request = None
+):
     if not check_admin_logged(request):
-        return RedirectResponse(url="/login")
+        return RedirectResponse(url="/login", status_code=303)
 
     seccion_bd = db.query(SeccionInformativa).filter_by(titulo=seccion).first()
     if not seccion_bd:
@@ -37,9 +42,11 @@ def guardar_seccion(seccion: str, contenido: str = Form(...), db: Session = Depe
         db.add(seccion_bd)
     else:
         seccion_bd.contenido = contenido
+
     db.commit()
 
-    return RedirectResponse(url=f"/{seccion}", status_code=303)
+    # Redirección corregida:
+    return RedirectResponse(url="/admin", status_code=303)
 
 # ------------------------ PUBLICAR VIDEO ------------------------
 
