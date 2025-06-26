@@ -3,34 +3,19 @@
 {% block title %}Inicio - Club Deportivo Blanca Cristiana{% endblock %}
 
 {% block content %}
-<div id="main-content">
+<div class="publicaciones-wrapper">
+  <!-- Noticias y horarios aquí arriba si quieres -->
 
-  <!-- Sección de noticias -->
-  <section style="margin-bottom: 30px; padding: 20px; background: #fff; color: #000; border-left: 5px solid #ff5e78; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-    <h3>🗞️ Noticias del Club</h3>
-    <p>¡Este fin de semana tendremos jornada deportiva en la sede central! No olvides asistir con tu camiseta del club 💪</p>
-  </section>
-
-  <!-- Horarios -->
-  {% if horarios %}
-  <section style="margin-bottom: 40px; background-color: #ffffff; color: #000000; padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
-    <h2 style="color: #ff5e78;">🕒 Horarios de Actividades</h2>
-    <ul style="list-style: none; padding: 0;">
-      {% for h in horarios %}
-        <li style="margin-bottom: 10px;">
-          <strong>{{ h.dia }}</strong> – {{ h.hora_inicio }} a {{ h.hora_fin }} – {{ h.actividad }}
-        </li>
-      {% endfor %}
-    </ul>
-  </section>
-  {% endif %}
-
-  <!-- Publicaciones -->
   <h2>📣 Últimas Publicaciones</h2>
   {% for post in posts %}
-    <div style="margin-bottom: 40px; background: #1c1c1c; padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(255, 65, 180, 0.3);">
+    <div class="post">
       {% if post.plataforma in ["YouTube", "Facebook", "TikTok", "Instagram"] %}
-        <iframe src="{{ post.embed_url }}" height="400" allowfullscreen loading="lazy" style="width:100%; border-radius:8px;"></iframe>
+        <iframe src="{{ post.embed_url }}"
+                height="400"
+                allowfullscreen
+                loading="lazy"
+                title="Publicación en {{ post.plataforma }}"
+                style="width:100%; border-radius:8px;"></iframe>
       {% elif post.plataforma == "Twitter" %}
         <blockquote class="twitter-tweet">
           <a href="{{ post.url }}"></a>
@@ -38,9 +23,8 @@
       {% else %}
         <p>Plataforma no soportada.</p>
       {% endif %}
-      <div style="margin-top: 10px; text-align: right; color: #ff91a4;">{{ post.plataforma }}</div>
+      <div class="plataforma">{{ post.plataforma }}</div>
     </div>
   {% endfor %}
-
 </div>
 {% endblock %}

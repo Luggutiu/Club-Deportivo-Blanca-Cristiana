@@ -148,3 +148,28 @@ footer {
     font-size: 0.9rem;
   }
 }
+
+.publicaciones-wrapper {
+  background-image: url('/static/background.jpg'); /* Asegúrate que esté en app/static */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding: 30px;
+  border-radius: 12px;
+}
+
+/* Opcional: dar fondo translúcido a cada publicación */
+.publicaciones-wrapper .post {
+  background: rgba(0, 0, 0, 0.8);
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+  box-shadow: 0 0 10px rgba(255, 65, 180, 0.3);
+  color: #fff;
+}
+
+.plataforma {
+  margin-top: 10px;
+  text-align: right;
+  color: #ff91a4;
+}
