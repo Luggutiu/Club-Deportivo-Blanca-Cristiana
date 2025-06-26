@@ -24,7 +24,7 @@
         {% endfor %}
       </ul>
     {% else %}
-      <p>No hay publicaciones aún.</p>
+      <p class="no-items">No hay publicaciones aún.</p>
     {% endif %}
   </div>
 
@@ -45,7 +45,7 @@
         {% endfor %}
       </ul>
     {% else %}
-      <p>No hay horarios registrados.</p>
+      <p class="no-items">No hay horarios registrados.</p>
     {% endif %}
   </div>
 
@@ -68,12 +68,14 @@
 <style>
   .admin-container {
     padding: 30px;
-    background-color: #fdfdfd;
+    background-color: #1c1c1c;
     border-radius: 15px;
+    color: #f2f2f2;
   }
 
   h2, h3 {
-    color: #c2185b;
+    color: #ff91a4;
+    margin-bottom: 15px;
   }
 
   .publicaciones-list,
@@ -86,11 +88,11 @@
   .publicacion-item,
   .horario-item,
   .seccion-item {
-    background: #fff0f5;
+    background: #2e2e2e;
     margin-bottom: 10px;
     padding: 12px;
     border-radius: 10px;
-    border: 1px solid #e91e63;
+    border: 1px solid #ff5e78;
   }
 
   .acciones-post,
@@ -118,20 +120,25 @@
   }
 
   .btn-editar {
-    background-color: #f39c12;
+    background-color: #ff41b4;
   }
 
   .btn-editar:hover {
-    background-color: #d68910;
+    background-color: #ff91a4;
   }
 
   .btn-agregar {
-    background-color: #8e44ad;
+    background-color: #25d366;
     margin-bottom: 10px;
   }
 
   .btn-agregar:hover {
-    background-color: #6c3483;
+    background-color: #1ebe5d;
+  }
+
+  .no-items {
+    color: #bbb;
+    font-style: italic;
   }
 </style>
 {% endblock %}
