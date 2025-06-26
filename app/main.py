@@ -39,6 +39,22 @@ app.include_router(admin.router)
 app.include_router(posts.router)
 app.include_router(dev.router)
 
+from app.models import SeccionInformativa
+from app.database import SessionLocal
+
+def crear_secciones_predeterminadas():
+    db = SessionLocal()
+    secciones = ["mision", "vision", "quienes-somos", "contacto"]
+    for titulo in secciones:
+        existente = db.query(SeccionInformativa).filter_by(titulo=titulo).first()
+        if not existente:
+            nueva = SeccionInformativa(titulo=titulo, contenido="")
+            db.add(nueva)
+    db.commit()
+    db.close()
+
+crear_secciones_predeterminadas()
+
 
 
 @app.get("/admin/gestionar-horarios", response_class=HTMLResponse)
