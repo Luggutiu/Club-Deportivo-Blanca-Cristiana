@@ -62,8 +62,8 @@ crear_secciones_predeterminadas()
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request, db: Session = Depends(get_db)):
     posts = db.query(Post).order_by(Post.id.desc()).all()
-    horarios = db.query(Horario).all()
-    print("HORARIOS EN INDEX:", horarios)    
+    horarios = db.query(Horario).filter(Horario.publicado == True).all()
+    print("HORARIOS PUBLICADOS EN INDEX:", horarios)
     secciones_query = db.query(SeccionInformativa).all()
     secciones = {s.titulo: s.contenido for s in secciones_query}
     return templates.TemplateResponse("index.html", {
@@ -111,15 +111,20 @@ def guardar_horario(
     actividad: str = Form(...),
     db: Session = Depends(get_db)
 ):
+    print(f"🟢 Horario recibido: {dia} - {hora_inicio} a {hora_fin} | {actividad}")
+    
     nuevo_horario = Horario(
         dia=dia,
         hora_inicio=hora_inicio,
         hora_fin=hora_fin,
-        actividad=actividad
+        actividad=actividad,
+        publicado=True  # ✅ Agrega esto para que se muestre en la página pública
     )
+    
     db.add(nuevo_horario)
     db.commit()
-    return RedirectResponse(url="/admin/gestionar-horarios", status_code=HTTP_303_SEE_OTHER)
+    
+    return RedirectResponse(url="/admin/gestionar-horarios", status_code=303)
 
 @app.get("/admin/editar-horario/{horario_id}", response_class=HTMLResponse)
 def mostrar_formulario_edicion(request: Request, horario_id: int, db: Session = Depends(get_db)):

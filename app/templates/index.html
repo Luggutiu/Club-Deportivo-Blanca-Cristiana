@@ -13,19 +13,20 @@
 
   <!-- HORARIOS PUBLICADOS -->
   <h2>📅 Horarios de Actividades</h2>
-  <div class="horarios-grid">
-    {% for h in horarios %}
-      <div class="horario-card">
-        <h3>{{ h.dia|capitalize }}</h3>
-        <p><strong>{{ h.hora_inicio }} - {{ h.hora_fin }}</strong></p>
-        <p>{{ h.actividad }}</p>
-      </div>
-    {% endfor %}
-  </div>
 
-  {% if horarios|length == 0 %}
-    <p style="text-align:center; color:#ff91a4;">Aún no se han registrado horarios.</p>
-  {% endif %}
+<div class="horarios-grid">
+  {% for h in horarios %}
+    <div class="horario-card">
+      <h3>{{ h.dia|capitalize }}</h3>
+      <p><strong>{{ h.hora_inicio }} - {{ h.hora_fin }}</strong></p>
+      <p>{{ h.actividad }}</p>
+    </div>
+  {% endfor %}
+</div>
+
+{% if horarios|length == 0 %}
+  <p style="text-align:center; color:#ff91a4;">Aún no se han registrado horarios.</p>
+{% endif %}
 
   <hr style="margin: 40px 0; border-color: #ff5e78;">
 
