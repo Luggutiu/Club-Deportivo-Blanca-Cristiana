@@ -1,52 +1,115 @@
 {% extends "base.html" %}
-{% block content %}
-<div class="container mt-5 text-white">
-    <h2 class="text-center mb-4">Gestión de Horarios</h2>
-    <form method="post" action="/admin/guardar-horario" class="bg-[#1a1a1a] p-6 rounded-xl shadow-lg max-w-md mx-auto mb-10">
-        <div class="mb-4">
-            <label>Día:</label>
-            <input type="text" name="dia" required class="w-full p-2 rounded bg-black text-white border border-fuchsia-500">
-        </div>
-        <div class="mb-4">
-            <label>Hora de inicio:</label>
-            <input type="text" name="hora_inicio" required class="w-full p-2 rounded bg-black text-white border border-fuchsia-500">
-        </div>
-        <div class="mb-4">
-            <label>Hora de fin:</label>
-            <input type="text" name="hora_fin" required class="w-full p-2 rounded bg-black text-white border border-fuchsia-500">
-        </div>
-        <div class="mb-4">
-            <label>Actividad:</label>
-            <input type="text" name="actividad" required class="w-full p-2 rounded bg-black text-white border border-fuchsia-500">
-        </div>
-        <button type="submit" class="bg-fuchsia-600 hover:bg-fuchsia-800 text-white px-4 py-2 rounded">Guardar</button>
-        <a href="/" class="ml-4 text-pink-400 hover:underline">Volver al inicio</a>
-    </form>
+{% block title %}Gestionar Horarios{% endblock %}
 
-    {% if horarios %}
-    <h3 class="text-center text-xl mb-4">Horarios registrados</h3>
-    <div class="overflow-x-auto">
-        <table class="min-w-full bg-[#1a1a1a] border border-pink-500 rounded-xl">
-            <thead class="bg-fuchsia-700 text-white">
-                <tr>
-                    <th class="px-4 py-2">Día</th>
-                    <th class="px-4 py-2">Inicio</th>
-                    <th class="px-4 py-2">Fin</th>
-                    <th class="px-4 py-2">Actividad</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for h in horarios %}
-                <tr class="border-b border-pink-400 hover:bg-[#292929]">
-                    <td class="px-4 py-2">{{ h.dia }}</td>
-                    <td class="px-4 py-2">{{ h.hora_inicio }}</td>
-                    <td class="px-4 py-2">{{ h.hora_fin }}</td>
-                    <td class="px-4 py-2">{{ h.actividad }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    {% endif %}
+{% block content %}
+<div class="horario-container">
+  <h2>Gestionar Horarios</h2>
+  <form method="post" action="/admin/horarios">
+    <label for="dia">Día</label>
+    <input type="text" id="dia" name="dia" required>
+
+    <label for="hora">Hora</label>
+    <input type="text" id="hora" name="hora" required>
+
+    <label for="actividad">Actividad</label>
+    <input type="text" id="actividad" name="actividad" required>
+
+    <button type="submit" class="btn-submit">Agregar</button>
+  </form>
+
+  <h3>Horarios Actuales</h3>
+  <ul class="horario-list">
+    {% for h in horarios %}
+      <li><strong>{{ h.dia }}</strong> - {{ h.hora }} - {{ h.actividad }}</li>
+    {% endfor %}
+  </ul>
+
+  <div class="nav-buttons">
+    <a href="/admin" class="btn-nav">Volver al Panel</a>
+  </div>
 </div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  .horario-container {
+    max-width: 600px;
+    margin: 80px auto;
+    padding: 40px;
+    background-color: rgba(0, 0, 0, 0.85);
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(255, 65, 180, 0.5);
+    color: #fff;
+  }
+
+  h2, h3 {
+    text-align: center;
+    color: #ff91a4;
+    margin-bottom: 20px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    color: #ffb3c6;
+  }
+
+  input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ff5e78;
+    border-radius: 10px;
+    background-color: #1c1c1c;
+    color: #fff;
+  }
+
+  .btn-submit {
+    width: 100%;
+    padding: 12px;
+    background-color: #ff41b4;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+  }
+
+  .btn-submit:hover {
+    background-color: #ff91a4;
+  }
+
+  .horario-list {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .horario-list li {
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid #ff5e78;
+    border-radius: 10px;
+    margin-bottom: 10px;
+  }
+
+  .nav-buttons {
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  .btn-nav {
+    background-color: transparent;
+    border: 1px solid #ff5e78;
+    color: #ff91a4;
+    padding: 10px 20px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .btn-nav:hover {
+    background-color: #ff5e78;
+    color: #fff;
+  }
+</style>
 {% endblock %}

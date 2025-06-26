@@ -67,3 +67,16 @@ async def guardar_horario(
     db.add(nuevo_horario)
     db.commit()
     return RedirectResponse(url="/admin/gestionar-horarios", status_code=303)
+
+from app.models import Post  # asegúrate que esto esté ya importado
+from fastapi.responses import HTMLResponse
+
+@app.get("/", response_class=HTMLResponse)
+async def home(request: Request, db: Session = Depends(get_db)):
+    posts = db.query(Post).order_by(Post.id.desc()).all()
+    horarios = db.query(Horario).all()
+    return templates.TemplateResponse("index.html", {
+        "request": request,
+        "posts": posts,
+        "horarios": horarios
+    })

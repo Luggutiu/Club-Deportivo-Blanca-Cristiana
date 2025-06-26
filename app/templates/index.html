@@ -1,83 +1,180 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Club Deportivo Blanca Cristiana</title>
-    <link rel="stylesheet" href="{{ request.url_for('static', path='styles.css') }}">
-    <link rel="icon" href="{{ request.url_for('static', path='favicon.ico') }}">
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            color: white;
-            height: 100vh;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-image: url("{{ request.url_for('static', path='background.jpg') }}");
-        }
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 10px 20px;
-        }
-        .menu a {
-            margin: 0 10px;
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .menu a:hover {
-            text-decoration: underline;
-        }
-        .btn {
-            background: #28a745;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 5px;
-            text-decoration: none;
-        }
-        .btn:hover {
-            background: #218838;
-        }
-        .hero {
-            text-align: center;
-            margin-top: 15%;
-            background: rgba(0, 0, 0, 0.4);
-            padding: 40px;
-        }
-        h1 {
-            font-size: 3em;
-        }
-        p {
-            font-size: 1.5em;
-        }
-    </style>
-</head>
-<body>
+{% extends "base.html" %}
 
-    <header class="navbar">
-        <div class="logo">
-            <img src="{{ request.url_for('static', path='logo.png') }}" alt="Logo del Club" height="60">
+{% block title %}Inicio - Club Deportivo Blanca Cristiana{% endblock %}
+
+{% block content %}
+<div class="main-layout">
+
+  <!-- Panel izquierdo -->
+  <aside class="side-panel">
+    <div class="menu-title">Navegación</div>
+    <ul class="menu-list">
+      <li><a href="/">Inicio</a></li>
+      <li><a href="/mision">Misión</a></li>
+      <li><a href="/vision">Visión</a></li>
+      <li><a href="/quienes-somos">¿Quiénes somos?</a></li>
+      <li><a href="/contacto">Contáctenos</a></li>
+      <li><a href="/login">Iniciar sesión</a></li>
+    </ul>
+  </aside>
+
+  <!-- Contenido principal -->
+  <section class="content-panel">
+
+    <!-- Horarios -->
+    <div class="horarios">
+      <h2>Horarios</h2>
+      {% if horarios %}
+        <ul class="horario-list">
+          {% for horario in horarios %}
+            <li><strong>{{ horario.dia }}</strong>: {{ horario.hora_inicio }} - {{ horario.hora_fin }} | {{ horario.actividad }}</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>No hay horarios registrados aún.</p>
+      {% endif %}
+    </div>
+
+    <!-- Publicaciones -->
+    <div class="publicaciones">
+      <h2>Publicaciones</h2>
+      {% for post in posts %}
+        <div class="post">
+          {% if post.embed_url %}
+            <div class="embed-container">
+              {{ post.embed_url | safe }}
+            </div>
+          {% else %}
+            <p>URL: {{ post.url }}</p>
+          {% endif %}
+          <p class="plataforma">{{ post.plataforma | capitalize }}</p>
         </div>
-        <nav class="menu">
-            <a href="/">Inicio</a>
-            <a href="/mision">Misión</a>
-            <a href="/vision">Visión</a>
-            <a href="/quienes-somos">¿Quiénes somos?</a>
-            <a href="/contacto">Contáctenos</a>
-        </nav>
-        <div class="login-button">
-            <a href="/login">Iniciar sesión</a>
-        </div>
-    </header>
+      {% endfor %}
+    </div>
+  </section>
 
-    <main class="hero">
-        <h1>Bienvenido al Club Deportivo Blanca Cristiana</h1>
-        <p>Formando talento, pasión y disciplina</p>
-    </main>
+  <!-- Botón flotante de WhatsApp -->
+  <a href="https://wa.me/573001112233" class="whatsapp-float" target="_blank" title="Contáctanos por WhatsApp">
+    <img src="{{ request.url_for('static', path='whatsapp.png') }}" alt="WhatsApp">
+  </a>
+</div>
+{% endblock %}
 
-</body>
-</html>
+{% block extra_css %}
+<style>
+  .main-layout {
+    display: flex;
+    min-height: 100vh;
+    background: linear-gradient(to bottom right, #ff5e78, #ff91a4, #ff41b4, #000000);
+    color: white;
+  }
+
+  .side-panel {
+    width: 250px;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    border-right: 3px solid #ff5e78;
+  }
+
+  .menu-title {
+    font-size: 1.5em;
+    margin-bottom: 15px;
+    color: #ff91a4;
+    text-align: center;
+  }
+
+  .menu-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .menu-list li {
+    margin: 10px 0;
+  }
+
+  .menu-list a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+  }
+
+  .menu-list a:hover {
+    color: #ff5e78;
+  }
+
+  .content-panel {
+    flex: 1;
+    padding: 30px;
+  }
+
+  .horarios, .publicaciones {
+    margin-bottom: 40px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(255, 65, 180, 0.2);
+  }
+
+  .horarios h2, .publicaciones h2 {
+    color: #ffb3c6;
+    border-bottom: 2px solid #ff5e78;
+    padding-bottom: 10px;
+  }
+
+  .horario-list {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .horario-list li {
+    padding: 5px 0;
+  }
+
+  .post {
+    margin-top: 20px;
+    background: #1c1c1c;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(255, 65, 180, 0.3);
+  }
+
+  .embed-container {
+    margin-bottom: 10px;
+  }
+
+  .plataforma {
+    font-size: 0.9em;
+    color: #ff91a4;
+    text-align: right;
+  }
+
+  .whatsapp-float {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 1000;
+  }
+
+  .whatsapp-float img {
+    width: 60px;
+    height: 60px;
+  }
+
+  @media (max-width: 768px) {
+    .main-layout {
+      flex-direction: column;
+    }
+
+    .side-panel {
+      width: 100%;
+      border-right: none;
+      border-bottom: 3px solid #ff5e78;
+    }
+
+    .content-panel {
+      padding: 20px;
+    }
+  }
+</style>
+{% endblock %}
