@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Admin - Club Deportivo Blanca Cristiana{% endblock %}</title>
+
+  <!-- Favicon -->
+  <link rel="icon" href="{{ url_for('static', path='favicon.ico') }}" type="image/x-icon">
+
+  <!-- Estilo global -->
+  <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
+
+  <!-- Estilo específico para la vista admin -->
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #000;
+      color: #fff;
+    }
+
+    .admin-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    aside {
+      width: 250px;
+      background: linear-gradient(to bottom, #ff41b4, #ff91a4);
+      padding: 20px;
+      box-shadow: 4px 0 15px rgba(0, 0, 0, 0.4);
+    }
+
+    aside h2 {
+      font-size: 1.2em;
+      color: #fff;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+
+    aside a {
+      display: block;
+      color: white;
+      text-decoration: none;
+      margin: 10px 0;
+      padding: 10px 15px;
+      border-radius: 10px;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+
+    aside a:hover {
+      background-color: #ff5e78;
+    }
+
+    main {
+      flex: 1;
+      padding: 40px;
+      background: linear-gradient(to bottom right, #1c1c1c, #000);
+    }
+
+    @media (max-width: 768px) {
+      .admin-layout {
+        flex-direction: column;
+      }
+
+      aside {
+        width: 100%;
+        text-align: center;
+        border-bottom: 3px solid #ff5e78;
+      }
+
+      aside a {
+        display: inline-block;
+        margin: 8px;
+      }
+
+      main {
+        padding: 20px;
+      }
+    }
+
+    /* WhatsApp Button */
+    .whatsapp-float {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #25d366;
+      color: white;
+      border-radius: 50%;
+      width: 55px;
+      height: 55px;
+      text-align: center;
+      font-size: 28px;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+      z-index: 1000;
+    }
+
+    .whatsapp-float:hover {
+      background-color: #1ebe5d;
+    }
+
+    .whatsapp-float i {
+      line-height: 55px;
+    }
+  </style>
+
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  <div class="admin-layout">
+    <!-- Panel lateral del administrador -->
+    <aside>
+      <h2>Administración</h2>
+      <a href="/admin">Inicio Admin</a>
+      <a href="/admin/publicar-video">Publicar Video</a>
+      <a href="/admin/horarios">Gestionar Horarios</a>
+      <a href="/admin/editar/mision">Editar Misión</a>
+      <a href="/admin/editar/vision">Editar Visión</a>
+      <a href="/admin/editar/quienes-somos">Editar ¿Quiénes Somos?</a>
+      <a href="/admin/editar/contacto">Editar Contacto</a>
+      <a href="/logout">Cerrar Sesión</a>
+    </aside>
+
+    <!-- Contenido del panel -->
+    <main id="main-content">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+
+  <!-- WhatsApp flotante -->
+  <a href="https://wa.me/573001112233" target="_blank" class="whatsapp-float" title="Contáctanos por WhatsApp">
+    <i class="fab fa-whatsapp"></i>
+  </a>
+
+  <!-- Iconos de FontAwesome (para ícono WhatsApp) -->
+  <script src="https://kit.fontawesome.com/0c4e2df15f.js" crossorigin="anonymous"></script>
+</body>
+</html>

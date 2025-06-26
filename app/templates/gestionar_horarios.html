@@ -1,21 +1,33 @@
-{% extends "base.html" %}
+{% extends "base_admin.html" %}
 {% block title %}Gestionar Horarios{% endblock %}
 
 {% block content %}
 <div class="horario-container">
   <h2>Gestionar Horarios</h2>
-  <form method="post" action="/admin/horarios">
-    <label for="dia">Día</label>
-    <input type="text" id="dia" name="dia" required>
+  <<form method="post" action="/admin/guardar-horario">
+  <label for="dia">Día</label>
+  <select id="dia" name="dia" required>
+    <option value="">-- Selecciona un día --</option>
+    <option value="Lunes">Lunes</option>
+    <option value="Martes">Martes</option>
+    <option value="Miércoles">Miércoles</option>
+    <option value="Jueves">Jueves</option>
+    <option value="Viernes">Viernes</option>
+    <option value="Sábado">Sábado</option>
+    <option value="Domingo">Domingo</option>
+  </select>
 
-    <label for="hora">Hora</label>
-    <input type="text" id="hora" name="hora" required>
+  <label for="hora_inicio">Hora de inicio</label>
+  <input type="time" id="hora_inicio" name="hora_inicio" required>
 
-    <label for="actividad">Actividad</label>
-    <input type="text" id="actividad" name="actividad" required>
+  <label for="hora_fin">Hora de fin</label>
+  <input type="time" id="hora_fin" name="hora_fin" required>
 
-    <button type="submit" class="btn-submit">Agregar</button>
-  </form>
+  <label for="actividad">Actividad</label>
+  <input type="text" id="actividad" name="actividad" placeholder="Ej: Entrenamiento sub-15" required>
+
+  <button type="submit" class="btn-submit">Agregar</button>
+</form>
 
   <h3>Horarios Actuales</h3>
   <ul class="horario-list">
@@ -32,15 +44,16 @@
 
 {% block extra_css %}
 <style>
-  .horario-container {
-    max-width: 600px;
-    margin: 80px auto;
-    padding: 40px;
-    background-color: rgba(0, 0, 0, 0.85);
-    border-radius: 20px;
-    box-shadow: 0 0 20px rgba(255, 65, 180, 0.5);
-    color: #fff;
-  }
+  select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ff5e78;
+  border-radius: 10px;
+  background-color: #1c1c1c;
+  color: #fff;
+  font-size: 1em;
+}
 
   h2, h3 {
     text-align: center;

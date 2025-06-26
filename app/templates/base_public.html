@@ -1,0 +1,36 @@
+<!-- WhatsApp flotante -->
+<a href="https://wa.me/573001112233" target="_blank" class="whatsapp-float" title="Contáctanos por WhatsApp">
+  <i class="fab fa-whatsapp"></i>
+</a>
+
+<!-- Font Awesome -->
+<script src="https://kit.fontawesome.com/0c4e2df15f.js" crossorigin="anonymous"></script>
+
+<!-- Navegación dinámica -->
+<script>
+  document.querySelectorAll("aside a").forEach(link => {
+    link.addEventListener("click", function (e) {
+      const url = this.getAttribute("href");
+
+      // Evita fetch en rutas que no son públicas
+      if (url.startsWith("/admin") || url.startsWith("/login")) {
+        return;
+      }
+
+      e.preventDefault();
+
+      fetch(url)
+        .then(response => response.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(html, "text/html");
+          const newContent = doc.querySelector("#main-content").innerHTML;
+          document.querySelector("#main-content").innerHTML = newContent;
+          window.history.pushState({}, "", url);
+        })
+        .catch(error => {
+          console.error("Error al cargar contenido:", error);
+        });
+    });
+  });
+</script>
