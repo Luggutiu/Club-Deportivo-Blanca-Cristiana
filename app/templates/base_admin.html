@@ -1,98 +1,135 @@
-{% extends "base_admin.html" %}
-{% block title %}Editar Horario{% endblock %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Panel Administrativo - Club Deportivo Blanca Cristiana{% endblock %}</title>
 
-{% block content %}
-<div class="editar-horario-container">
-  <h2>✏️ Editar Horario</h2>
+  <!-- Favicon -->
+  <link rel="icon" href="{{ url_for('static', path='favicon.ico') }}" type="image/x-icon">
 
-  <form method="post" action="/admin/actualizar-horario/{{ horario.id }}">
-    <label for="dia">Día</label>
-    <input type="text" name="dia" id="dia" value="{{ horario.dia }}" required>
+  <!-- Estilo global -->
+  <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
 
-    <label for="hora_inicio">Hora de inicio</label>
-    <input type="time" name="hora_inicio" id="hora_inicio" value="{{ horario.hora_inicio }}" required>
+  <!-- Estilo personalizado -->
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #000;
+      color: #fff;
+    }
 
-    <label for="hora_fin">Hora de fin</label>
-    <input type="time" name="hora_fin" id="hora_fin" value="{{ horario.hora_fin }}" required>
+    .admin-layout {
+      display: flex;
+      min-height: 100vh;
+    }
 
-    <label for="actividad">Actividad</label>
-    <input type="text" name="actividad" id="actividad" value="{{ horario.actividad }}" required>
+    aside {
+      width: 250px;
+      background: linear-gradient(to bottom, #ff41b4, #ff91a4);
+      padding: 20px;
+      box-shadow: 4px 0 15px rgba(0, 0, 0, 0.4);
+    }
 
-    <button type="submit" class="btn-submit">Actualizar</button>
-  </form>
+    aside h2 {
+      font-size: 1.2em;
+      color: #fff;
+      margin-bottom: 25px;
+      text-align: center;
+    }
 
-  <div class="nav-buttons">
-    <a href="/admin/gestionar-horarios" class="btn-cancelar">Cancelar</a>
+    aside a {
+      display: block;
+      color: white;
+      text-decoration: none;
+      margin: 10px 0;
+      padding: 10px 15px;
+      border-radius: 10px;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+
+    aside a:hover {
+      background-color: #ff5e78;
+    }
+
+    main {
+      flex: 1;
+      padding: 40px;
+      background: linear-gradient(to bottom right, #1c1c1c, #000);
+    }
+
+    @media (max-width: 768px) {
+      .admin-layout {
+        flex-direction: column;
+      }
+
+      aside {
+        width: 100%;
+        text-align: center;
+        border-bottom: 3px solid #ff5e78;
+      }
+
+      aside a {
+        display: inline-block;
+        margin: 8px;
+      }
+
+      main {
+        padding: 20px;
+      }
+    }
+
+    .whatsapp-float {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #25d366;
+      color: white;
+      border-radius: 50%;
+      width: 55px;
+      height: 55px;
+      text-align: center;
+      font-size: 28px;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+      z-index: 1000;
+    }
+
+    .whatsapp-float:hover {
+      background-color: #1ebe5d;
+    }
+
+    .whatsapp-float i {
+      line-height: 55px;
+    }
+  </style>
+
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  <div class="admin-layout">
+    <aside>
+      <h2>Administración</h2>
+      <a href="/admin">Inicio Admin</a>
+      <a href="/admin/publicar-video">Publicar Video</a>
+      <a href="/admin/horarios">Gestionar Horarios</a>
+      <a href="/admin/editar/mision">Editar Misión</a>
+      <a href="/admin/editar/vision">Editar Visión</a>
+      <a href="/admin/editar/quienes-somos">Editar ¿Quiénes Somos?</a>
+      <a href="/admin/editar/contacto">Editar Contacto</a>
+      <a href="/logout">Cerrar Sesión</a>
+    </aside>
+
+    <main id="main-content">
+      {% block content %}{% endblock %}
+    </main>
   </div>
-</div>
-{% endblock %}
 
-{% block extra_css %}
-<style>
-  .editar-horario-container {
-    max-width: 600px;
-    margin: 40px auto;
-    background-color: rgba(255, 255, 255, 0.05);
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 0 15px rgba(255, 65, 180, 0.3);
-  }
+  <a href="https://wa.me/573001112233" target="_blank" class="whatsapp-float" title="Contáctanos por WhatsApp">
+    <i class="fab fa-whatsapp"></i>
+  </a>
 
-  h2 {
-    text-align: center;
-    color: #ff91a4;
-    margin-bottom: 30px;
-  }
-
-  label {
-    display: block;
-    color: #ffb3c6;
-    margin-bottom: 8px;
-  }
-
-  input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 20px;
-    background-color: #1c1c1c;
-    color: #fff;
-    border: 1px solid #ff5e78;
-    border-radius: 10px;
-  }
-
-  .btn-submit {
-    width: 100%;
-    background-color: #ff41b4;
-    color: white;
-    padding: 12px;
-    border: none;
-    border-radius: 10px;
-    font-weight: bold;
-    cursor: pointer;
-  }
-
-  .btn-submit:hover {
-    background-color: #ff91a4;
-  }
-
-  .nav-buttons {
-    margin-top: 20px;
-    text-align: center;
-  }
-
-  .btn-cancelar {
-    text-decoration: none;
-    color: #fff;
-    background-color: transparent;
-    border: 1px solid #ff5e78;
-    padding: 10px 20px;
-    border-radius: 10px;
-    transition: background-color 0.3s;
-  }
-
-  .btn-cancelar:hover {
-    background-color: #ff5e78;
-    color: #fff;
-  }
-</style>
-{% endblock %}
+  <script src="https://kit.fontawesome.com/0c4e2df15f.js" crossorigin="anonymous"></script>
+</body>
+</html>
