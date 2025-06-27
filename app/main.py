@@ -58,14 +58,16 @@ def crear_secciones_predeterminadas():
 crear_secciones_predeterminadas()
 
 # ------------------------- RUTAS PÚBLICAS -------------------------
-
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request, db: Session = Depends(get_db)):
     posts = db.query(Post).order_by(Post.id.desc()).all()
+    
+    # 👇 Este filtro es CLAVE
     horarios = db.query(Horario).filter(Horario.publicado == True).all()
-    print("HORARIOS PUBLICADOS EN INDEX:", horarios)
+
     secciones_query = db.query(SeccionInformativa).all()
     secciones = {s.titulo: s.contenido for s in secciones_query}
+    
     return templates.TemplateResponse("index.html", {
         "request": request,
         "posts": posts,
@@ -80,7 +82,8 @@ def admin_panel(request: Request):
 
     db = SessionLocal()
     publicaciones = db.query(Post).all()
-    horarios = db.query(Horario).all()
+    horarios = db.query(Horario).filter(Horario.publicado == True).all()
+    print("HORARIOS VISIBLES EN INDEX:", [f"{h.dia} {h.hora_inicio}-{h.hora_fin}" for h in horarios])
 
     return templates.TemplateResponse("admin.html", {
         "request": request,
