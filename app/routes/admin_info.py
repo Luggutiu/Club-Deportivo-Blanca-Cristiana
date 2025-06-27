@@ -174,7 +174,7 @@ async def publicar_post(
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from fastapi.responses import RedirectResponse
-from app.main import get_db
+from app.dependencies import get_db
 from app.models import Horario  # Asegúrate de que la ruta sea correcta
 
 router = APIRouter()

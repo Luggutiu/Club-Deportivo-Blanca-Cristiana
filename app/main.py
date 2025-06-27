@@ -5,6 +5,8 @@ from fastapi.templating import Jinja2Templates
 from starlette.status import HTTP_303_SEE_OTHER
 from sqlalchemy.orm import Session
 from starlette.middleware.sessions import SessionMiddleware
+from fastapi import FastAPI
+from app.dependencies import get_db 
 
 from app.database import engine, Base, SessionLocal
 from app.models import Horario, SeccionInformativa, Post
@@ -36,13 +38,7 @@ app.include_router(admin.router)
 app.include_router(posts.router)
 app.include_router(dev.router)
 
-# Dependencia de DB
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+
 
 # Crear secciones por defecto
 def crear_secciones_predeterminadas():
