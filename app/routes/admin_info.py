@@ -26,6 +26,8 @@ def editar_seccion(seccion: str, request: Request, db: Session = Depends(get_db)
         "contenido": contenido
     })
 
+
+
 @router.post("/admin/editar/{seccion}")
 def guardar_seccion(
     seccion: str,
@@ -56,6 +58,30 @@ def publicar_video_form(request: Request):
         return RedirectResponse(url="/login")
     
     return templates.TemplateResponse("publicar_video.html", {"request": request})
+
+
+@router.post("/admin/publicar-video")
+async def procesar_video(
+    request: Request,
+    titulo: str = Form(...),
+    url: str = Form(...),
+    plataforma: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    if not check_admin_logged(request):
+        return RedirectResponse(url="/login", status_code=302)
+
+    embed_url = generar_embed(url, plataforma)
+
+    nuevo_post = Post(
+        titulo=titulo,
+        url=url,
+        plataforma=plataforma,
+        embed_url=embed_url
+    )
+    db.add(nuevo_post)
+    db.commit()
+    return RedirectResponse(url="/admin", status_code=303)
 
 # ------------------------ GESTIONAR HORARIOS ------------------------
 

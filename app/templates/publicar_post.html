@@ -1,40 +1,24 @@
 {% extends "base_admin.html" %}
-{% block title %}Nueva Publicación{% endblock %}
+{% block title %}Publicar Video{% endblock %}
 
 {% block content %}
 <div class="form-container">
-  <h2>📝 Crear nueva publicación</h2>
-  <form method="post" action="/admin/publicar-post" enctype="multipart/form-data">
-    
+  <h2>🎥 Publicar Video</h2>
+  <form method="post" action="/admin/publicar-video">
     <div class="form-group">
       <label for="titulo">Título</label>
       <input type="text" name="titulo" id="titulo" required>
     </div>
 
     <div class="form-group">
-      <label for="contenido_texto">Texto descriptivo</label>
-      <textarea name="contenido_texto" id="contenido_texto" rows="4"></textarea>
+      <label for="url">URL del video</label>
+      <input type="text" name="url" id="url" required>
     </div>
 
     <div class="form-group">
-      <label for="imagen_url">📷 URL de imagen (opcional)</label>
-      <input type="text" name="imagen_url" id="imagen_url">
-    </div>
-
-    <div class="form-group">
-      <label for="imagen_archivo">📂 Subir imagen desde archivo (opcional)</label>
-      <input type="file" name="imagen_archivo" id="imagen_archivo" accept="image/*">
-    </div>
-
-    <div class="form-group">
-      <label for="url">🎥 URL de video (opcional)</label>
-      <input type="text" name="url" id="url">
-    </div>
-
-    <div class="form-group">
-      <label for="plataforma">Plataforma del video</label>
-      <select name="plataforma" id="plataforma">
-        <option value="">-- Seleccionar --</option>
+      <label for="plataforma">Plataforma</label>
+      <select name="plataforma" id="plataforma" required>
+        <option value="">-- Selecciona --</option>
         <option value="YouTube">YouTube</option>
         <option value="Facebook">Facebook</option>
         <option value="Instagram">Instagram</option>
@@ -46,7 +30,6 @@
     <div class="form-group">
       <button type="submit">📤 Publicar</button>
     </div>
-
   </form>
 </div>
 {% endblock %}
@@ -77,8 +60,6 @@
   }
 
   input[type="text"],
-  input[type="file"],
-  textarea,
   select {
     width: 100%;
     padding: 10px;
