@@ -91,3 +91,56 @@ def guardar_horario(
     db.add(nuevo_horario)
     db.commit()
     return RedirectResponse(url="/admin/gestionar-horarios", status_code=303)
+
+from fastapi import APIRouter, Request, Form, UploadFile, File, Depends
+from fastapi.responses import RedirectResponse
+from sqlalchemy.orm import Session
+import os, shutil
+
+from app.database import get_db
+from app.models import Post
+from app.routes.auth import check_admin_logged
+from app.routes.embedder import generar_embed
+
+router = APIRouter()
+
+
+@router.post("/admin/publicar-post")
+async def publicar_post(
+    request: Request,
+    titulo: str = Form(...),
+    texto: str = Form(None),
+    imagen_url: str = Form(None),
+    imagen_archivo: UploadFile = File(None),
+    url: str = Form(None),
+    plataforma: str = Form(None),
+    db: Session = Depends(get_db)
+):
+    if not check_admin_logged(request):
+        return RedirectResponse(url="/login", status_code=302)
+
+    embed_url = ""
+    if url and plataforma:
+        embed_url = generar_embed(url, plataforma)
+
+    filename = None
+    if imagen_archivo:
+        uploads_dir = "app/static/uploads"
+        os.makedirs(uploads_dir, exist_ok=True)
+        filename = imagen_archivo.filename
+        path = os.path.join(uploads_dir, filename)
+        with open(path, "wb") as buffer:
+            shutil.copyfileobj(imagen_archivo.file, buffer)
+
+    nuevo_post = Post(
+        titulo=titulo,
+        texto=texto,
+        imagen_url=imagen_url,
+        imagen_archivo=filename,
+        url=url,
+        embed_url=embed_url,
+        plataforma=plataforma
+    )
+    db.add(nuevo_post)
+    db.commit()
+    return RedirectResponse(url="/admin", status_code=303)

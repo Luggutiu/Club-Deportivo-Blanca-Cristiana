@@ -13,20 +13,19 @@
 
   <!-- HORARIOS PUBLICADOS -->
   <h2>📅 Horarios de Actividades</h2>
+  <div class="horarios-grid">
+    {% for h in horarios %}
+      <div class="horario-card">
+        <h3>{{ h.dia|capitalize }}</h3>
+        <p><strong>{{ h.hora_inicio }} - {{ h.hora_fin }}</strong></p>
+        <p>{{ h.actividad }}</p>
+      </div>
+    {% endfor %}
+  </div>
 
-<div class="horarios-grid">
-  {% for h in horarios %}
-    <div class="horario-card">
-      <h3>{{ h.dia|capitalize }}</h3>
-      <p><strong>{{ h.hora_inicio }} - {{ h.hora_fin }}</strong></p>
-      <p>{{ h.actividad }}</p>
-    </div>
-  {% endfor %}
-</div>
-
-{% if horarios|length == 0 %}
-  <p style="text-align:center; color:#ff91a4;">Aún no se han registrado horarios.</p>
-{% endif %}
+  {% if horarios|length == 0 %}
+    <p style="text-align:center; color:#ff91a4;">Aún no se han registrado horarios.</p>
+  {% endif %}
 
   <hr style="margin: 40px 0; border-color: #ff5e78;">
 
@@ -38,7 +37,7 @@
       <label for="filtro-plataforma" style="color:#ffb3c6; font-weight: bold;">Filtrar por plataforma:</label><br>
       <select id="filtro-plataforma">
         <option value="todas">Todas</option>
-        {% for p in ["YouTube", "Facebook", "Instagram", "TikTok", "Twitter"] %}
+        {% for p in ["YouTube", "Facebook", "Instagram", "TikTok", "Twitter", "Texto"] %}
           <option value="{{ p }}">{{ p }}</option>
         {% endfor %}
       </select>
@@ -55,22 +54,35 @@
 
   <div id="posts-container">
     {% for post in posts %}
-      <div class="post" data-plataforma="{{ post.plataforma }}" data-id="{{ post.id }}">
-        {% if post.plataforma in ["YouTube", "Facebook", "TikTok", "Instagram"] %}
+      <div class="post" data-plataforma="{{ post.plataforma or 'Texto' }}" data-id="{{ post.id }}">
+        {% if post.titulo %}
+          <h3 style="color:#ffb3c6;">{{ post.titulo }}</h3>
+        {% endif %}
+        {% if post.texto %}
+          <p style="color:white;">{{ post.texto }}</p>
+        {% endif %}
+        {% if post.imagen_url %}
+          <img src="{{ post.imagen_url }}" alt="Imagen del post" style="max-width:100%; border-radius: 8px; margin:10px 0;">
+        {% elif post.imagen_archivo %}
+          <img src="/static/uploads/{{ post.imagen_archivo }}" alt="Imagen subida" style="max-width:100%; border-radius: 8px; margin:10px 0;">
+        {% endif %}
+        {% if post.video_embed %}
+          <div class="video-embed" style="margin-top: 10px;">
+            {{ post.video_embed | safe }}
+          </div>
+        {% elif post.plataforma in ["YouTube", "Facebook", "TikTok", "Instagram"] %}
           <iframe src="{{ post.embed_url }}"
             height="250"
             allowfullscreen
             loading="lazy"
             title="Publicación en {{ post.plataforma }}"
-            style="width:100%; border-radius:8px;"></iframe>
+            style="width:100%; border-radius:8px; margin-top:10px;"></iframe>
         {% elif post.plataforma == "Twitter" %}
           <blockquote class="twitter-tweet">
             <a href="{{ post.url }}"></a>
           </blockquote>
-        {% else %}
-          <p>Plataforma no soportada.</p>
         {% endif %}
-        <div class="plataforma">Plataforma: {{ post.plataforma }}</div>
+        <div class="plataforma">Plataforma: {{ post.plataforma or 'Texto' }}</div>
       </div>
     {% endfor %}
   </div>
@@ -148,6 +160,17 @@
   .horario-card p {
     margin: 5px 0;
     color: #fff;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .video-embed iframe, .video-embed {
+    width: 100%;
+    border-radius: 8px;
   }
 </style>
 {% endblock %}

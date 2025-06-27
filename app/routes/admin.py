@@ -1,61 +1,70 @@
-from fastapi import APIRouter, Request, Form, HTTPException
+from fastapi import APIRouter, Request, Form, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-from app.database import SessionLocal
-from app import models
+from sqlalchemy.orm import Session
+
+from app.database import get_db, SessionLocal
 from app.models import Post, SeccionInformativa, Horario
-from app.embedder import generar_embed
-from app.routes.admin_info import check_admin_logged  # Asegúrate de tenerlo disponible
-from app.utils import detect_platform  # o defínelo aquí si no tienes utils.py
+from app.routes.auth import check_admin_logged
+from app.routes.embedder import generar_embed
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 
-# ---------- Panel principal ----------
+# -----------------------------------------
+# Panel principal admin
+# -----------------------------------------
 @router.get("/admin", response_class=HTMLResponse)
-def admin_panel(request: Request):
+def admin_panel(request: Request, db: Session = Depends(get_db)):
     if not check_admin_logged(request):
         return RedirectResponse(url="/login", status_code=302)
 
-    db = SessionLocal()
     publicaciones = db.query(Post).order_by(Post.id.desc()).all()
-    db.close()
     return templates.TemplateResponse("admin.html", {
         "request": request,
         "publicaciones": publicaciones
     })
 
-# ---------- Publicar video ----------
-@router.get("/admin/publicar-video", response_class=HTMLResponse)
-def mostrar_form_video(request: Request):
-    if not check_admin_logged(request):
-        return RedirectResponse(url="/login", status_code=302)
-    return templates.TemplateResponse("publicar_video.html", {"request": request})
 
-@router.post("/admin/publicar-video")
-def guardar_video(request: Request, title: str = Form(...), url: str = Form(...)):
-    if not check_admin_logged(request):
-        return RedirectResponse(url="/login", status_code=302)
+# -----------------------------------------
+# Publicar un post (texto, imagen y video)
+# -----------------------------------------
+@router.post("/admin/publicar-post")
+def publicar_post(
+    request: Request,
+    titulo: str = Form(...),
+    contenido_texto: str = Form(...),
+    imagen_url: str = Form(None),
+    url: str = Form(None),
+    plataforma: str = Form(None),
+    db: Session = Depends(get_db)
+):
+    embed_url = ""
+    if url and plataforma:
+        embed_url = generar_embed(url, plataforma)
 
-    db = SessionLocal()
-    platform = detect_platform(url)
-    embed_url, _ = generar_embed(url)
-    nuevo = Post(title=title, url=url, platform=platform, embed_url=embed_url)
-    db.add(nuevo)
+    nuevo_post = Post(
+        titulo=titulo,
+        contenido_texto=contenido_texto,
+        imagen_url=imagen_url,
+        url=url,
+        embed_url=embed_url,
+        plataforma=plataforma
+    )
+    db.add(nuevo_post)
     db.commit()
-    db.close()
-    return RedirectResponse(url="/posts", status_code=302)
+    return RedirectResponse(url="/admin", status_code=303)
 
-# ---------- Editar secciones ----------
+
+# -----------------------------------------
+# Editar secciones informativas
+# -----------------------------------------
 @router.get("/admin/editar/{seccion}", response_class=HTMLResponse)
-def editar_seccion(request: Request, seccion: str):
+def editar_seccion(request: Request, seccion: str, db: Session = Depends(get_db)):
     if not check_admin_logged(request):
         return RedirectResponse(url="/login", status_code=302)
 
-    db = SessionLocal()
     contenido = db.query(SeccionInformativa).filter_by(titulo=seccion).first()
-    db.close()
-
     if not contenido:
         contenido = SeccionInformativa(titulo=seccion, contenido="")
 
@@ -66,11 +75,15 @@ def editar_seccion(request: Request, seccion: str):
     })
 
 @router.post("/admin/editar/{seccion}")
-def guardar_seccion(request: Request, seccion: str, contenido: str = Form(...)):
+def guardar_seccion(
+    request: Request,
+    seccion: str,
+    contenido: str = Form(...),
+    db: Session = Depends(get_db)
+):
     if not check_admin_logged(request):
         return RedirectResponse(url="/login", status_code=302)
 
-    db = SessionLocal()
     seccion_obj = db.query(SeccionInformativa).filter_by(titulo=seccion).first()
 
     if not seccion_obj:
@@ -80,50 +93,17 @@ def guardar_seccion(request: Request, seccion: str, contenido: str = Form(...)):
         seccion_obj.contenido = contenido
 
     db.commit()
-    db.close()
     return RedirectResponse(url="/admin", status_code=302)
 
-# ---------- Horarios ----------
-@router.get("/admin/horarios", response_class=HTMLResponse)
-def ver_horarios(request: Request):
+
+# -----------------------------------------
+# Gestionar horarios
+# -----------------------------------------
+@router.get("/admin/gestionar-horarios", response_class=HTMLResponse)
+def gestionar_horarios(request: Request, db: Session = Depends(get_db)):
     if not check_admin_logged(request):
         return RedirectResponse(url="/login", status_code=302)
 
-    db = SessionLocal()
-    horarios = db.query(Horario).all()
-    db.close()
-    return templates.TemplateResponse("gestionar_horarios.html", {"request": request, "horarios": horarios})
-
-@router.post("/admin/horarios")
-def agregar_horario(request: Request, dia: str = Form(...), hora: str = Form(...), actividad: str = Form(...)):
-    if not check_admin_logged(request):
-        return RedirectResponse(url="/login", status_code=302)
-
-    db = SessionLocal()
-    nuevo = Horario(dia=dia, hora=hora, actividad=actividad)
-    db.add(nuevo)
-    db.commit()
-    db.close()
-    return RedirectResponse(url="/admin/horarios", status_code=302)
-from fastapi import APIRouter, Request, Form
-from fastapi.responses import RedirectResponse
-from fastapi.templating import Jinja2Templates
-from sqlalchemy.orm import Session
-
-from app.database import SessionLocal
-from app.models import Horario
-from app.routes.auth import check_admin_logged  # Asegúrate que esta ruta es correcta
-
-router = APIRouter()
-templates = Jinja2Templates(directory="app/templates")
-
-
-@router.get("/admin/gestionar-horarios")
-def gestionar_horarios(request: Request):
-    if not check_admin_logged(request):
-        return RedirectResponse(url="/login", status_code=302)
-
-    db: Session = SessionLocal()
     horarios = db.query(Horario).all()
     return templates.TemplateResponse("gestionar_horarios.html", {
         "request": request,
@@ -137,19 +117,19 @@ def guardar_horario(
     dia: str = Form(...),
     hora_inicio: str = Form(...),
     hora_fin: str = Form(...),
-    actividad: str = Form(...)
+    actividad: str = Form(...),
+    db: Session = Depends(get_db)
 ):
     if not check_admin_logged(request):
         return RedirectResponse(url="/login", status_code=302)
 
-    db: Session = SessionLocal()
     nuevo_horario = Horario(
         dia=dia,
         hora_inicio=hora_inicio,
         hora_fin=hora_fin,
         actividad=actividad,
-        publicado=True  # Se publica por defecto
+        publicado=True
     )
     db.add(nuevo_horario)
     db.commit()
-    return RedirectResponse(url="/admin/gestionar-horarios", status_code=302)
+    return RedirectResponse(url="/admin/gestionar-horarios", status_code=303)

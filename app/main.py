@@ -185,7 +185,7 @@ def ping():
     return JSONResponse(content={"status": "ok", "message": "pong"})
 
 from fastapi import Form
-from app.embedder import generar_embed  # Asegúrate de tener esta función
+from app.routes.embedder import generar_embed  # Asegúrate de tener esta función
 
 @app.post("/admin/publicar-video")
 def publicar_video(
@@ -206,4 +206,44 @@ def publicar_video(
     db.add(nuevo_post)
     db.commit()
 
+    return RedirectResponse(url="/admin", status_code=303)
+
+from fastapi import UploadFile, File
+import shutil
+import os
+
+@app.get("/admin/publicar-post", response_class=HTMLResponse)
+def formulario_publicar_post(request: Request):
+    if not check_admin_logged(request):
+        return RedirectResponse(url="/login", status_code=302)
+    return templates.TemplateResponse("publicar_post.html", {"request": request})
+
+
+@app.post("/admin/publicar-post")
+def guardar_post(
+    request: Request,
+    titulo: str = Form(...),
+    texto: str = Form(None),
+    imagen_url: str = Form(None),
+    video_embed: str = Form(None),
+    imagen_archivo: UploadFile = File(None),
+    db: Session = Depends(get_db)
+):
+    nombre_archivo = None
+
+    if imagen_archivo:
+        nombre_archivo = imagen_archivo.filename
+        ruta_guardado = f"static/uploads/{nombre_archivo}"
+        with open(ruta_guardado, "wb") as buffer:
+            shutil.copyfileobj(imagen_archivo.file, buffer)
+
+    nuevo_post = Post(
+        titulo=titulo,
+        texto=texto,
+        imagen_url=imagen_url,
+        imagen_archivo=nombre_archivo,
+        video_embed=video_embed
+    )
+    db.add(nuevo_post)
+    db.commit()
     return RedirectResponse(url="/admin", status_code=303)
