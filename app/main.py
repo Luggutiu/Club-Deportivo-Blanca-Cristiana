@@ -23,7 +23,7 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
 
 # Crear las tablas
-Base.metadata.drop_all(bind=engine)  # <-- esto borra todas las tablas
+'Base.metadata.drop_all(bind=engine)'  # <-- esto borra todas las tablas
 Base.metadata.create_all(bind=engine)
 
 

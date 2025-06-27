@@ -170,3 +170,28 @@ async def publicar_post(
     db.add(nuevo_post)
     db.commit()
     return RedirectResponse(url="/admin", status_code=303)
+
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from fastapi.responses import RedirectResponse
+from main import get_db
+from app.models import Horario  # Asegúrate de que la ruta sea correcta
+
+router = APIRouter()
+
+from fastapi import Request
+
+@router.post("/admin/publicar-horario/{horario_id}")
+def publicar_horario(
+    request: Request,
+    horario_id: int,
+    db: Session = Depends(get_db)
+):
+    if not check_admin_logged(request):
+        return RedirectResponse(url="/login", status_code=302)
+
+    horario = db.query(Horario).filter(Horario.id == horario_id).first()
+    if horario:
+        horario.publicado = True
+        db.commit()
+    return RedirectResponse(url="/admin/gestionar-horarios", status_code=303)

@@ -36,4 +36,4 @@ class Horario(Base):
     hora_inicio = Column(String, nullable=False)
     hora_fin = Column(String, nullable=False)
     actividad = Column(String, nullable=False)
-    publicado = Column(Boolean, default=True)
+    publicado = Column(Boolean, default=False)

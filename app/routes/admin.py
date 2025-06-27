@@ -128,7 +128,7 @@ def guardar_horario(
         hora_inicio=hora_inicio,
         hora_fin=hora_fin,
         actividad=actividad,
-        publicado=True
+        publicado=False
     )
     db.add(nuevo_horario)
     db.commit()
