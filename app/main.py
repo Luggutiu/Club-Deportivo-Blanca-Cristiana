@@ -219,3 +219,13 @@ app.include_router(admin_info.router)
 app.include_router(admin.router)
 app.include_router(posts.router)
 app.include_router(dev.router)
+
+from app.models import Seccion
+@app.get("/contacto", response_class=HTMLResponse)
+def contacto(request: Request, db=Depends(get_db)):
+    seccion = db.query(Seccion).filter(Seccion.titulo == "contacto").first()
+    return templates.TemplateResponse("contacto.html", {
+        "request": request,
+        "contenido": seccion.contenido if seccion else "",
+        "imagen_url": seccion.imagen_url if seccion and seccion.imagen_url else None
+    })

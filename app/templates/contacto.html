@@ -4,7 +4,14 @@
 {% block content %}
 <div class="section-container">
   <h2>Contáctenos</h2>
+  
   <p>{{ contenido if contenido else "Contenido no disponible" }}</p>
+
+  {% if imagen_url %}
+    <div class="imagen-contacto">
+      <img src="{{ imagen_url }}" alt="Imagen de contacto" />
+    </div>
+  {% endif %}
 
   <div class="nav-buttons">
     <a href="/" class="btn-nav">Volver al inicio</a>
@@ -13,6 +20,14 @@
 {% endblock %}
 
 {% block extra_css %}
-<!-- Puedes reutilizar el estilo anterior -->
 {% include "partials/estilo_seccion.html" %}
+
+<style>
+  .imagen-contacto img {
+    max-width: 100%;
+    margin-top: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 12px rgba(255, 94, 120, 0.4);
+  }
+</style>
 {% endblock %}
