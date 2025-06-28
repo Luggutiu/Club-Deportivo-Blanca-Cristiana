@@ -5,13 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{% block title %}Club Deportivo Blanca Cristiana{% endblock %}</title>
 
-  <!-- Favicon -->
   <link rel="icon" href="{{ url_for('static', path='favicon.ico') }}" type="image/x-icon" />
-
-  <!-- Estilos -->
   <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
   {% block extra_css %}{% endblock %}
 
   <style>
@@ -32,6 +28,7 @@
       background-color: #6B5B95;
       color: white;
       padding: 1rem 2rem;
+      position: relative;
     }
 
     header h1 {
@@ -47,6 +44,16 @@
       text-decoration: none;
     }
 
+    .sidebar-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.8rem;
+      cursor: pointer;
+      margin-right: 1rem;
+    }
+
     .layout {
       display: flex;
       flex-grow: 1;
@@ -57,6 +64,7 @@
       background-color: #1c1c1c;
       padding: 20px;
       box-shadow: 2px 0 10px rgba(255, 105, 180, 0.3);
+      transition: transform 0.3s ease-in-out;
     }
 
     aside h2 {
@@ -103,15 +111,32 @@
         flex-direction: column;
       }
 
+      .sidebar-toggle {
+        display: block;
+      }
+
       aside {
+        position: absolute;
+        top: 65px;
+        left: 0;
         width: 100%;
+        transform: translateY(-100%);
+        z-index: 999;
+      }
+
+      aside.open {
+        transform: translateY(0);
+      }
+
+      aside nav {
         display: flex;
-        justify-content: center;
         flex-wrap: wrap;
+        justify-content: center;
       }
 
       aside nav a {
         margin: 0 10px;
+        padding: 10px;
       }
     }
   </style>
@@ -120,13 +145,16 @@
 
   <!-- Encabezado superior -->
   <header>
-    <h1>Club Deportivo Blanca Cristiana</h1>
+    <div style="display: flex; align-items: center;">
+      <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+      <h1 style="margin-left: 0.5rem;">Club Deportivo Blanca Cristiana</h1>
+    </div>
     <a href="/login" class="login-btn">Iniciar sesión</a>
   </header>
 
   <!-- Panel lateral + contenido principal -->
   <div class="layout">
-    <aside aria-label="Navegación principal">
+    <aside id="sidebar" aria-label="Navegación principal">
       <h2>🏠 Navegación</h2>
       <nav>
         <a href="/">Inicio</a>
@@ -151,7 +179,11 @@
   <script src="https://platform.twitter.com/widgets.js" charset="utf-8" defer></script>
 
   <script>
-    // Navegación dinámica AJAX (no aplica a admin ni login)
+    function toggleSidebar() {
+      const sidebar = document.getElementById("sidebar");
+      sidebar.classList.toggle("open");
+    }
+
     document.querySelectorAll("aside nav a").forEach(link => {
       link.addEventListener("click", function (e) {
         const url = this.getAttribute("href");
@@ -169,6 +201,9 @@
               document.querySelector("#main-content").innerHTML = newContent.innerHTML;
               window.history.pushState({}, "", url);
             }
+
+            const sidebar = document.getElementById("sidebar");
+            sidebar.classList.remove("open");
           })
           .catch(error => console.error("Error al cargar contenido:", error));
       });
