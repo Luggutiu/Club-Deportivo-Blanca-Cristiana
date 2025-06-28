@@ -24,15 +24,15 @@ header {
 /* --- Botón de menú --- */
 .sidebar-toggle {
   display: none;
-  position: absolute;
-  left: 1rem;
-  top: 1.2rem;
-  font-size: 1.5rem;
   background: none;
   border: none;
   color: white;
-  z-index: 1000;
+  font-size: 1.8rem;
   cursor: pointer;
+  margin-right: 1rem;
+  z-index: 1001;
+  position: absolute;
+  top: 1.2rem; /* en escritorio */
 }
 
 /* --- Sidebar fija (escritorio) --- */
@@ -126,10 +126,11 @@ footer {
 
 /* --- Responsive --- */
 @media (max-width: 768px) {
-  header {
-    font-size: 1.3rem;
-    padding: 1rem;
+  .sidebar-toggle {
+    top: 60px; /* ✅ mueve el botón más abajo solo en móviles */
   }
+
+
 
   .sidebar-toggle {
     display: block;
