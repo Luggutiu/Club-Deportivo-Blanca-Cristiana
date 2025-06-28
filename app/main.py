@@ -220,10 +220,10 @@ app.include_router(admin.router)
 app.include_router(posts.router)
 app.include_router(dev.router)
 
-from app.models import Seccion
+from app.models import SeccionInformativa
 @app.get("/contacto", response_class=HTMLResponse)
 def contacto(request: Request, db=Depends(get_db)):
-    seccion = db.query(Seccion).filter(Seccion.titulo == "contacto").first()
+    seccion = db.query(SeccionInformativa).filter(SeccionInformativa.titulo == "contacto").first()
     return templates.TemplateResponse("contacto.html", {
         "request": request,
         "contenido": seccion.contenido if seccion else "",
