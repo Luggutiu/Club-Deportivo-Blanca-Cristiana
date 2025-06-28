@@ -1,0 +1,25 @@
+{% extends "base_admin.html" %}
+{% block title %}Editar Publicación{% endblock %}
+
+{% block content %}
+<div class="form-container">
+  <h2>Editar publicación</h2>
+
+  <form method="post" action="/admin/editar-post/{{ post.id }}">
+    <label for="titulo">Título</label>
+    <input type="text" id="titulo" name="titulo" value="{{ post.titulo }}" required>
+
+    <label for="texto">Texto</label>
+    <textarea id="texto" name="texto">{{ post.texto }}</textarea>
+
+    <label for="imagen_url">Imagen (URL)</label>
+    <input type="text" id="imagen_url" name="imagen_url" value="{{ post.imagen_url }}">
+
+    <button type="submit" class="btn-submit">Guardar Cambios</button>
+  </form>
+
+  <div class="nav-buttons">
+    <a href="/admin" class="btn-nav">Volver al panel</a>
+  </div>
+</div>
+{% endblock %}

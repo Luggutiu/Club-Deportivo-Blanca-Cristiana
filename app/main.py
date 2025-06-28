@@ -229,3 +229,62 @@ def contacto(request: Request, db=Depends(get_db)):
         "contenido": seccion.contenido if seccion else "",
         "imagen_url": seccion.imagen_url if seccion and seccion.imagen_url else None
     })
+    
+@app.post("/admin/editar/{titulo}")
+def editar_seccion_post(
+    request: Request,
+    titulo: str,
+    contenido: str = Form(...),
+    imagen_url: str = Form(None),
+    db=Depends(get_db)
+):
+    seccion = db.query(SeccionInformativa).filter_by(titulo=titulo).first()
+    if not seccion:
+        raise HTTPException(status_code=404, detail="Sección no encontrada")
+
+    # Agrega imagen si fue enviada
+    if imagen_url:
+        contenido += f'<br><img src="{imagen_url}" alt="Imagen relacionada" style="max-width:100%;">'
+
+    seccion.contenido = contenido
+    db.commit()
+    return RedirectResponse(url="/admin", status_code=303)
+
+
+
+from fastapi.responses import HTMLResponse
+from fastapi import Request
+from fastapi.templating import Jinja2Templates
+
+templates = Jinja2Templates(directory="app/templates")  # Ajusta si tu carpeta es diferente
+
+@app.get("/admin/editar-post/{post_id}", response_class=HTMLResponse)
+def mostrar_formulario_editar_post(request: Request, post_id: int, db=Depends(get_db)):
+    if not check_admin_logged(request):
+        return RedirectResponse(url="/login", status_code=302)
+
+    post = db.query(Post).filter(Post.id == post_id).first()
+    if not post:
+        return HTMLResponse("Post no encontrado", status_code=404)
+
+    return templates.TemplateResponse("editar_post.html", {"request": request, "post": post})
+
+@app.post("/admin/editar-post/{post_id}")
+def editar_post(
+    request: Request,
+    post_id: int,
+    titulo: str = Form(...),
+    texto: str = Form(None),
+    imagen_url: str = Form(None),
+    db=Depends(get_db)
+):
+    post = db.query(Post).filter(Post.id == post_id).first()
+    if not post:
+        return HTMLResponse("Post no encontrado", status_code=404)
+
+    post.titulo = titulo
+    post.texto = texto
+    post.imagen_url = imagen_url
+
+    db.commit()
+    return RedirectResponse(url="/admin", status_code=303)

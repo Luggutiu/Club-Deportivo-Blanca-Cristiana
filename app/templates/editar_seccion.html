@@ -9,6 +9,17 @@
     <label for="contenido">Contenido</label>
     <textarea id="contenido" name="contenido" rows="10" required>{{ contenido.contenido }}</textarea>
 
+    <label for="imagen_url">URL de imagen (opcional)</label>
+    <input type="text" name="imagen_url" id="imagen_url" placeholder="https://ejemplo.com/imagen.jpg" value="{{ contenido.imagen_url or '' }}" oninput="mostrarVistaPrevia()" />
+
+    <div id="preview" style="margin-top: 15px; text-align: center;">
+      {% if contenido.imagen_url %}
+        <img id="imagen-preview" src="{{ contenido.imagen_url }}" alt="Vista previa de la imagen" style="max-width: 100%; border-radius: 10px; border: 1px solid #ff5e78;" />
+      {% else %}
+        <img id="imagen-preview" src="" alt="Vista previa de la imagen" style="max-width: 100%; border-radius: 10px; border: 1px solid #ff5e78; display: none;" />
+      {% endif %}
+    </div>
+
     <button type="submit" class="btn-submit">Guardar Cambios</button>
   </form>
 
@@ -48,7 +59,8 @@
     font-weight: bold;
   }
 
-  textarea {
+  textarea,
+  input[type="text"] {
     width: 100%;
     padding: 12px;
     margin-bottom: 25px;
@@ -97,4 +109,20 @@
     color: #fff;
   }
 </style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function mostrarVistaPrevia() {
+    const input = document.getElementById("imagen_url");
+    const img = document.getElementById("imagen-preview");
+
+    if (input.value && input.value.startsWith("http")) {
+      img.src = input.value;
+      img.style.display = "block";
+    } else {
+      img.style.display = "none";
+    }
+  }
+</script>
 {% endblock %}
