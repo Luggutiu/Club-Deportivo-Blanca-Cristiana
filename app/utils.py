@@ -1,5 +1,11 @@
 # app/utils.py
 
+# En app/utils.py
+from fastapi import Request
+
+def check_admin_logged(request: Request):
+    return True  # esto lo reemplazas después con tu lógica real
+
 def detect_platform(url: str) -> str:
     url = url.lower()
 
