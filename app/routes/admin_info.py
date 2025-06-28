@@ -148,7 +148,8 @@ from sqlalchemy.orm import Session
 import os, shutil
 from app.database import get_db
 from app.models import Post
-from app.utils import check_admin_logged, generar_embed
+from app.utils import check_admin_logged
+from app.routes.embedder import generar_embed
 
 router = APIRouter()
 
