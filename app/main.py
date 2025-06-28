@@ -7,6 +7,8 @@ from starlette.status import HTTP_303_SEE_OTHER
 import shutil
 import os
 from fastapi import UploadFile, File
+from app.routes import google_oauth
+app.include_router(google_oauth.router)
 
 from app.routes import auth, info, admin_info, admin, posts, dev
 from app.routes.auth import check_admin_logged
