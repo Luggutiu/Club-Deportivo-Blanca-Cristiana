@@ -1,0 +1,11 @@
+{% extends "base_public.html" %}
+
+{% block title %}¡Gracias por suscribirte!{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: auto; padding: 2rem; text-align: center;">
+  <h2 style="color: #ff5e78;">¡Gracias por suscribirte, {{ nombre }}!</h2>
+  <p>Hemos registrado tu correo: <strong>{{ correo }}</strong></p>
+  <a href="/" style="margin-top: 2rem; display: inline-block; color: white; background-color: #ff5e78; padding: 0.5rem 1rem; border-radius: 8px;">Volver al inicio</a>
+</div>
+{% endblock %}

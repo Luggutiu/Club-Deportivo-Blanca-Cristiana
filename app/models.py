@@ -58,6 +58,10 @@ from app.database import Base
 
 class Suscriptor(Base):
     __tablename__ = "suscriptores"
+
     id = Column(Integer, primary_key=True, index=True)
-    nombre = Column(String, nullable=True)
+    tipo_documento = Column(String, nullable=False)
+    numero_documento = Column(String, unique=True, nullable=False)
+    nombre_completo = Column(String, nullable=False)
+    celular = Column(String, nullable=False)
     correo = Column(String, unique=True, nullable=False)

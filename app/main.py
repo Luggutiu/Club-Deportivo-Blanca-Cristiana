@@ -296,3 +296,61 @@ def politica_privacidad(request: Request):
 @app.get("/condiciones-servicio", response_class=HTMLResponse)
 def condiciones_servicio(request: Request):
     return templates.TemplateResponse("condiciones_servicio.html", {"request": request})
+
+
+from fastapi import Form, Request, Depends, HTTPException
+from fastapi.responses import RedirectResponse
+from sqlalchemy.orm import Session
+from app.database import get_db
+from app.models import Suscriptor
+
+from app.models import Suscriptor
+from sqlalchemy.exc import IntegrityError
+
+@app.post("/guardar-suscriptor")
+def guardar_suscriptor(
+    request: Request,
+    tipo_documento: str = Form(...),
+    numero_documento: str = Form(...),
+    nombre_completo: str = Form(...),
+    celular: str = Form(...),
+    correo: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    nuevo = Suscriptor(
+        tipo_documento=tipo_documento,
+        numero_documento=numero_documento,
+        nombre=nombre_completo,
+        nombre_completo=nombre_completo,
+        celular=celular,
+        correo=correo
+    )
+
+    try:
+        db.add(nuevo)
+        db.commit()
+        return templates.TemplateResponse("confirmacion_suscripcion.html", {
+            "request": request,
+            "nombre": nombre_completo,
+            "correo": correo
+        })
+    except IntegrityError:
+        db.rollback()
+        return templates.TemplateResponse("error.html", {
+            "request": request,
+            "error_message": "Este correo o documento ya está registrado."
+        }, status_code=400)
+
+from fastapi import Query
+
+@app.get("/formulario-suscriptor", response_class=HTMLResponse)
+def formulario_suscriptor(
+    request: Request,
+    correo: str = Query(None),
+    nombre: str = Query(None)
+):
+    return templates.TemplateResponse("formulario_suscriptor.html", {
+        "request": request,
+        "correo": correo,
+        "nombre": nombre
+    })

@@ -15,3 +15,4 @@ def suscribirse(nombre: str = Form(None), correo: str = Form(...), db: Session =
     db.add(nuevo)
     db.commit()
     return RedirectResponse(url="/?suscrito=1", status_code=303)
+
