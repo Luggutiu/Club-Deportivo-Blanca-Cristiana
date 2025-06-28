@@ -142,6 +142,16 @@ def publicar_horario(
 
 # ------------------------ PUBLICAR POST ------------------------
 
+from fastapi import APIRouter, Request, Form, UploadFile, File, Depends
+from fastapi.responses import RedirectResponse
+from sqlalchemy.orm import Session
+import os, shutil
+from app.database import get_db
+from app.models import Post
+from app.utils import check_admin_logged, generar_embed
+
+router = APIRouter()
+
 @router.post("/admin/publicar-post")
 async def publicar_post(
     request: Request,
@@ -166,6 +176,8 @@ async def publicar_post(
         os.makedirs(uploads_dir, exist_ok=True)
         filename = imagen_archivo.filename
         path = os.path.join(uploads_dir, filename)
+
+        # Guardar la imagen en disco
         with open(path, "wb") as buffer:
             shutil.copyfileobj(imagen_archivo.file, buffer)
 
@@ -180,4 +192,5 @@ async def publicar_post(
     )
     db.add(nuevo_post)
     db.commit()
+
     return RedirectResponse(url="/admin", status_code=303)
