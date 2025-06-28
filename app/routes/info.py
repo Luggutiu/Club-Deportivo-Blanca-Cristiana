@@ -21,12 +21,14 @@ async def ver_seccion(request: Request, seccion_slug: str, db: Session = Depends
         return templates.TemplateResponse("ver_seccion.html", {
             "request": request,
             "titulo": "Sección no encontrada",
-            "contenido": "La sección solicitada no está disponible."
+            "contenido": "La sección solicitada no está disponible.",
+            "imagen_url": None
         })
 
     contenido = db.query(SeccionInformativa).filter_by(titulo=seccion_slug).first()
     return templates.TemplateResponse("ver_seccion.html", {
         "request": request,
         "titulo": SECCIONES[seccion_slug],
-        "contenido": contenido.contenido if contenido else "Contenido no disponible"
+        "contenido": contenido.contenido if contenido else "",
+        "imagen_url": contenido.imagen_url if contenido and contenido.imagen_url else None
     })
