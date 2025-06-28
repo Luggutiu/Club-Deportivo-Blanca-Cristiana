@@ -31,10 +31,7 @@ from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import Post, Horario, SeccionInformativa
-from app.main import app
-from app.main import templates  # Usa tu import adecuado
 from sqlalchemy import desc
-
 from fastapi import Request, Depends
 from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
@@ -219,7 +216,7 @@ def publicar_video(
 
 # -------- Routers externos --------
 app.include_router(auth.router)
-app.include_router(info.router)
+app.include_router(info.router, prefix="/info")
 app.include_router(admin_info.router)
 app.include_router(admin.router)
 app.include_router(posts.router)
