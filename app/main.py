@@ -359,3 +359,20 @@ def formulario_suscriptor(
         "nombre": nombre
     })
     
+    from fastapi import Form
+
+@app.get("/suscribirse", response_class=HTMLResponse)
+def mostrar_formulario_suscripcion(request: Request):
+    return templates.TemplateResponse("suscribirse.html", {"request": request})
+
+@app.post("/suscribirse", response_class=HTMLResponse)
+def procesar_suscripcion(request: Request, nombre: str = Form(...), correo: str = Form(...), db: Session = Depends(get_db)):
+    from app.models import Suscriptor
+    nuevo_suscriptor = Suscriptor(nombre=nombre, correo=correo)
+    try:
+        db.add(nuevo_suscriptor)
+        db.commit()
+        return templates.TemplateResponse("confirmacion_suscripcion.html", {"request": request, "nombre": nombre})
+    except Exception as e:
+        db.rollback()
+        return templates.TemplateResponse("error.html", {"request": request, "error_message": str(e)})
