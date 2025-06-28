@@ -17,7 +17,9 @@ SECCIONES = {
 
 @router.get("/{seccion_slug}", response_class=HTMLResponse)
 async def ver_seccion(request: Request, seccion_slug: str, db: Session = Depends(get_db)):
-    if seccion_slug not in SECCIONES:
+    seccion = db.query(SeccionInformativa).filter_by(slug=seccion_slug).first()
+
+    if not seccion:
         return templates.TemplateResponse("ver_seccion.html", {
             "request": request,
             "titulo": "Sección no encontrada",
@@ -25,12 +27,9 @@ async def ver_seccion(request: Request, seccion_slug: str, db: Session = Depends
             "imagen_url": None
         })
 
-    # 👇 Aquí corregimos para que filtre por el título visible (ej. "Contáctenos")
-    contenido = db.query(SeccionInformativa).filter_by(titulo=SECCIONES[seccion_slug]).first()
-
     return templates.TemplateResponse("ver_seccion.html", {
         "request": request,
-        "titulo": SECCIONES[seccion_slug],
-        "contenido": contenido.contenido if contenido else "",
-        "imagen_url": contenido.imagen_url if contenido and contenido.imagen_url else None
+        "titulo": seccion.titulo,
+        "contenido": seccion.contenido,
+        "imagen_url": seccion.imagen_url
     })

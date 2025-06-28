@@ -32,9 +32,10 @@ class SeccionInformativa(Base):
     __tablename__ = "secciones"
 
     id = Column(Integer, primary_key=True, index=True)
-    titulo = Column(String, unique=True, index=True, nullable=False)
+    titulo = Column(String, unique=True, nullable=False)
+    slug = Column(String, unique=True, nullable=False)  # Nuevo campo
     contenido = Column(Text, nullable=False)
-    imagen_url = Column(String, nullable=True)  # ← ESTE DEBE EXISTIR
+    imagen_url = Column(String, nullable=True)
 
 # ---------------------------
 # Modelo: Horario de actividad
