@@ -1,10 +1,15 @@
-from fastapi import APIRouter, Request, Form, Depends, HTTPException
+# admin_info.py
+
+from fastapi import APIRouter, Request, Form, UploadFile, File, Depends, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
+import os, shutil
+
 from app.database import get_db
-from app.models import SeccionInformativa, Horario
+from app.models import SeccionInformativa, Horario, Post
 from app.routes.auth import check_admin_logged
+from app.routes.embedder import generar_embed
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
@@ -27,7 +32,6 @@ def editar_seccion(seccion: str, request: Request, db: Session = Depends(get_db)
     })
 
 
-
 @router.post("/admin/editar/{seccion}")
 def guardar_seccion(
     seccion: str,
@@ -46,9 +50,8 @@ def guardar_seccion(
         seccion_bd.contenido = contenido
 
     db.commit()
-
-    # Redirección corregida:
     return RedirectResponse(url="/admin", status_code=303)
+
 
 # ------------------------ PUBLICAR VIDEO ------------------------
 
@@ -83,6 +86,7 @@ async def procesar_video(
     db.commit()
     return RedirectResponse(url="/admin", status_code=303)
 
+
 # ------------------------ GESTIONAR HORARIOS ------------------------
 
 @router.get("/admin/gestionar-horarios", response_class=HTMLResponse)
@@ -95,6 +99,7 @@ def gestionar_horarios(request: Request, db: Session = Depends(get_db)):
         "request": request,
         "horarios": horarios
     })
+
 
 @router.post("/admin/guardar-horario")
 def guardar_horario(
@@ -118,18 +123,24 @@ def guardar_horario(
     db.commit()
     return RedirectResponse(url="/admin/gestionar-horarios", status_code=303)
 
-from fastapi import APIRouter, Request, Form, UploadFile, File, Depends
-from fastapi.responses import RedirectResponse
-from sqlalchemy.orm import Session
-import os, shutil
 
-from app.database import get_db
-from app.models import Post
-from app.routes.auth import check_admin_logged
-from app.routes.embedder import generar_embed
+@router.post("/admin/publicar-horario/{horario_id}")
+def publicar_horario(
+    request: Request,
+    horario_id: int,
+    db: Session = Depends(get_db)
+):
+    if not check_admin_logged(request):
+        return RedirectResponse(url="/login", status_code=302)
 
-router = APIRouter()
+    horario = db.query(Horario).filter(Horario.id == horario_id).first()
+    if horario:
+        horario.publicado = True
+        db.commit()
+    return RedirectResponse(url="/admin/gestionar-horarios", status_code=303)
 
+
+# ------------------------ PUBLICAR POST ------------------------
 
 @router.post("/admin/publicar-post")
 async def publicar_post(
@@ -170,28 +181,3 @@ async def publicar_post(
     db.add(nuevo_post)
     db.commit()
     return RedirectResponse(url="/admin", status_code=303)
-
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
-from fastapi.responses import RedirectResponse
-from app.dependencies import get_db
-from app.models import Horario  # Asegúrate de que la ruta sea correcta
-
-router = APIRouter()
-
-from fastapi import Request
-
-@router.post("/admin/publicar-horario/{horario_id}")
-def publicar_horario(
-    request: Request,
-    horario_id: int,
-    db: Session = Depends(get_db)
-):
-    if not check_admin_logged(request):
-        return RedirectResponse(url="/login", status_code=302)
-
-    horario = db.query(Horario).filter(Horario.id == horario_id).first()
-    if horario:
-        horario.publicado = True
-        db.commit()
-    return RedirectResponse(url="/admin/gestionar-horarios", status_code=303)

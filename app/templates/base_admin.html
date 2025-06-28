@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#000000" />
   <title>{% block title %}Panel Administrativo - Club Deportivo Blanca Cristiana{% endblock %}</title>
 
   <!-- Favicon -->
@@ -94,14 +95,13 @@
       font-size: 28px;
       box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
       z-index: 1000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .whatsapp-float:hover {
       background-color: #1ebe5d;
-    }
-
-    .whatsapp-float i {
-      line-height: 55px;
     }
   </style>
 
@@ -109,7 +109,7 @@
 </head>
 <body>
   <div class="admin-layout">
-    <aside>
+    <aside aria-label="Menú de administración">
       <h2>Administración</h2>
       <a href="/admin" title="Ir al panel principal">Inicio Admin</a>
       <a href="/admin/publicar-video" title="Publicar nuevo video">Publicar Video</a>
@@ -126,10 +126,10 @@
     </main>
   </div>
 
-  <a href="https://wa.me/573001112233" target="_blank" class="whatsapp-float" title="Contáctanos por WhatsApp">
+  <a href="https://wa.me/573001112233" target="_blank" class="whatsapp-float" title="Contáctanos por WhatsApp" aria-label="WhatsApp">
     <i class="fab fa-whatsapp"></i>
   </a>
 
-  <script src="https://kit.fontawesome.com/0c4e2df15f.js" crossorigin="anonymous"></script>
+  <script src="https://kit.fontawesome.com/0c4e2df15f.js" crossorigin="anonymous" defer></script>
 </body>
 </html>

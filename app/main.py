@@ -1,72 +1,30 @@
-from fastapi import FastAPI, Request, Depends, Form, HTTPException
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi import FastAPI, Request, Depends, Form, UploadFile, File, HTTPException
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from starlette.middleware.sessions import SessionMiddleware
 from starlette.status import HTTP_303_SEE_OTHER
-from sqlalchemy.orm import Session
-from starlette.middleware.sessions import SessionMiddleware
-from fastapi import FastAPI
-from app.dependencies import get_db 
+import shutil
+import os
 
-from app.database import engine, Base, SessionLocal
-from app.models import Horario, SeccionInformativa, Post
 from app.routes import auth, info, admin_info, admin, posts, dev
-from app.routes.auth import check_admin_logged  # ✅ Import correcto
-from starlette.middleware.sessions import SessionMiddleware
+from app.routes.auth import check_admin_logged
+from app.routes.embedder import generar_embed
+from app.models import Horario, SeccionInformativa, Post
+from app.database import get_db  # Importamos la dependencia de sesión de la base
 
-# Inicialización de la app
 app = FastAPI()
+app.add_middleware(SessionMiddleware, secret_key="2025*")
 
-# Middleware de sesiones
-app.add_middleware(SessionMiddleware, secret_key="una_clave_secreta_segura")
-
-# Archivos estáticos y plantillas
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
 
-# Crear las tablas
- # <-- esto borra todas las tablas
-Base.metadata.create_all(bind=engine)
-
-
-
-
-
-# Incluir routers
-app.include_router(auth.router)
-app.include_router(info.router)
-app.include_router(admin_info.router)
-app.include_router(admin.router)
-app.include_router(posts.router)
-app.include_router(dev.router)
-
-
-
-# Crear secciones por defecto
-def crear_secciones_predeterminadas():
-    db = SessionLocal()
-    secciones = ["mision", "vision", "quienes-somos", "contacto"]
-    for titulo in secciones:
-        existente = db.query(SeccionInformativa).filter_by(titulo=titulo).first()
-        if not existente:
-            nueva = SeccionInformativa(titulo=titulo, contenido="")
-            db.add(nueva)
-    db.commit()
-    db.close()
-
-crear_secciones_predeterminadas()
-
-# ------------------------- RUTAS PÚBLICAS -------------------------
+# -------- Rutas públicas --------
 @app.get("/", response_class=HTMLResponse)
-async def home(request: Request, db: Session = Depends(get_db)):
+async def home(request: Request, db=Depends(get_db)):
     posts = db.query(Post).order_by(Post.id.desc()).all()
-    
-    # 👇 Este filtro es CLAVE
     horarios = db.query(Horario).filter(Horario.publicado == True).all()
-
-    secciones_query = db.query(SeccionInformativa).all()
-    secciones = {s.titulo: s.contenido for s in secciones_query}
-    
+    secciones = {s.titulo: s.contenido for s in db.query(SeccionInformativa).all()}
     return templates.TemplateResponse("index.html", {
         "request": request,
         "posts": posts,
@@ -74,16 +32,18 @@ async def home(request: Request, db: Session = Depends(get_db)):
         "secciones": secciones
     })
 
+@app.get("/ping")
+def ping():
+    return JSONResponse(content={"status": "ok", "message": "pong"})
+
+# -------- Rutas administración --------
 @app.get("/admin", response_class=HTMLResponse)
 def admin_panel(request: Request):
     if not check_admin_logged(request):
         return RedirectResponse(url="/login", status_code=302)
-
-    db = SessionLocal()
+    db = next(get_db())
     publicaciones = db.query(Post).all()
     horarios = db.query(Horario).filter(Horario.publicado == True).all()
-    print("HORARIOS VISIBLES EN INDEX:", [f"{h.dia} {h.hora_inicio}-{h.hora_fin}" for h in horarios])
-
     return templates.TemplateResponse("admin.html", {
         "request": request,
         "publicaciones": publicaciones,
@@ -94,10 +54,9 @@ def admin_panel(request: Request):
 def test_embed(request: Request):
     return templates.TemplateResponse("test_embed.html", {"request": request})
 
-# ------------------------- HORARIOS (ADMIN) -------------------------
-
+# -------- Gestión de horarios --------
 @app.get("/admin/gestionar-horarios", response_class=HTMLResponse)
-def mostrar_formulario_horario(request: Request, db: Session = Depends(get_db)):
+def mostrar_formulario_horario(request: Request, db=Depends(get_db)):
     horarios = db.query(Horario).order_by(Horario.dia).all()
     return templates.TemplateResponse("gestionar_horarios.html", {
         "request": request,
@@ -111,25 +70,21 @@ def guardar_horario(
     hora_inicio: str = Form(...),
     hora_fin: str = Form(...),
     actividad: str = Form(...),
-    db: Session = Depends(get_db)
+    db=Depends(get_db)
 ):
-    print(f"🟢 Horario recibido: {dia} - {hora_inicio} a {hora_fin} | {actividad}")
-    
     nuevo_horario = Horario(
         dia=dia,
         hora_inicio=hora_inicio,
         hora_fin=hora_fin,
         actividad=actividad,
-        publicado=True  # ✅ Agrega esto para que se muestre en la página pública
+        publicado=True
     )
-    
     db.add(nuevo_horario)
     db.commit()
-    
     return RedirectResponse(url="/admin/gestionar-horarios", status_code=303)
 
 @app.get("/admin/editar-horario/{horario_id}", response_class=HTMLResponse)
-def mostrar_formulario_edicion(request: Request, horario_id: int, db: Session = Depends(get_db)):
+def mostrar_formulario_edicion(request: Request, horario_id: int, db=Depends(get_db)):
     horario = db.query(Horario).filter(Horario.id == horario_id).first()
     if not horario:
         return HTMLResponse("Horario no encontrado", status_code=404)
@@ -146,7 +101,7 @@ def actualizar_horario(
     hora_inicio: str = Form(...),
     hora_fin: str = Form(...),
     actividad: str = Form(...),
-    db: Session = Depends(get_db)
+    db=Depends(get_db)
 ):
     horario = db.query(Horario).filter(Horario.id == horario_id).first()
     if not horario:
@@ -159,64 +114,19 @@ def actualizar_horario(
     return RedirectResponse(url="/admin/gestionar-horarios", status_code=HTTP_303_SEE_OTHER)
 
 @app.get("/admin/eliminar-horario/{horario_id}")
-def eliminar_horario(horario_id: int, db: Session = Depends(get_db)):
+def eliminar_horario(horario_id: int, db=Depends(get_db)):
     horario = db.query(Horario).filter(Horario.id == horario_id).first()
     if horario:
         db.delete(horario)
         db.commit()
     return RedirectResponse(url="/admin/gestionar-horarios", status_code=HTTP_303_SEE_OTHER)
 
-# ------------------------- PUBLICACIONES -------------------------
-
-@app.post("/admin/eliminar-post/{post_id}")
-async def eliminar_post(post_id: int, db: Session = Depends(get_db)):
-    post = db.query(Post).filter(Post.id == post_id).first()
-    if not post:
-        raise HTTPException(status_code=404, detail="Publicación no encontrada")
-    db.delete(post)
-    db.commit()
-    return RedirectResponse(url="/admin", status_code=HTTP_303_SEE_OTHER)
-
-from fastapi.responses import JSONResponse
-
-@app.get("/ping")
-def ping():
-    return JSONResponse(content={"status": "ok", "message": "pong"})
-
-from fastapi import Form
-from app.routes.embedder import generar_embed  # Asegúrate de tener esta función
-
-@app.post("/admin/publicar-video")
-def publicar_video(
-    request: Request,
-    url: str = Form(...),
-    plataforma: str = Form(...),
-    db: Session = Depends(get_db)
-):
-    try:
-        embed_url = generar_embed(url)
-    except Exception as e:
-        return templates.TemplateResponse("publicar_video.html", {
-            "request": request,
-            "error": "URL inválida o plataforma no soportada."
-        })
-
-    nuevo_post = Post(url=url, plataforma=plataforma, embed_url=embed_url)
-    db.add(nuevo_post)
-    db.commit()
-
-    return RedirectResponse(url="/admin", status_code=303)
-
-from fastapi import UploadFile, File
-import shutil
-import os
-
+# -------- Gestión de publicaciones --------
 @app.get("/admin/publicar-post", response_class=HTMLResponse)
 def formulario_publicar_post(request: Request):
     if not check_admin_logged(request):
         return RedirectResponse(url="/login", status_code=302)
     return templates.TemplateResponse("publicar_post.html", {"request": request})
-
 
 @app.post("/admin/publicar-post")
 def guardar_post(
@@ -226,13 +136,13 @@ def guardar_post(
     imagen_url: str = Form(None),
     video_embed: str = Form(None),
     imagen_archivo: UploadFile = File(None),
-    db: Session = Depends(get_db)
+    db=Depends(get_db)
 ):
     nombre_archivo = None
-
     if imagen_archivo:
+        os.makedirs("app/static/uploads", exist_ok=True)
         nombre_archivo = imagen_archivo.filename
-        ruta_guardado = f"static/uploads/{nombre_archivo}"
+        ruta_guardado = f"app/static/uploads/{nombre_archivo}"
         with open(ruta_guardado, "wb") as buffer:
             shutil.copyfileobj(imagen_archivo.file, buffer)
 
@@ -246,3 +156,40 @@ def guardar_post(
     db.add(nuevo_post)
     db.commit()
     return RedirectResponse(url="/admin", status_code=303)
+
+@app.post("/admin/eliminar-post/{post_id}")
+async def eliminar_post(post_id: int, db=Depends(get_db)):
+    post = db.query(Post).filter(Post.id == post_id).first()
+    if not post:
+        raise HTTPException(status_code=404, detail="Publicación no encontrada")
+    db.delete(post)
+    db.commit()
+    return RedirectResponse(url="/admin", status_code=HTTP_303_SEE_OTHER)
+
+@app.post("/admin/publicar-video")
+def publicar_video(
+    request: Request,
+    url: str = Form(...),
+    plataforma: str = Form(...),
+    db=Depends(get_db)
+):
+    try:
+        embed_url = generar_embed(url)
+    except Exception:
+        return templates.TemplateResponse("publicar_video.html", {
+            "request": request,
+            "error": "URL inválida o plataforma no soportada."
+        })
+
+    nuevo_post = Post(url=url, plataforma=plataforma, embed_url=embed_url)
+    db.add(nuevo_post)
+    db.commit()
+    return RedirectResponse(url="/admin", status_code=303)
+
+# -------- Routers externos --------
+app.include_router(auth.router)
+app.include_router(info.router)
+app.include_router(admin_info.router)
+app.include_router(admin.router)
+app.include_router(posts.router)
+app.include_router(dev.router)

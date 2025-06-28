@@ -3,7 +3,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
-from app.database import get_db, SessionLocal
+from app.database import get_db
 from app.models import Post, SeccionInformativa, Horario
 from app.routes.auth import check_admin_logged
 from app.routes.embedder import generar_embed
@@ -25,7 +25,6 @@ def admin_panel(request: Request, db: Session = Depends(get_db)):
         "publicaciones": publicaciones
     })
 
-
 # -----------------------------------------
 # Publicar un post (texto, imagen y video)
 # -----------------------------------------
@@ -33,7 +32,7 @@ def admin_panel(request: Request, db: Session = Depends(get_db)):
 def publicar_post(
     request: Request,
     titulo: str = Form(...),
-    contenido_texto: str = Form(...),
+    texto: str = Form(...),
     imagen_url: str = Form(None),
     url: str = Form(None),
     plataforma: str = Form(None),
@@ -45,7 +44,7 @@ def publicar_post(
 
     nuevo_post = Post(
         titulo=titulo,
-        contenido_texto=contenido_texto,
+        texto=texto,
         imagen_url=imagen_url,
         url=url,
         embed_url=embed_url,
@@ -54,7 +53,6 @@ def publicar_post(
     db.add(nuevo_post)
     db.commit()
     return RedirectResponse(url="/admin", status_code=303)
-
 
 # -----------------------------------------
 # Editar secciones informativas
@@ -95,7 +93,6 @@ def guardar_seccion(
     db.commit()
     return RedirectResponse(url="/admin", status_code=302)
 
-
 # -----------------------------------------
 # Gestionar horarios
 # -----------------------------------------
@@ -109,7 +106,6 @@ def gestionar_horarios(request: Request, db: Session = Depends(get_db)):
         "request": request,
         "horarios": horarios
     })
-
 
 @router.post("/admin/guardar-horario")
 def guardar_horario(
@@ -128,7 +124,7 @@ def guardar_horario(
         hora_inicio=hora_inicio,
         hora_fin=hora_fin,
         actividad=actividad,
-        publicado=False
+        publicado=False  # Cambia a True si quieres que se publique de una vez
     )
     db.add(nuevo_horario)
     db.commit()

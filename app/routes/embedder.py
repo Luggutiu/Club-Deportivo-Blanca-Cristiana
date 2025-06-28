@@ -1,32 +1,48 @@
-from urllib.parse import urlparse
-from typing import Tuple
+from urllib.parse import urlparse, parse_qs
+from typing import Optional
 
-def generar_embed(url: str) -> str:
-    if "youtube.com" in url or "youtu.be" in url:
-        if "watch?v=" in url:
-            video_id = url.split("watch?v=")[1].split("&")[0]
-        else:
-            video_id = url.split("/")[-1]
-        return f"https://www.youtube.com/embed/{video_id}"
+def generar_embed(url: str) -> Optional[str]:
+    try:
+        parsed_url = urlparse(url)
+        hostname = parsed_url.hostname or ""
 
-    elif "facebook.com" in url:
-        return url.replace("www.facebook.com", "www.facebook.com/plugins/video")
+        # YouTube
+        if "youtube.com" in hostname:
+            query = parse_qs(parsed_url.query)
+            video_id = query.get("v", [None])[0]
+            if video_id:
+                return f"https://www.youtube.com/embed/{video_id}"
+        elif "youtu.be" in hostname:
+            video_id = parsed_url.path.strip("/")
+            return f"https://www.youtube.com/embed/{video_id}"
 
-    elif "instagram.com" in url:
-        return url + "embed"
+        # Facebook
+        elif "facebook.com" in hostname:
+            return f"https://www.facebook.com/plugins/video.php?href={url}"
 
-    elif "twitter.com" in url:
-        return url  # Twitter se muestra con blockquote, no embed directo
+        # Instagram
+        elif "instagram.com" in hostname:
+            return f"{url.rstrip('/')}/embed"
 
-    elif "tiktok.com" in url:
-        return url.replace("www.tiktok.com", "www.tiktok.com/embed")
+        # Twitter (se maneja como blockquote)
+        elif "twitter.com" in hostname:
+            return url
 
-    elif "twitch.tv" in url:
-        if "/videos/" in url:
-            video_id = url.split("/videos/")[1]
-            return f"https://player.twitch.tv/?video={video_id}&parent=localhost"
-        elif "twitch.tv/" in url:
-            channel = url.split("twitch.tv/")[1]
-            return f"https://player.twitch.tv/?channel={channel}&parent=localhost"
+        # TikTok
+        elif "tiktok.com" in hostname:
+            return url.replace("www.tiktok.com", "www.tiktok.com/embed")
 
-    return url  # Si no se reconoce, retorna el mismo URL
+        # Twitch
+        elif "twitch.tv" in hostname:
+            if "/videos/" in parsed_url.path:
+                video_id = parsed_url.path.split("/videos/")[1]
+                return f"https://player.twitch.tv/?video={video_id}&parent=localhost"
+            else:
+                channel = parsed_url.path.strip("/")
+                return f"https://player.twitch.tv/?channel={channel}&parent=localhost"
+
+        # Otros (retorna URL tal cual)
+        return url
+    except Exception as e:
+        print(f"Error generando embed: {e}")
+        return None

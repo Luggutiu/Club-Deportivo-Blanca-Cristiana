@@ -1,11 +1,11 @@
 from sqlalchemy import Column, Integer, String, Text, Boolean
-from .database import Base
+from sqlalchemy.ext.declarative import declarative_base
 
-# Modelo para publicaciones de video
-from sqlalchemy import Text, DateTime
-from datetime import datetime
+Base = declarative_base()
 
-
+# ---------------------------
+# Modelo: Publicación (Post)
+# ---------------------------
 class Post(Base):
     __tablename__ = "posts"
 
@@ -16,18 +16,22 @@ class Post(Base):
     imagen_archivo = Column(String, nullable=True)
     url = Column(String, nullable=True)
     embed_url = Column(String, nullable=True)
-    video_embed = Column(Text, nullable=True)  # solo si generas HTML embed
+    video_embed = Column(Text, nullable=True)  # HTML embed opcional
     plataforma = Column(String, nullable=True)
 
-# Modelo para secciones informativas (misión, visión, etc.)
+# ---------------------------
+# Modelo: Sección Informativa
+# ---------------------------
 class SeccionInformativa(Base):
     __tablename__ = "secciones"
 
     id = Column(Integer, primary_key=True, index=True)
-    titulo = Column(String, unique=True, index=True)
-    contenido = Column(Text)
+    titulo = Column(String, unique=True, index=True, nullable=False)
+    contenido = Column(Text, nullable=False)
 
-# Modelo para horarios de actividades
+# ---------------------------
+# Modelo: Horario de actividad
+# ---------------------------
 class Horario(Base):
     __tablename__ = "horarios"
 
@@ -36,4 +40,4 @@ class Horario(Base):
     hora_inicio = Column(String, nullable=False)
     hora_fin = Column(String, nullable=False)
     actividad = Column(String, nullable=False)
-    publicado = Column(Boolean, default=False)
+    publicado = Column(Boolean, default=False, nullable=False)

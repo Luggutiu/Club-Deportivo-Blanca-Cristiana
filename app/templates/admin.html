@@ -8,18 +8,18 @@
   <!-- Publicaciones -->
   <div class="publicaciones-section">
     <h3>Publicaciones recientes</h3>
-    <a href="/admin/publicar-post" class="btn-agregar">➕ Nueva publicación</a>
+    <a href="/admin/publicar-post" class="btn-agregar" aria-label="Crear nueva publicación">➕ Nueva publicación</a>
     {% if publicaciones %}
       <ul class="publicaciones-list">
         {% for post in publicaciones %}
           <li class="publicacion-item">
-            <span>{{ post.title or "Video" }} - {{ post.plataforma|capitalize }}</span>
+            <span>{{ post.titulo or "Sin título" }} - {{ post.plataforma|capitalize or "Desconocida" }}</span>
             <small>ID: {{ post.id }}</small>
             <div class="acciones-post">
               <form method="post" action="/admin/eliminar-post/{{ post.id }}" style="display:inline;">
-                <button type="submit" class="btn-eliminar" onclick="return confirm('¿Eliminar esta publicación?')">🗑️ Eliminar</button>
+                <button type="submit" class="btn-eliminar" onclick="return confirm('¿Eliminar esta publicación?')" aria-label="Eliminar publicación">🗑️ Eliminar</button>
               </form>
-              <a href="/admin/editar-post/{{ post.id }}" class="btn-editar">✏️ Editar</a>
+              <a href="/admin/editar-post/{{ post.id }}" class="btn-editar" aria-label="Editar publicación">✏️ Editar</a>
             </div>
           </li>
         {% endfor %}
@@ -32,15 +32,18 @@
   <!-- Horarios -->
   <div class="horarios-section">
     <h3>Horarios registrados</h3>
-    <a href="/admin/gestionar-horarios" class="btn-agregar">➕ Agregar nuevo horario</a>
+    <a href="/admin/gestionar-horarios" class="btn-agregar" aria-label="Agregar nuevo horario">➕ Agregar nuevo horario</a>
     {% if horarios %}
       <ul class="horarios-list">
         {% for horario in horarios %}
           <li class="horario-item">
             <strong>{{ horario.dia }}:</strong> {{ horario.hora_inicio }} - {{ horario.hora_fin }} → {{ horario.actividad }}
+            {% if horario.publicado %}
+              <span class="badge-publicado">Publicado</span>
+            {% endif %}
             <div class="acciones-horario">
-              <a href="/admin/editar-horario/{{ horario.id }}" class="btn-editar">✏️ Editar</a>
-              <a href="/admin/eliminar-horario/{{ horario.id }}" class="btn-eliminar" onclick="return confirm('¿Eliminar este horario?')">🗑️ Eliminar</a>
+              <a href="/admin/editar-horario/{{ horario.id }}" class="btn-editar" aria-label="Editar horario">✏️ Editar</a>
+              <a href="/admin/eliminar-horario/{{ horario.id }}" class="btn-eliminar" onclick="return confirm('¿Eliminar este horario?')" aria-label="Eliminar horario">🗑️ Eliminar</a>
             </div>
           </li>
         {% endfor %}
@@ -57,7 +60,7 @@
       {% for titulo in ['mision', 'vision', 'quienes-somos', 'contacto'] %}
         <li class="seccion-item">
           <strong>{{ titulo|replace('-', ' ')|title }}</strong>
-          <a href="/admin/editar/{{ titulo }}" class="btn-editar">✏️ Editar</a>
+          <a href="/admin/editar/{{ titulo }}" class="btn-editar" aria-label="Editar sección">✏️ Editar</a>
         </li>
       {% endfor %}
     </ul>
@@ -135,6 +138,15 @@
 
   .btn-agregar:hover {
     background-color: #1ebe5d;
+  }
+
+  .badge-publicado {
+    background-color: #25d366;
+    color: #fff;
+    padding: 2px 8px;
+    font-size: 0.8rem;
+    border-radius: 5px;
+    margin-left: 10px;
   }
 
   .no-items {

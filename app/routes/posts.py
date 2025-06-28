@@ -1,24 +1,29 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Form, status
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from app.database import SessionLocal
 from app import models
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 
+# Página principal con publicaciones
 @router.get("/", response_class=HTMLResponse)
 def index(request: Request):
     db = SessionLocal()
-    posts = db.query(models.Post).all()
-    db.close()
+    try:
+        posts = db.query(models.Post).order_by(models.Post.id.desc()).all()
+    finally:
+        db.close()
     return templates.TemplateResponse("index.html", {"request": request, "posts": posts})
 
-from fastapi import Form, status
-from fastapi.responses import RedirectResponse
-
+# Formulario de inicio de sesión
 @router.post("/login")
-async def login_post(request: Request, username: str = Form(...), password: str = Form(...)):
+async def login_post(
+    request: Request,
+    username: str = Form(...),
+    password: str = Form(...)
+):
     if username == "admin" and password == "admin":
         response = RedirectResponse(url="/admin", status_code=status.HTTP_303_SEE_OTHER)
         response.set_cookie(key="user", value=username)
