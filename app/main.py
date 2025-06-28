@@ -20,22 +20,29 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
 
 # -------- Rutas públicas --------
+from fastapi import Request, Depends
+from fastapi.responses import HTMLResponse
+from sqlalchemy.orm import Session
+from app.database import get_db
+from app.models import Post, Horario, SeccionInformativa
+from app.main import app
+from app.main import templates  # Usa tu import adecuado
+from sqlalchemy import desc
+
 @app.get("/", response_class=HTMLResponse)
-async def home(request: Request, db=Depends(get_db)):
-    posts = db.query(Post).order_by(Post.id.desc()).all()
+async def home(request: Request, db: Session = Depends(get_db)):
+    posts = db.query(Post).all()
     horarios = db.query(Horario).filter(Horario.publicado == True).all()
+
+    publicaciones = sorted(posts + horarios, key=lambda x: x.fecha_creacion, reverse=True)
+
     secciones = {s.titulo: s.contenido for s in db.query(SeccionInformativa).all()}
+
     return templates.TemplateResponse("index.html", {
         "request": request,
-        "posts": posts,
-        "horarios": horarios,
+        "publicaciones": publicaciones,
         "secciones": secciones
     })
-
-@app.get("/ping")
-def ping():
-    return JSONResponse(content={"status": "ok", "message": "pong"})
-
 # -------- Rutas administración --------
 @app.get("/admin", response_class=HTMLResponse)
 def admin_panel(request: Request):

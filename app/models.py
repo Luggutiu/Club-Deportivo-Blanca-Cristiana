@@ -1,5 +1,7 @@
 from sqlalchemy import Column, Integer, String, Text, Boolean
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, DateTime
+from datetime import datetime
 
 Base = declarative_base()
 
@@ -18,6 +20,8 @@ class Post(Base):
     embed_url = Column(String, nullable=True)
     video_embed = Column(Text, nullable=True)  # HTML embed opcional
     plataforma = Column(String, nullable=True)
+    
+    fecha_creacion = Column(DateTime, default=datetime.utcnow)
 
 # ---------------------------
 # Modelo: Sección Informativa
@@ -41,3 +45,5 @@ class Horario(Base):
     hora_fin = Column(String, nullable=False)
     actividad = Column(String, nullable=False)
     publicado = Column(Boolean, default=False, nullable=False)
+    
+    fecha_creacion = Column(DateTime, default=datetime.utcnow)

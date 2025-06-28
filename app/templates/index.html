@@ -11,85 +11,52 @@
     <input type="text" id="busqueda" placeholder="Escribe una palabra clave..." style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ff5e78; background-color: #1c1c1c; color: #fff;">
   </div>
 
-  <!-- HORARIOS PUBLICADOS -->
-  <h2>📅 Horarios de Actividades</h2>
-  <div class="horarios-grid">
-    {% for h in horarios %}
-      <div class="horario-card">
-        <h3>{{ h.dia|capitalize }}</h3>
-        <p><strong>{{ h.hora_inicio }} - {{ h.hora_fin }}</strong></p>
-        <p>{{ h.actividad }}</p>
-      </div>
-    {% endfor %}
-  </div>
-
-  {% if horarios|length == 0 %}
-    <p style="text-align:center; color:#ff91a4;">Aún no se han registrado horarios.</p>
-  {% endif %}
-
-  <hr style="margin: 40px 0; border-color: #ff5e78;">
-
-  <!-- PUBLICACIONES -->
+  <!-- ÚLTIMAS PUBLICACIONES (Post y Horarios) -->
   <h2>📣 Últimas Publicaciones</h2>
 
-  <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center; margin-bottom: 20px;">
-    <div>
-      <label for="filtro-plataforma" style="color:#ffb3c6; font-weight: bold;">Filtrar por plataforma:</label><br>
-      <select id="filtro-plataforma">
-        <option value="todas">Todas</option>
-        {% for p in ["YouTube", "Facebook", "Instagram", "TikTok", "Twitter", "Texto"] %}
-          <option value="{{ p }}">{{ p }}</option>
-        {% endfor %}
-      </select>
-    </div>
+  <div id="publicaciones-container">
+    {% for item in publicaciones %}
+      {% if item.__class__.__name__ == "Post" %}
+        <div class="post" data-plataforma="{{ item.plataforma or 'Texto' }}" data-id="{{ item.id }}">
+          {% if item.titulo %}
+            <h3 style="color:#ffb3c6;">{{ item.titulo }}</h3>
+          {% endif %}
+          {% if item.texto %}
+            <p style="color:white;">{{ item.texto }}</p>
+          {% endif %}
+          {% if item.imagen_url %}
+            <img src="{{ item.imagen_url }}" alt="Imagen del post" style="max-width:100%; border-radius: 8px; margin:10px 0;">
+          {% elif item.imagen_archivo %}
+            <img src="/static/uploads/{{ item.imagen_archivo }}" alt="Imagen subida" style="max-width:100%; border-radius: 8px; margin:10px 0;">
+          {% endif %}
+          {% if item.video_embed %}
+            <div class="video-embed" style="margin-top: 10px;">
+              {{ item.video_embed | safe }}
+            </div>
+          {% elif item.plataforma in ["YouTube", "Facebook", "TikTok", "Instagram"] %}
+            <iframe src="{{ item.embed_url }}"
+              height="250"
+              allowfullscreen
+              loading="lazy"
+              title="Publicación en {{ item.plataforma }}"
+              style="width:100%; border-radius:8px; margin-top:10px;"></iframe>
+          {% elif item.plataforma == "Twitter" %}
+            <blockquote class="twitter-tweet">
+              <a href="{{ item.url }}"></a>
+            </blockquote>
+          {% endif %}
+          <div class="plataforma">Plataforma: {{ item.plataforma or 'Texto' }}</div>
+        </div>
 
-    <div>
-      <label for="orden-posts" style="color:#ffb3c6; font-weight: bold;">Ordenar por:</label><br>
-      <select id="orden-posts">
-        <option value="recientes">Más recientes</option>
-        <option value="plataforma">Plataforma (A-Z)</option>
-      </select>
-    </div>
-  </div>
-
-  <div id="posts-container">
-    {% for post in posts %}
-      <div class="post" data-plataforma="{{ post.plataforma or 'Texto' }}" data-id="{{ post.id }}">
-        {% if post.titulo %}
-          <h3 style="color:#ffb3c6;">{{ post.titulo }}</h3>
-        {% endif %}
-        {% if post.texto %}
-          <p style="color:white;">{{ post.texto }}</p>
-        {% endif %}
-        {% if post.imagen_url %}
-          <img src="{{ post.imagen_url }}" alt="Imagen del post" style="max-width:100%; border-radius: 8px; margin:10px 0;">
-        {% elif post.imagen_archivo %}
-          <img src="/static/uploads/{{ post.imagen_archivo }}" alt="Imagen subida" style="max-width:100%; border-radius: 8px; margin:10px 0;">
-        {% endif %}
-        {% if post.video_embed %}
-          <div class="video-embed" style="margin-top: 10px;">
-            {{ post.video_embed | safe }}
-          </div>
-        {% elif post.plataforma in ["YouTube", "Facebook", "TikTok", "Instagram"] %}
-          <iframe src="{{ post.embed_url }}"
-            height="250"
-            allowfullscreen
-            loading="lazy"
-            title="Publicación en {{ post.plataforma }}"
-            style="width:100%; border-radius:8px; margin-top:10px;"></iframe>
-        {% elif post.plataforma == "Twitter" %}
-          <blockquote class="twitter-tweet">
-            <a href="{{ post.url }}"></a>
-          </blockquote>
-        {% endif %}
-        <div class="plataforma">Plataforma: {{ post.plataforma or 'Texto' }}</div>
-      </div>
+      {% elif item.__class__.__name__ == "Horario" %}
+        <div class="horario-card">
+          <h3>{{ item.dia|capitalize }}</h3>
+          <p><strong>{{ item.hora_inicio }} - {{ item.hora_fin }}</strong></p>
+          <p>{{ item.actividad }}</p>
+        </div>
+      {% endif %}
     {% endfor %}
   </div>
-
-  <p id="no-posts" style="display:none; text-align:center; color:#ff91a4; margin-top:10px;">
-    No hay publicaciones disponibles para esta plataforma.
-  </p>
 
 </div>
 {% endblock %}
@@ -108,34 +75,12 @@
     padding-left: 15px;
   }
 
-  select {
-    padding: 10px;
-    margin-bottom: 30px;
-    background-color: #1c1c1c;
-    color: white;
-    border: 1px solid #ff5e78;
-    border-radius: 8px;
-  }
-
   .post {
     background-color: rgba(255, 255, 255, 0.05);
     padding: 20px;
     border-radius: 15px;
     margin-bottom: 30px;
     box-shadow: 0 0 10px rgba(255, 65, 180, 0.3);
-  }
-
-  .plataforma {
-    margin-top: 10px;
-    color: #ffb3c6;
-    font-size: 0.9em;
-    text-align: right;
-  }
-
-  .horarios-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 20px;
   }
 
   .horario-card {
@@ -145,11 +90,7 @@
     border-radius: 15px;
     box-shadow: 0 0 10px rgba(255, 65, 180, 0.2);
     text-align: center;
-    transition: 0.3s ease;
-  }
-
-  .horario-card:hover {
-    background-color: #2b2b2b;
+    margin-bottom: 30px;
   }
 
   .horario-card h3 {
@@ -160,6 +101,13 @@
   .horario-card p {
     margin: 5px 0;
     color: #fff;
+  }
+
+  .plataforma {
+    margin-top: 10px;
+    color: #ffb3c6;
+    font-size: 0.9em;
+    text-align: right;
   }
 
   img {
@@ -173,39 +121,4 @@
     border-radius: 8px;
   }
 </style>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-  function applyFilters() {
-    const plataforma = document.getElementById("filtro-plataforma").value;
-    const orden = document.getElementById("orden-posts").value;
-
-    const posts = Array.from(document.querySelectorAll(".post"));
-    let postsVisibles = [];
-
-    posts.forEach(post => {
-      const mostrar = (plataforma === "todas" || post.dataset.plataforma === plataforma);
-      post.style.display = mostrar ? "block" : "none";
-      if (mostrar) postsVisibles.push(post);
-    });
-
-    document.getElementById("no-posts").style.display = (postsVisibles.length === 0) ? "block" : "none";
-
-    // Ordenar publicaciones
-    if (orden === "plataforma") {
-      postsVisibles.sort((a, b) => a.dataset.plataforma.localeCompare(b.dataset.plataforma));
-    } else {
-      postsVisibles.sort((a, b) => parseInt(b.dataset.id) - parseInt(a.dataset.id));
-    }
-
-    const container = document.getElementById("posts-container");
-    postsVisibles.forEach(p => container.appendChild(p));
-  }
-
-  document.getElementById("filtro-plataforma").addEventListener("change", applyFilters);
-  document.getElementById("orden-posts").addEventListener("change", applyFilters);
-
-  applyFilters();
-</script>
 {% endblock %}
