@@ -161,7 +161,7 @@ async def publicar_post(
         embed_url = generar_embed(url, plataforma)
 
     filename = None
-    if imagen_archivo:
+    if imagen_archivo and imagen_archivo.filename:
         uploads_dir = "app/static/uploads"
         os.makedirs(uploads_dir, exist_ok=True)
         filename = imagen_archivo.filename
