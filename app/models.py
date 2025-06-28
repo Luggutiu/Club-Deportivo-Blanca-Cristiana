@@ -8,6 +8,8 @@ Base = declarative_base()
 # ---------------------------
 # Modelo: Publicación (Post)
 # ---------------------------
+from sqlalchemy import Boolean  # asegúrate de tenerlo importado
+
 class Post(Base):
     __tablename__ = "posts"
 
@@ -18,11 +20,11 @@ class Post(Base):
     imagen_archivo = Column(String, nullable=True)
     url = Column(String, nullable=True)
     embed_url = Column(String, nullable=True)
-    video_embed = Column(Text, nullable=True)  # HTML embed opcional
+    video_embed = Column(Text, nullable=True)
     plataforma = Column(String, nullable=True)
-    
     fecha_creacion = Column(DateTime, default=datetime.utcnow)
 
+    publicado = Column(Boolean, default=True) 
 # ---------------------------
 # Modelo: Sección Informativa
 # ---------------------------
