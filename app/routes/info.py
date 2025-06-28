@@ -25,7 +25,9 @@ async def ver_seccion(request: Request, seccion_slug: str, db: Session = Depends
             "imagen_url": None
         })
 
+    # 👇 Aquí corregimos para que filtre por el título visible (ej. "Contáctenos")
     contenido = db.query(SeccionInformativa).filter_by(titulo=SECCIONES[seccion_slug]).first()
+
     return templates.TemplateResponse("ver_seccion.html", {
         "request": request,
         "titulo": SECCIONES[seccion_slug],

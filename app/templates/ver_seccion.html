@@ -4,6 +4,10 @@
 <section style="background-color: #FDA8A8; color: #000; padding: 2rem; border-radius: 12px; max-width: 900px; margin: 2rem auto;">
     <h1 style="font-size: 2.5rem; color: #D902EE; text-align: center; margin-bottom: 1rem;">{{ titulo }}</h1>
 
+    <!-- DEBUG opcional -->
+    <p style="color:red;">DEBUG contenido: {{ contenido }}</p>
+    <p style="color:red;">DEBUG imagen_url: {{ imagen_url }}</p>
+
     {% if imagen_url %}
         <div style="text-align: center; margin-bottom: 1.5rem;">
             <img src="{{ imagen_url }}" alt="Imagen sección" style="max-width: 100%; border-radius: 8px;">
