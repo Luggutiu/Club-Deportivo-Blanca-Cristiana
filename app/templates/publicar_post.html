@@ -4,31 +4,21 @@
 {% block content %}
 <div class="form-container">
   <h2>📝 Publicar Contenido</h2>
-  <form method="post" action="/admin/publicar-post" enctype="multipart/form-data">
-    
+  <form method="post" action="/admin/publicar-post">
+
     <div class="form-group">
       <label for="titulo">Título</label>
-      <input type="text" name="titulo" id="titulo" placeholder="Título del post">
+      <input type="text" name="titulo" id="titulo" placeholder="Título del post" required>
     </div>
 
     <div class="form-group">
       <label for="texto">Texto</label>
-      <textarea name="texto" id="texto" rows="5" placeholder="Escribe tu publicación..."></textarea>
+      <textarea name="texto" id="texto" rows="5" placeholder="Escribe tu publicación..." required></textarea>
     </div>
 
     <div class="form-group">
       <label for="imagen_url">URL de Imagen (opcional)</label>
       <input type="text" name="imagen_url" id="imagen_url" placeholder="https://ejemplo.com/imagen.jpg">
-    </div>
-
-    <div class="form-group">
-      <label for="imagen_archivo">O subir archivo de imagen</label>
-      <input type="file" name="imagen_archivo" id="imagen_archivo" accept="image/*">
-    </div>
-
-    <div class="form-group">
-      <label for="video_embed">Código Embed de Video (opcional)</label>
-      <textarea name="video_embed" id="video_embed" rows="3" placeholder="Pega aquí el código embed del video"></textarea>
     </div>
 
     <div class="form-group">
@@ -64,7 +54,6 @@
   }
 
   input[type="text"],
-  input[type="file"],
   textarea,
   select {
     width: 100%;

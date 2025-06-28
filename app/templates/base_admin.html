@@ -12,7 +12,6 @@
   <!-- Estilo global -->
   <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}" />
 
-  <!-- Estilo personalizado -->
   <style>
     body {
       margin: 0;
@@ -31,6 +30,7 @@
       background: linear-gradient(to bottom, #ff41b4, #ff91a4);
       padding: 20px;
       box-shadow: 4px 0 15px rgba(0, 0, 0, 0.4);
+      transition: transform 0.3s ease-in-out;
     }
 
     aside h2 {
@@ -61,24 +61,48 @@
       background: linear-gradient(to bottom right, #1c1c1c, #000);
     }
 
+    .sidebar-toggle {
+      display: none;
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 1.8rem;
+      background: none;
+      border: none;
+      color: white;
+      z-index: 1001;
+      cursor: pointer;
+    }
+
     @media (max-width: 768px) {
       .admin-layout {
         flex-direction: column;
       }
 
       aside {
-        width: 100%;
-        text-align: center;
-        border-bottom: 3px solid #ff5e78;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 240px;
+        transform: translateX(-100%);
+        z-index: 1000;
+        text-align: left;
+        border-bottom: none;
+        box-shadow: 4px 0 15px rgba(0, 0, 0, 0.6);
       }
 
-      aside a {
-        display: inline-block;
-        margin: 8px;
+      aside.open {
+        transform: translateX(0);
       }
 
       main {
         padding: 20px;
+        margin-top: 60px;
+      }
+
+      .sidebar-toggle {
+        display: block;
       }
     }
 
@@ -108,17 +132,19 @@
   {% block extra_css %}{% endblock %}
 </head>
 <body>
+  <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+
   <div class="admin-layout">
-    <aside aria-label="Menú de administración">
+    <aside id="admin-sidebar" aria-label="Menú de administración">
       <h2>Administración</h2>
-      <a href="/admin" title="Ir al panel principal">Inicio Admin</a>
-      <a href="/admin/publicar-video" title="Publicar nuevo video">Publicar Video</a>
-      <a href="/admin/gestionar-horarios" title="Ver y editar horarios">Gestionar Horarios</a>
-      <a href="/admin/editar/mision" title="Editar sección Misión">Editar Misión</a>
-      <a href="/admin/editar/vision" title="Editar sección Visión">Editar Visión</a>
-      <a href="/admin/editar/quienes-somos" title="Editar sección ¿Quiénes Somos?">Editar ¿Quiénes Somos?</a>
-      <a href="/admin/editar/contacto" title="Editar sección Contacto">Editar Contacto</a>
-      <a href="/logout" title="Cerrar sesión como administrador">Cerrar Sesión</a>
+      <a href="/admin">Inicio Admin</a>
+      <a href="/admin/publicar-video">Publicar Video</a>
+      <a href="/admin/gestionar-horarios">Gestionar Horarios</a>
+      <a href="/admin/editar/mision">Editar Misión</a>
+      <a href="/admin/editar/vision">Editar Visión</a>
+      <a href="/admin/editar/quienes-somos">Editar ¿Quiénes Somos?</a>
+      <a href="/admin/editar/contacto">Editar Contacto</a>
+      <a href="/logout">Cerrar Sesión</a>
     </aside>
 
     <main id="main-content">
@@ -131,5 +157,11 @@
   </a>
 
   <script src="https://kit.fontawesome.com/0c4e2df15f.js" crossorigin="anonymous" defer></script>
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById("admin-sidebar");
+      sidebar.classList.toggle("open");
+    }
+  </script>
 </body>
 </html>

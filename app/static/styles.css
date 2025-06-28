@@ -21,7 +21,7 @@ header {
   align-items: center;
 }
 
-/* --- Botón de menú --- */
+/* --- Botón de menú (visible solo en móvil con media query) --- */
 .sidebar-toggle {
   display: none;
   background: none;
@@ -32,7 +32,7 @@ header {
   margin-right: 1rem;
   z-index: 1001;
   position: absolute;
-  top: 1.2rem; /* en escritorio */
+  top: 1.2rem; /* posición por defecto en escritorio */
 }
 
 /* --- Sidebar fija (escritorio) --- */
@@ -127,13 +127,11 @@ footer {
 /* --- Responsive --- */
 @media (max-width: 768px) {
   .sidebar-toggle {
-    top: 60px; /* ✅ mueve el botón más abajo solo en móviles */
-  }
-
-
-
-  .sidebar-toggle {
     display: block;
+    position: fixed;
+    top: 80px; /* ✅ movido más abajo en móvil */
+    left: 20px;
+    z-index: 1001;
   }
 
   .sidebar {

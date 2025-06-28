@@ -157,41 +157,23 @@ router = APIRouter()
 async def publicar_post(
     request: Request,
     titulo: str = Form(...),
-    texto: str = Form(None),
+    texto: str = Form(...),
     imagen_url: str = Form(None),
-    imagen_archivo: UploadFile = File(None),
-    url: str = Form(None),
-    plataforma: str = Form(None),
     db: Session = Depends(get_db)
 ):
-    if not check_admin_logged(request):
-        return RedirectResponse(url="/login", status_code=302)
-
-    embed_url = ""
-    if url and plataforma:
-        embed_url = generar_embed(url, plataforma)
-
-    filename = None
-    if imagen_archivo and imagen_archivo.filename:
-        uploads_dir = "app/static/uploads"
-        os.makedirs(uploads_dir, exist_ok=True)
-        filename = imagen_archivo.filename
-        path = os.path.join(uploads_dir, filename)
-
-        # Guardar la imagen en disco
-        with open(path, "wb") as buffer:
-            shutil.copyfileobj(imagen_archivo.file, buffer)
-
-    nuevo_post = Post(
-        titulo=titulo,
-        texto=texto,
-        imagen_url=imagen_url,
-        imagen_archivo=filename,
-        url=url,
-        embed_url=embed_url,
-        plataforma=plataforma
-    )
-    db.add(nuevo_post)
-    db.commit()
-
-    return RedirectResponse(url="/admin", status_code=303)
+    try:
+        nuevo_post = Post(
+            titulo=titulo,
+            texto=texto,
+            imagen_url=imagen_url
+        )
+        db.add(nuevo_post)
+        db.commit()
+        db.refresh(nuevo_post)
+        return RedirectResponse(url="/admin", status_code=302)
+    except Exception as e:
+        print("Error al publicar:", e)
+        return templates.TemplateResponse("error.html", {
+            "request": request,
+            "error_message": str(e)
+        }, status_code=500)

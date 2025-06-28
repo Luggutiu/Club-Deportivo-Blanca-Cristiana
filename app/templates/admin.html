@@ -13,7 +13,7 @@
       <ul class="publicaciones-list">
         {% for post in publicaciones %}
           <li class="publicacion-item">
-            <span>{{ post.titulo or "Sin título" }} - {{ post.plataforma|capitalize or "Desconocida" }}</span>
+            <span>{{ post.titulo or "Sin título" }}</span>
             <small>ID: {{ post.id }}</small>
             <div class="acciones-post">
               <form method="post" action="/admin/eliminar-post/{{ post.id }}" style="display:inline;">

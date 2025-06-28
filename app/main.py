@@ -6,6 +6,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from starlette.status import HTTP_303_SEE_OTHER
 import shutil
 import os
+from fastapi import UploadFile, File
 
 from app.routes import auth, info, admin_info, admin, posts, dev
 from app.routes.auth import check_admin_logged
@@ -157,28 +158,18 @@ def guardar_post(
     titulo: str = Form(...),
     texto: str = Form(None),
     imagen_url: str = Form(None),
-    video_embed: str = Form(None),
-    imagen_archivo: UploadFile = File(None),
     db=Depends(get_db)
 ):
-    nombre_archivo = None
-    if imagen_archivo:
-        os.makedirs("app/static/uploads", exist_ok=True)
-        nombre_archivo = imagen_archivo.filename
-        ruta_guardado = f"app/static/uploads/{nombre_archivo}"
-        with open(ruta_guardado, "wb") as buffer:
-            shutil.copyfileobj(imagen_archivo.file, buffer)
-
     nuevo_post = Post(
         titulo=titulo,
         texto=texto,
-        imagen_url=imagen_url,
-        imagen_archivo=nombre_archivo,
-        video_embed=video_embed
+        imagen_url=imagen_url
     )
     db.add(nuevo_post)
     db.commit()
     return RedirectResponse(url="/admin", status_code=303)
+
+
 
 @app.post("/admin/eliminar-post/{post_id}")
 async def eliminar_post(post_id: int, db=Depends(get_db)):
