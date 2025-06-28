@@ -5,11 +5,11 @@
 <div class="section-container">
   <h2>Contáctenos</h2>
   
-  <p>{{ contenido if contenido else "Contenido no disponible" }}</p>
+  <p>{{ contenido.contenido if contenido else "Contenido no disponible" }}</p>
 
-  {% if imagen_url %}
+  {% if contenido.imagen_url %}
     <div class="imagen-contacto">
-      <img src="{{ imagen_url }}" alt="Imagen de contacto" />
+      <img src="{{ contenido.imagen_url }}" alt="Imagen de contacto" />
     </div>
   {% endif %}
 
