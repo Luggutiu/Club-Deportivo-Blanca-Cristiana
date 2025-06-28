@@ -65,7 +65,7 @@ async def editar_seccion_get(request: Request, seccion_slug: str, db: Session = 
     if not seccion:
         raise HTTPException(status_code=404, detail="Sección no encontrada")
 
-    return templates.TemplateResponse("admin/editar_seccion.html", {
+    return templates.TemplateResponse("editar_seccion.html", {
         "request": request,
         "titulo": seccion.titulo,
         "contenido": seccion.contenido,
