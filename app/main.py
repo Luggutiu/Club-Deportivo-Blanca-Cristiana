@@ -286,3 +286,11 @@ def editar_post(
 
     db.commit()
     return RedirectResponse(url="/admin", status_code=303)
+
+@app.get("/politica-privacidad", response_class=HTMLResponse)
+def politica_privacidad(request: Request):
+    return templates.TemplateResponse("politica_privacidad.html", {"request": request})
+
+@app.get("/condiciones-servicio", response_class=HTMLResponse)
+def condiciones_servicio(request: Request):
+    return templates.TemplateResponse("condiciones_servicio.html", {"request": request})

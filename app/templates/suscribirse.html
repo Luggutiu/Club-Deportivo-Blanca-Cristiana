@@ -1,0 +1,20 @@
+{% extends "base_public.html" %}
+
+{% block content %}
+<h2 style="color: #FF6B6B;">Suscríbete al Club Deportivo</h2>
+<form method="post" action="/suscribirse" style="max-width: 500px; margin: auto;">
+  <label>Nombre:</label><br>
+  <input type="text" name="nombre" required style="width: 100%; padding: 10px; border-radius: 6px;"><br><br>
+  <label>Correo electrónico:</label><br>
+  <input type="email" name="correo" required style="width: 100%; padding: 10px; border-radius: 6px;"><br><br>
+  <button type="submit" style="background-color: #FF6B6B; color: white; padding: 10px 20px; border-radius: 8px; border: none;">
+    Suscribirme
+  </button>
+</form>
+<hr style="margin: 2rem 0;">
+<div style="text-align: center;">
+  <a href="/auth/google" style="background-color: #4285F4; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none;">
+    Continuar con Google
+  </a>
+</div>
+{% endblock %}

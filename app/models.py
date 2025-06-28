@@ -23,6 +23,7 @@ class Post(Base):
     video_embed = Column(Text, nullable=True)
     plataforma = Column(String, nullable=True)
     fecha_creacion = Column(DateTime, default=datetime.utcnow)
+    likes = Column(Integer, default=0)  # Nuevo campo
 
     publicado = Column(Boolean, default=True) 
 # ---------------------------
@@ -51,3 +52,12 @@ class Horario(Base):
     publicado = Column(Boolean, default=False, nullable=False)
     
     fecha_creacion = Column(DateTime, default=datetime.utcnow)
+    
+from sqlalchemy import Column, Integer, String
+from app.database import Base
+
+class Suscriptor(Base):
+    __tablename__ = "suscriptores"
+    id = Column(Integer, primary_key=True, index=True)
+    nombre = Column(String, nullable=True)
+    correo = Column(String, unique=True, nullable=False)

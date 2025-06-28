@@ -37,16 +37,29 @@
           {% elif item.plataforma in ["YouTube", "Facebook", "TikTok", "Instagram"] %}
             <div class="video-embed-container">
               <iframe src="{{ item.embed_url }}"
-                allowfullscreen
-                loading="lazy"
-                title="Publicación en {{ item.plataforma }}"></iframe>
+                      allowfullscreen
+                      loading="lazy"
+                      title="Publicación en {{ item.plataforma }}"></iframe>
             </div>
           {% elif item.plataforma == "Twitter" %}
             <blockquote class="twitter-tweet">
               <a href="{{ item.url }}"></a>
             </blockquote>
           {% endif %}
+
           <div class="plataforma">Plataforma: {{ item.plataforma or 'Texto' }}</div>
+
+          {% if item.id %}
+          <div class="acciones-post" style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
+            <div class="likes" id="likes-{{ item.id }}" style="color: #fff;">
+              ❤️ {{ item.likes or 0 }} Me gusta
+            </div>
+            <button onclick="darLike('{{ item.id }}')"
+                    style="background-color: #ff5e78; color: white; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer;">
+              ❤️ Me gusta
+            </button>
+          </div>
+          {% endif %}
         </div>
 
       {% elif item.__class__.__name__ == "Horario" %}
@@ -118,14 +131,14 @@
   }
 
   .video-embed-container {
-  position: relative;
-  width: 100%;
-  padding-top: 75%; /* Relación 4:3: más alto que 16:9 pero menos que cuadrado */
-  border-radius: 8px;
-  overflow: hidden;
-  margin-top: 10px;
-  background-color: #000; /* fondo negro mientras carga */
-}
+    position: relative;
+    width: 100%;
+    padding-top: 75%;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 10px;
+    background-color: #000;
+  }
 
   .video-embed-container iframe,
   .video-embed-container .video-embed {
@@ -137,4 +150,25 @@
     border: none;
   }
 </style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function darLike(postId) {
+    fetch(`/like/${postId}`, {
+      method: 'POST'
+    })
+    .then(response => {
+      if (response.ok) return response.json();
+      throw new Error("Error al dar like");
+    })
+    .then(data => {
+      const likesDiv = document.getElementById(`likes-${postId}`);
+      if (likesDiv) {
+        likesDiv.innerText = `❤️ ${data.likes} Me gusta`;
+      }
+    })
+    .catch(error => console.error("Error al dar like:", error));
+  }
+</script>
 {% endblock %}
