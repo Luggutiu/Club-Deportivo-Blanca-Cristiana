@@ -22,8 +22,8 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
 
 # Luego importa rutas y usa app
-from app.routes import auth_google as google_oauth  # o el nombre correcto
-app.include_router(google_oauth.router)
+from app.routes import auth_google
+app.include_router(auth_google.router)
 
 # -------- Rutas públicas --------
 from fastapi import Request, Depends
