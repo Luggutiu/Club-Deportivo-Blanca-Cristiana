@@ -52,6 +52,7 @@
       font-size: 1.8rem;
       cursor: pointer;
       margin-right: 1rem;
+      z-index: 1001;
     }
 
     .layout {
@@ -106,6 +107,7 @@
       line-height: 60px;
     }
 
+    /* --- Responsive: oculta el sidebar hacia la izquierda --- */
     @media (max-width: 768px) {
       .layout {
         flex-direction: column;
@@ -116,26 +118,28 @@
       }
 
       aside {
-        position: absolute;
-        top: 65px;
+        position: fixed;
+        top: 0;
         left: 0;
-        width: 100%;
-        transform: translateY(-100%);
+        height: 100%;
+        width: 220px;
+        transform: translateX(-100%);
         z-index: 999;
       }
 
       aside.open {
-        transform: translateY(0);
+        transform: translateX(0);
       }
 
       aside nav {
         display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 1rem;
+        text-align: center;
       }
 
       aside nav a {
-        margin: 0 10px;
         padding: 10px;
       }
     }
@@ -184,6 +188,15 @@
       sidebar.classList.toggle("open");
     }
 
+    // Cierra el menú al hacer clic en un enlace (solo móviles)
+    document.querySelectorAll("aside nav a").forEach(link => {
+      link.addEventListener("click", function () {
+        const sidebar = document.getElementById("sidebar");
+        sidebar.classList.remove("open");
+      });
+    });
+
+    // Navegación AJAX (opcional)
     document.querySelectorAll("aside nav a").forEach(link => {
       link.addEventListener("click", function (e) {
         const url = this.getAttribute("href");

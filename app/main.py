@@ -189,12 +189,17 @@ async def eliminar_post(post_id: int, db=Depends(get_db)):
     db.commit()
     return RedirectResponse(url="/admin", status_code=HTTP_303_SEE_OTHER)
 
+@app.get("/admin/publicar-video", response_class=HTMLResponse)
+def mostrar_formulario_video(request: Request):
+    return templates.TemplateResponse("publicar_video.html", {"request": request})
+
 @app.post("/admin/publicar-video")
 def publicar_video(
     request: Request,
+    title: str = Form(...),
     url: str = Form(...),
     plataforma: str = Form(...),
-    db=Depends(get_db)
+    db: Session = Depends(get_db)
 ):
     try:
         embed_url = generar_embed(url)
@@ -204,9 +209,16 @@ def publicar_video(
             "error": "URL inválida o plataforma no soportada."
         })
 
-    nuevo_post = Post(url=url, plataforma=plataforma, embed_url=embed_url)
+    nuevo_post = Post(
+        titulo=title,
+        url=url,
+        plataforma=plataforma,
+        embed_url=embed_url,
+        publicado=True
+    )
     db.add(nuevo_post)
     db.commit()
+
     return RedirectResponse(url="/admin", status_code=303)
 
 # -------- Routers externos --------
