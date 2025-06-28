@@ -8,6 +8,9 @@ import shutil
 import os
 from fastapi import UploadFile, File
 
+from app.routes import like
+
+
 
 from app.routes import auth, info, admin_info, admin, posts, dev
 from app.routes.auth import check_admin_logged
@@ -17,6 +20,7 @@ from app.database import get_db  # Importamos la dependencia de sesión de la ba
 
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key="2025*")
+app.include_router(like.router)
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
@@ -354,3 +358,4 @@ def formulario_suscriptor(
         "correo": correo,
         "nombre": nombre
     })
+    
