@@ -216,7 +216,7 @@ def publicar_video(
 
 # -------- Routers externos --------
 app.include_router(auth.router)
-app.include_router(info.router, prefix="/info")
+app.include_router(info.router)
 app.include_router(admin_info.router)
 app.include_router(admin.router)
 app.include_router(posts.router)
