@@ -118,13 +118,14 @@
   }
 
   .video-embed-container {
-    position: relative;
-    width: 100%;
-    padding-top: 100%; /* Relación 1:1 (cuadrado) */
-    border-radius: 8px;
-    overflow: hidden;
-    margin-top: 10px;
-  }
+  position: relative;
+  width: 100%;
+  padding-top: 75%; /* Relación 4:3: más alto que 16:9 pero menos que cuadrado */
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 10px;
+  background-color: #000; /* fondo negro mientras carga */
+}
 
   .video-embed-container iframe,
   .video-embed-container .video-embed {

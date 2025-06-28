@@ -29,20 +29,36 @@ from app.main import app
 from app.main import templates  # Usa tu import adecuado
 from sqlalchemy import desc
 
+from fastapi import Request, Depends
+from fastapi.responses import HTMLResponse
+from sqlalchemy.orm import Session
+from app.database import get_db
+from app.models import Post, Horario, SeccionInformativa
+from app.main import templates  # Asegúrate de tener esto bien importado
+
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request, db: Session = Depends(get_db)):
-    posts = db.query(Post).all()
-    horarios = db.query(Horario).filter(Horario.publicado == True).all()
+    try:
+        posts = db.query(Post).all()
+        horarios = db.query(Horario).filter(Horario.publicado == True).all()
+        secciones = {s.titulo: s.contenido for s in db.query(SeccionInformativa).all()}
 
-    publicaciones = sorted(posts + horarios, key=lambda x: x.fecha_creacion, reverse=True)
+        # Combinar y ordenar por fecha si existe
+        publicaciones = posts + horarios
+        publicaciones.sort(key=lambda x: getattr(x, 'fecha_creacion', None) or x.id, reverse=True)
 
-    secciones = {s.titulo: s.contenido for s in db.query(SeccionInformativa).all()}
-
-    return templates.TemplateResponse("index.html", {
-        "request": request,
-        "publicaciones": publicaciones,
-        "secciones": secciones
-    })
+        return templates.TemplateResponse("index.html", {
+            "request": request,
+            "publicaciones": publicaciones,
+            "secciones": secciones
+        })
+    except Exception as e:
+        return templates.TemplateResponse("error.html", {
+            "request": request,
+            "error_message": str(e)
+        }, status_code=500)
+        
+        
 # -------- Rutas administración --------
 @app.get("/admin", response_class=HTMLResponse)
 def admin_panel(request: Request):
