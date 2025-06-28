@@ -34,6 +34,7 @@ class SeccionInformativa(Base):
     id = Column(Integer, primary_key=True, index=True)
     titulo = Column(String, unique=True, index=True, nullable=False)
     contenido = Column(Text, nullable=False)
+    imagen_url = Column(String, nullable=True)  # ← ESTE DEBE EXISTIR
 
 # ---------------------------
 # Modelo: Horario de actividad
