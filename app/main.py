@@ -7,8 +7,7 @@ from starlette.status import HTTP_303_SEE_OTHER
 import shutil
 import os
 from fastapi import UploadFile, File
-from app.routes import google_oauth
-app.include_router(google_oauth.router)
+
 
 from app.routes import auth, info, admin_info, admin, posts, dev
 from app.routes.auth import check_admin_logged
@@ -21,6 +20,10 @@ app.add_middleware(SessionMiddleware, secret_key="2025*")
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
+
+# Luego importa rutas y usa app
+from app.routes import auth_google as google_oauth  # o el nombre correcto
+app.include_router(google_oauth.router)
 
 # -------- Rutas públicas --------
 from fastapi import Request, Depends
