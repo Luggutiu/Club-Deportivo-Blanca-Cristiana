@@ -10,7 +10,11 @@ templates = Jinja2Templates(directory="app/templates")
 # ⚠️ Toma credenciales solo de variables de entorno
 
 ADMIN_USER = os.getenv("ADMIN_USER", "admin")
-ADMIN_PASS = os.getenv("ADMIN_PASS", "admin123")
+ADMIN_PASS = os.getenv("ADMIN_PASS", "admin123*")
+
+import os
+print("DEBUG: ADMIN_USER:", os.getenv("ADMIN_USER"))
+print("DEBUG: ADMIN_PASS:", os.getenv("ADMIN_PASS"))
 
 @router.get("/login")
 async def login_form(request: Request):
