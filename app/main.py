@@ -7,6 +7,7 @@ from starlette.status import HTTP_303_SEE_OTHER
 import shutil
 import os
 from fastapi import UploadFile, File
+from app.routes import suscripcion 
 
 from app.routes import like
 from app.routes.suscripcion import router as suscripcion_router
@@ -28,7 +29,8 @@ templates = Jinja2Templates(directory="app/templates")
 from app.routes import auth_google
 app.include_router(auth_google.router)
 app.include_router(suscripcion_router)
-app.include_router(info.router) 
+app.include_router(info.router)
+app.include_router(suscripcion.router)
 
 # -------- Rutas públicas --------
 from fastapi import Request, Depends

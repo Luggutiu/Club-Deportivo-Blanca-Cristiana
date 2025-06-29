@@ -2,19 +2,31 @@
 
 {% block content %}
 <h2 style="color: #FF6B6B;">Suscríbete al Club Deportivo</h2>
+
+{% if 'error' in request.query_params %}
+  <p style="color: red;">El correo o número de documento ya está registrado.</p>
+{% elif 'suscrito' in request.query_params %}
+  <p style="color: green;">¡Gracias por suscribirte!</p>
+{% endif %}
+
 <form method="post" action="/suscribirse" style="max-width: 500px; margin: auto;">
-  <label>Nombre:</label><br>
-  <input type="text" name="nombre" required style="width: 100%; padding: 10px; border-radius: 6px;"><br><br>
+  <label>Tipo de documento:</label><br>
+  <input type="text" name="tipo_documento" required style="width: 100%; padding: 10px; border-radius: 6px;"><br><br>
+
+  <label>Número de documento:</label><br>
+  <input type="text" name="numero_documento" required style="width: 100%; padding: 10px; border-radius: 6px;"><br><br>
+
+  <label>Nombre completo:</label><br>
+  <input type="text" name="nombre_completo" required style="width: 100%; padding: 10px; border-radius: 6px;"><br><br>
+
+  <label>Celular:</label><br>
+  <input type="tel" name="celular" required style="width: 100%; padding: 10px; border-radius: 6px;"><br><br>
+
   <label>Correo electrónico:</label><br>
   <input type="email" name="correo" required style="width: 100%; padding: 10px; border-radius: 6px;"><br><br>
+
   <button type="submit" style="background-color: #FF6B6B; color: white; padding: 10px 20px; border-radius: 8px; border: none;">
     Suscribirme
   </button>
 </form>
-<hr style="margin: 2rem 0;">
-<div style="text-align: center;">
-  <a href="/auth/google" style="background-color: #4285F4; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none;">
-    Continuar con Google
-  </a>
-</div>
 {% endblock %}
