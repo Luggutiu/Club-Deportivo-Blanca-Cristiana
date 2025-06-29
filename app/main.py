@@ -20,7 +20,6 @@ from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import Post, Horario, SeccionInformativa
-from app.main import templates  # Asegúrate de tener esto bien importado
 
 
 from app.routes import like
