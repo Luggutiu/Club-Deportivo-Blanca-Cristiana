@@ -17,18 +17,9 @@ async def login_form(request: Request):
 
 @router.post("/login")
 async def login_post(request: Request, username: str = Form(...), password: str = Form(...)):
-    print(f"🔐 Intento login - username: '{username}' | password: '{password}'")
-    print(f"Comparando con: '{ADMIN_USER}' y '{ADMIN_PASS}'")
-
-    if username.strip() == ADMIN_USER and password.strip() == ADMIN_PASS:
-        request.session["admin_logged"] = True
-        print("✅ Login exitoso")
-        return RedirectResponse(url="/admin", status_code=HTTP_302_FOUND)
-
-    print("❌ Login fallido")
     return templates.TemplateResponse("login.html", {
         "request": request,
-        "error": "Usuario o contraseña incorrectos"
+        "error": f"Recibido: {username=} {password=}"
     })
 
 @router.get("/logout")
