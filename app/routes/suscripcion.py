@@ -9,7 +9,7 @@ from app.utils.email_utils import notificar_admin_suscripcion, enviar_correo_bie
 
 router = APIRouter()
 
-@router.post("/suscribirse")
+'''@router.post("/suscribirse")
 async def suscribirse_formulario(
     request: Request,
     nombre_completo: str = Form(...),
@@ -83,4 +83,4 @@ async def suscribirse_formulario(
     return RedirectResponse(
         url="/suscribirse?success=¡Gracias por unirte al club!",
         status_code=303
-    )
+    )'''

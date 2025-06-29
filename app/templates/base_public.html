@@ -9,8 +9,8 @@
   <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-   
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   {% block head_extra %}{% endblock %}
   {% block extra_css %}{% endblock %}
 
@@ -111,7 +111,6 @@
       line-height: 60px;
     }
 
-    /* --- Responsive: oculta el sidebar hacia la izquierda --- */
     @media (max-width: 768px) {
       .layout {
         flex-direction: column;
@@ -150,13 +149,13 @@
   </style>
 </head>
 <body>
-  <div style="text-align: right; padding: 1rem;">
-  <a href="/suscribirse" style="background-color: #ff5e78; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: bold;">
-    ❤️ Suscribirse
-  </a>
-</div>
 
-  <!-- Encabezado superior -->
+  <div style="text-align: right; padding: 1rem;">
+    <a href="/suscribirse" style="background-color: #ff5e78; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: bold;">
+      ❤️ Suscribirse
+    </a>
+  </div>
+
   <header>
     <div style="display: flex; align-items: center;">
       <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
@@ -165,7 +164,6 @@
     <a href="/login" class="login-btn">Iniciar sesión</a>
   </header>
 
-  <!-- Panel lateral + contenido principal -->
   <div class="layout">
     <aside id="sidebar" aria-label="Navegación principal">
       <h2>🏠 Navegación</h2>
@@ -183,12 +181,10 @@
     </main>
   </div>
 
-  <!-- WhatsApp flotante -->
   <a href="https://wa.me/573045532258" target="_blank" class="whatsapp-float" title="Contáctanos por WhatsApp" rel="noopener">
     <i class="fab fa-whatsapp"></i>
   </a>
 
-  <!-- Scripts -->
   <script src="https://platform.twitter.com/widgets.js" charset="utf-8" defer></script>
 
   <script>
@@ -200,12 +196,11 @@
     // Cierra el menú al hacer clic en un enlace (solo móviles)
     document.querySelectorAll("aside nav a").forEach(link => {
       link.addEventListener("click", function () {
-        const sidebar = document.getElementById("sidebar");
-        sidebar.classList.remove("open");
+        document.getElementById("sidebar").classList.remove("open");
       });
     });
 
-    // Navegación AJAX (opcional)
+    // Navegación AJAX opcional (puedes desactivarla si no deseas SPA)
     document.querySelectorAll("aside nav a").forEach(link => {
       link.addEventListener("click", function (e) {
         const url = this.getAttribute("href");
@@ -223,9 +218,7 @@
               document.querySelector("#main-content").innerHTML = newContent.innerHTML;
               window.history.pushState({}, "", url);
             }
-
-            const sidebar = document.getElementById("sidebar");
-            sidebar.classList.remove("open");
+            document.getElementById("sidebar").classList.remove("open");
           })
           .catch(error => console.error("Error al cargar contenido:", error));
       });

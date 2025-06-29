@@ -4,7 +4,7 @@ from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.status import HTTP_303_SEE_OTHER
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
+
 from app.utils.email_utils import enviar_correo_bienvenida, notificar_admin_suscripcion  # si aún no lo tienes importado
 from app.routes.auth import check_admin_logged
 import shutil
@@ -30,7 +30,7 @@ from starlette.status import HTTP_303_SEE_OTHER
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
-from app.utils.email_utils import enviar_correo_bienvenida, notificar_admin_suscripcion
+
 from app.routes.auth import check_admin_logged
 from app.routes.embedder import generar_embed
 from app.database import get_db
@@ -130,11 +130,9 @@ def confirmacion_suscripcion(request: Request):
         "request": request
     })
     
-from fastapi.responses import JSONResponse
-from sqlalchemy.exc import IntegrityError
-from app.utils.email_utils import enviar_correo_bienvenida, notificar_admin_suscripcion
 
-from fastapi.responses import JSONResponse
+
+
 
 @app.post("/suscribirse")
 async def procesar_suscripcion(

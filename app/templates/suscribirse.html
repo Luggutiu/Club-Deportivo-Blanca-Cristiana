@@ -11,7 +11,9 @@
   <h1 style="color: #ff5e78;">Suscríbete</h1>
   <p>Por favor llena el siguiente formulario para suscribirte al club.</p>
 
-  <form id="form-suscripcion" method="post" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem;">
+  <form id="form-suscripcion" method="post" enctype="multipart/form-data"
+        style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem;">
+    
     <label for="nombre_completo">Nombre completo:</label>
     <input type="text" id="nombre_completo" name="nombre_completo" required>
 
@@ -28,10 +30,10 @@
     </select>
 
     <label for="numero_documento">Número de documento:</label>
-    <input type="text" id="numero_documento" name="numero_documento" required>
+    <input type="text" id="numero_documento" name="numero_documento" required pattern="\d{6,15}">
 
     <label for="celular">Número de celular:</label>
-    <input type="text" id="celular" name="celular" required>
+    <input type="text" id="celular" name="celular" required pattern="3\d{9}" placeholder="Ej: 3001234567">
 
     <label for="archivo">Adjunta una imagen o documento (opcional):</label>
     <input type="file" name="archivo" accept=".jpg,.jpeg,.png,.pdf">
@@ -39,7 +41,8 @@
     <div>
       <input type="checkbox" id="acepto" name="acepto" required>
       <label for="acepto">
-        Acepto los <a href="/condiciones-servicio" target="_blank">Términos y Condiciones</a> y la <a href="/politica-privacidad" target="_blank">Política de Privacidad</a>.
+        Acepto los <a href="/condiciones-servicio" target="_blank">Términos y Condiciones</a> y la 
+        <a href="/politica-privacidad" target="_blank">Política de Privacidad</a>.
       </label>
     </div>
 
@@ -49,7 +52,7 @@
   </form>
 
   <div style="text-align: center; margin-top: 2.5rem;">
-    <p style="margin-bottom: 1rem; font-size: 1rem; color: #555;">
+    <p style="margin-bottom: 1rem; font-size: 1rem; color: #ccc;">
       <strong>¿Prefieres una opción rápida?</strong><br>
       También puedes suscribirte con tu cuenta de Google:
     </p>
@@ -61,51 +64,63 @@
 </section>
 
 <script>
-document.getElementById("form-suscripcion").addEventListener("submit", async function (e) {
-  e.preventDefault();
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById("form-suscripcion");
 
-  const form = e.target;
-  const formData = new FormData(form);
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
 
-  try {
-    const response = await fetch("/suscribirse", {
-      method: "POST",
-      body: formData,
-    });
+    const formData = new FormData(form);
 
-    const result = await response.json();
-
-    if (response.ok) {
+    if (!form.acepto.checked) {
       Swal.fire({
-        icon: "success",
-        title: "¡Gracias por suscribirte!",
-        text: result.mensaje,
-      }).then(() => {
-        window.location.href = "/confirmacion-suscripcion";  // Redirige aquí
+        icon: "warning",
+        title: "Falta aceptar condiciones",
+        text: "Debes aceptar los términos y condiciones.",
       });
-    } else {
-      let mensaje = "Ocurrió un error.";
-      if (result.error === "documento_existente") {
-        mensaje = "⚠️ Este número de documento ya ha sido registrado anteriormente.";
-      } else if (result.error === "registro_fallido") {
-        mensaje = "⚠️ No se pudo completar la suscripción. Intenta nuevamente.";
-      } else if (result.error === "Debes aceptar los términos y condiciones.") {
-        mensaje = result.error;
-      }
+      return;
+    }
 
+    try {
+      const response = await fetch("/suscribirse", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        await Swal.fire({
+          icon: "success",
+          title: "¡Gracias por suscribirte!",
+          text: result.mensaje || "Tu suscripción fue exitosa.",
+        });
+        window.location.href = "/confirmacion-suscripcion";
+      } else {
+        let mensaje = "Ocurrió un error al enviar el formulario.";
+        if (result?.error === "documento_existente") {
+          mensaje = "⚠️ Este número de documento ya ha sido registrado anteriormente.";
+        } else if (result?.error === "registro_fallido") {
+          mensaje = "⚠️ No se pudo completar la suscripción. Intenta nuevamente.";
+        } else if (result?.error) {
+          mensaje = result.error;
+        }
+
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: mensaje,
+        });
+      }
+    } catch (err) {
+      console.error("Error en la solicitud:", err);
       Swal.fire({
         icon: "error",
-        title: "Error",
-        text: mensaje,
+        title: "Error inesperado",
+        text: "No se pudo enviar el formulario. Verifica tu conexión.",
       });
     }
-  } catch (error) {
-    Swal.fire({
-      icon: "error",
-      title: "Error inesperado",
-      text: "No se pudo enviar el formulario. Verifica tu conexión.",
-    });
-  }
+  });
 });
 </script>
 {% endblock %}
