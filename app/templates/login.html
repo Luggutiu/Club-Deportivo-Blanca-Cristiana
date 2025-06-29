@@ -92,9 +92,11 @@
     <form method="post" action="/login">
       <input type="text" name="username" placeholder="Usuario" required>
       <input type="password" name="password" placeholder="Contraseña" required>
+
       {% if error %}
         <div class="error-msg">{{ error }}</div>
       {% endif %}
+
       <input type="submit" value="Ingresar">
     </form>
 

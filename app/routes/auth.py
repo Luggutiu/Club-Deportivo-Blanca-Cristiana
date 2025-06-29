@@ -2,13 +2,15 @@ from fastapi import APIRouter, Request, Form
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from starlette.status import HTTP_302_FOUND
+import os
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 
-# ⚠️ Para producción, NO dejes las credenciales hardcodeadas
-ADMIN_USER = "admin"
-ADMIN_PASS = "admin123"
+# ⚠️ Toma credenciales solo de variables de entorno
+
+ADMIN_USER = os.getenv("ADMIN_USER", "admin")
+ADMIN_PASS = os.getenv("ADMIN_PASS", "admin123")
 
 @router.get("/login")
 async def login_form(request: Request):
@@ -16,9 +18,6 @@ async def login_form(request: Request):
 
 @router.post("/login")
 async def login_post(request: Request, username: str = Form(...), password: str = Form(...)):
-    print(f">>> Usuario ingresado: '{username}'")
-    print(f">>> Contraseña ingresada: '{password}'")
-
     if username.strip().lower() == ADMIN_USER.lower() and password.strip() == ADMIN_PASS:
         request.session["admin_logged"] = True
         return RedirectResponse(url="/admin", status_code=HTTP_302_FOUND)

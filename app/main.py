@@ -40,7 +40,13 @@ from app.routes.suscripcion import router as suscripcion_router
 
 # Inicialización
 app = FastAPI()
-app.add_middleware(SessionMiddleware, secret_key="supersecreto")  # Reemplaza por variable de entorno
+
+
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=os.getenv("SECRET_KEY", "clave-insegura-por-defecto")
+) # Reemplaza por variable de entorno
+
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
 
