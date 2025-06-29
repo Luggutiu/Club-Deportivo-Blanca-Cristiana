@@ -25,31 +25,42 @@ conf = ConnectionConfig(
 # ------------------------------------------
 # 📧 Correo de bienvenida al suscriptor
 # ------------------------------------------
-async def enviar_correo_bienvenida(destinatario: EmailStr, nombre: str):
-    asunto = "¡Bienvenido al Club Deportivo Blanca Cristiana!"
-    cuerpo = f"""
-    <h2>Hola {nombre},</h2>
-    <p>Gracias por suscribirte al <strong>Club Deportivo Blanca Cristiana</strong>.</p>
-    <p>Pronto recibirás noticias, eventos y actualizaciones del club.</p>
-    <br>
-    <p>¡Nos alegra tenerte con nosotros!</p>
-    """
+from email_validator import validate_email, EmailNotValidError
 
-    mensaje = MessageSchema(
-        subject=asunto,
-        recipients=[destinatario],
-        body=cuerpo,
-        subtype="html"
-    )
+async def enviar_correo_bienvenida(destinatario: str, nombre: str):
+    try:
+        # Validación de correo
+        validate_email(destinatario)
 
-    fm = FastMail(conf)
-    await fm.send_message(mensaje)
-    print(f"✅ Correo de bienvenida enviado a {destinatario}")
+        asunto = "¡Bienvenido al Club Deportivo Blanca Cristiana!"
+        cuerpo = f"""
+        <h2>Hola {nombre},</h2>
+        <p>Gracias por suscribirte al <strong>Club Deportivo Blanca Cristiana</strong>.</p>
+        <p>Pronto recibirás noticias, eventos y actualizaciones del club.</p>
+        <br>
+        <p>¡Nos alegra tenerte con nosotros!</p>
+        """
+
+        mensaje = MessageSchema(
+            subject=asunto,
+            recipients=[destinatario],
+            body=cuerpo,
+            subtype="html"
+        )
+
+        fm = FastMail(conf)
+        await fm.send_message(mensaje)
+        print(f"✅ Correo de bienvenida enviado a {destinatario}")
+
+    except EmailNotValidError as e:
+        print(f"❌ Correo inválido: {e}")
 
 
 # -----------------------------------------------------
 # 📩 Correo al administrador con adjunto opcional
 # -----------------------------------------------------
+from email_validator import validate_email, EmailNotValidError
+
 async def notificar_admin_suscripcion(
     nombre: str,
     correo: str,
@@ -58,36 +69,48 @@ async def notificar_admin_suscripcion(
     celular: str,
     archivo_path: str = None
 ):
-    asunto = f"Nuevo suscriptor: {nombre}"
-    cuerpo = f"""
-    <h2>Nuevo suscriptor registrado</h2>
-    <p>Se ha registrado un nuevo miembro en el Club Deportivo:</p>
-    <ul>
-        <li><strong>Nombre completo:</strong> {nombre}</li>
-        <li><strong>Correo electrónico:</strong> {correo}</li>
-        <li><strong>Tipo de documento:</strong> {tipo}</li>
-        <li><strong>Número de documento:</strong> {documento}</li>
-        <li><strong>Celular:</strong> {celular}</li>
-    </ul>
-    <p>Este mensaje ha sido generado automáticamente.</p>
-    """
+    try:
+        # Validar correo del suscriptor
+        validate_email(correo)
 
-    # Adjuntar solo si se proporcionó
-    attachments = [archivo_path] if archivo_path and os.path.isfile(archivo_path) else None
+        asunto = f"Nuevo suscriptor: {nombre}"
+        cuerpo = f"""
+        <h2>📩 Nuevo suscriptor</h2>
+        <ul>
+            <li><strong>Nombre:</strong> {nombre}</li>
+            <li><strong>Correo:</strong> {correo}</li>
+            <li><strong>Tipo de documento:</strong> {tipo}</li>
+            <li><strong>Número de documento:</strong> {documento}</li>
+            <li><strong>Celular:</strong> {celular}</li>
+        </ul>
+        """
 
-    mensaje = MessageSchema(
-        subject=asunto,
-        recipients=["clubdeportivoblancacristiana@gmail.com"],
-        body=cuerpo,
-        subtype="html",
-        attachments=attachments
-    )
+        # Adjuntar solo si el archivo existe
+        attachments = [archivo_path] if archivo_path and os.path.isfile(archivo_path) else None
 
-    fm = FastMail(conf)
-    await fm.send_message(mensaje)
-    print(f"📬 Notificación enviada al administrador sobre {nombre}")
+        mensaje = MessageSchema(
+            subject=asunto,
+            recipients=["clubdeportivoblancacristiana@gmail.com"],
+            body=cuerpo,
+            subtype="html",
+            attachments=attachments
+        )
 
-    # Eliminar archivo temporal si existe
-    if archivo_path and os.path.isfile(archivo_path):
-        os.remove(archivo_path)
-        print(f"🗑️ Archivo temporal eliminado: {archivo_path}")
+        fm = FastMail(conf)
+        await fm.send_message(mensaje)
+        print("✅ Notificación enviada al administrador.")
+
+    except EmailNotValidError as e:
+        print(f"❌ Correo del suscriptor inválido: {correo} | {e}")
+
+    except Exception as e:
+        print(f"❌ Error al enviar notificación al admin: {e}")
+
+    finally:
+        # Eliminar archivo temporal si existe
+        if archivo_path and os.path.isfile(archivo_path):
+            try:
+                os.remove(archivo_path)
+                print(f"🗑️ Archivo temporal eliminado: {archivo_path}")
+            except Exception as err:
+                print(f"⚠️ No se pudo eliminar el archivo: {err}")
