@@ -6,6 +6,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from starlette.status import HTTP_303_SEE_OTHER
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
+from app.utils.email_utils import enviar_correo_bienvenida, notificar_admin_suscripcion  # si aún no lo tienes importado
 
 import shutil
 import os
@@ -125,8 +126,8 @@ def procesar_suscripcion(
             "correo": correo
         })
 
-@app.post("/guardar-suscriptor")
-def guardar_suscriptor(
+@app.post("/guardar-suscriptor", response_class=HTMLResponse)
+async def guardar_suscriptor(
     request: Request,
     tipo_documento: str = Form(...),
     numero_documento: str = Form(...),
@@ -135,6 +136,8 @@ def guardar_suscriptor(
     correo: str = Form(...),
     db: Session = Depends(get_db)
 ):
+    
+
     nuevo = Suscriptor(
         tipo_documento=tipo_documento,
         numero_documento=numero_documento,
@@ -143,14 +146,27 @@ def guardar_suscriptor(
         celular=celular,
         correo=correo
     )
+
     try:
         db.add(nuevo)
         db.commit()
+
+        # Envío de correos
+        await enviar_correo_bienvenida(destinatario=correo, nombre=nombre_completo)
+        await notificar_admin_suscripcion(
+            nombre=nombre_completo,
+            correo=correo,
+            documento=numero_documento,
+            tipo=tipo_documento,
+            celular=celular
+        )
+
         return templates.TemplateResponse("confirmacion_suscripcion.html", {
             "request": request,
             "nombre": nombre_completo,
             "correo": correo
         })
+
     except IntegrityError:
         db.rollback()
         return templates.TemplateResponse("error.html", {
