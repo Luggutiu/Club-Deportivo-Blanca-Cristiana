@@ -9,8 +9,7 @@ import os
 from fastapi import UploadFile, File
 
 from app.routes import like
-
-
+from app.routes.suscripcion import router as suscripcion_router
 
 from app.routes import auth, info, admin_info, admin, posts, dev
 from app.routes.auth import check_admin_logged
@@ -28,6 +27,8 @@ templates = Jinja2Templates(directory="app/templates")
 # Luego importa rutas y usa app
 from app.routes import auth_google
 app.include_router(auth_google.router)
+app.include_router(suscripcion_router)
+app.include_router(info.router) 
 
 # -------- Rutas públicas --------
 from fastapi import Request, Depends
