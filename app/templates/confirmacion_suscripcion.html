@@ -1,12 +1,30 @@
 {% extends "base_public.html" %}
 
-{% block title %}Confirmación de suscripción{% endblock %}
+{% block title %}Suscripción Confirmada - Club Deportivo Blanca Cristiana{% endblock %}
 
 {% block content %}
-<section style="text-align: center; padding: 3rem;">
-  <h1 style="color: #ff5e78;">🎉 ¡Gracias por unirte!</h1>
-  <p>Tu suscripción se ha registrado correctamente.</p>
-  <p>Pronto recibirás novedades y noticias del club.</p>
-  <a href="/" style="margin-top: 2rem; display: inline-block; background-color: #6B5B95; color: white; padding: 0.8rem 1.5rem; border-radius: 10px; text-decoration: none;">Volver al inicio</a>
+<section style="max-width: 600px; margin: auto; padding: 3rem 2rem; text-align: center;">
+  <h1 style="color: #ff5e78;">¡Gracias por unirte al club!</h1>
+  <p style="font-size: 1.1rem; color: #ccc; margin-top: 1rem;">
+    Tu suscripción ha sido registrada exitosamente. Pronto recibirás noticias, eventos y novedades del <strong>Club Deportivo Blanca Cristiana</strong>.
+  </p>
+
+  {% if nombre %}
+  <p style="margin-top: 2rem; color: #eee;">
+    Bienvenido, <strong>{{ nombre }}</strong>.
+  </p>
+  {% endif %}
+
+  {% if correo %}
+  <p style="margin-top: 0.5rem; color: #aaa;">
+    Se ha enviado un correo de bienvenida a <strong>{{ correo }}</strong>.
+  </p>
+  {% endif %}
+
+  <div style="margin-top: 3rem;">
+    <a href="/" style="background-color: #ff5e78; color: white; padding: 0.8rem 1.5rem; border-radius: 10px; text-decoration: none; font-weight: bold;">
+      Ir al inicio
+    </a>
+  </div>
 </section>
 {% endblock %}

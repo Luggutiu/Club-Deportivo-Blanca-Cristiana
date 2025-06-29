@@ -72,13 +72,56 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const formData = new FormData(form);
 
-    if (!form.acepto.checked) {
-      Swal.fire({
+    const nombre = form.nombre_completo.value.trim();
+    const correo = form.correo.value.trim();
+    const tipo = form.tipo_documento.value;
+    const documento = form.numero_documento.value.trim();
+    const celular = form.celular.value.trim();
+    const acepto = form.acepto.checked;
+
+    // Validación personalizada
+    const correoRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const celularRegex = /^3\d{9}$/;
+    const documentoRegex = /^\d{6,15}$/;
+
+    if (!nombre || !correo || !tipo || !documento || !celular) {
+      return Swal.fire({
         icon: "warning",
-        title: "Falta aceptar condiciones",
+        title: "Campos incompletos",
+        text: "Por favor completa todos los campos obligatorios.",
+      });
+    }
+
+    if (!correoRegex.test(correo)) {
+      return Swal.fire({
+        icon: "error",
+        title: "Correo inválido",
+        text: "Por favor ingresa un correo electrónico válido.",
+      });
+    }
+
+    if (!documentoRegex.test(documento)) {
+      return Swal.fire({
+        icon: "error",
+        title: "Documento inválido",
+        text: "El número de documento debe tener entre 6 y 15 dígitos.",
+      });
+    }
+
+    if (!celularRegex.test(celular)) {
+      return Swal.fire({
+        icon: "error",
+        title: "Celular inválido",
+        text: "El número de celular debe comenzar con 3 y tener 10 dígitos.",
+      });
+    }
+
+    if (!acepto) {
+      return Swal.fire({
+        icon: "warning",
+        title: "Términos no aceptados",
         text: "Debes aceptar los términos y condiciones.",
       });
-      return;
     }
 
     try {

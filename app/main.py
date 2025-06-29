@@ -125,12 +125,16 @@ async def mostrar_formulario_suscripcion(
 
 
 @app.get("/confirmacion-suscripcion", response_class=HTMLResponse)
-def confirmacion_suscripcion(request: Request):
+def confirmacion_suscripcion(
+    request: Request,
+    nombre: str = Query(default=None),
+    correo: str = Query(default=None)
+):
     return templates.TemplateResponse("confirmacion_suscripcion.html", {
-        "request": request
+        "request": request,
+        "nombre": nombre,
+        "correo": correo
     })
-    
-
 
 
 
