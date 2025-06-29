@@ -47,7 +47,7 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
 
 # Montar rutas
-app.include_router(info.router)
+
 app.include_router(like.router)
 app.include_router(healthcheck.router)
 app.include_router(auth_google.router)
@@ -57,6 +57,7 @@ app.include_router(admin.router)
 app.include_router(posts.router)
 app.include_router(dev.router)
 app.include_router(auth.router)
+app.include_router(info.router)
 
 # --------------------- Rutas Públicas ---------------------
 
