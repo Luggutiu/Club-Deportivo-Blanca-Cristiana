@@ -8,6 +8,8 @@ import shutil
 import os
 from fastapi import UploadFile, File
 from app.routes import suscripcion 
+from app.routes import auth_google
+
 
 from app.routes import like
 from app.routes.suscripcion import router as suscripcion_router
@@ -31,6 +33,7 @@ app.include_router(auth_google.router)
 app.include_router(suscripcion_router)
 app.include_router(info.router)
 app.include_router(suscripcion.router)
+app.include_router(auth_google.router)
 
 # -------- Rutas públicas --------
 from fastapi import Request, Depends
