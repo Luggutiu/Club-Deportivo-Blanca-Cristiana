@@ -134,6 +134,8 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.exc import IntegrityError
 from app.utils.email_utils import enviar_correo_bienvenida, notificar_admin_suscripcion
 
+from fastapi.responses import JSONResponse
+
 @app.post("/suscribirse")
 async def procesar_suscripcion(
     request: Request,
@@ -142,57 +144,59 @@ async def procesar_suscripcion(
     tipo_documento: str = Form(...),
     numero_documento: str = Form(...),
     celular: str = Form(...),
-    archivo: UploadFile = None,
-    acepto: str = Form(None),
+    archivo: UploadFile = File(None),  # ← CORRECTO
+    acepto: str = Form(...),
     db: Session = Depends(get_db),
 ):
-    print(">> Procesando suscripción con JSONResponse")
-
-    if not acepto:
-        return JSONResponse(
-            status_code=400,
-            content={"error": "Debes aceptar los términos y condiciones."}
-        )
-
-    # Verificar si ya existe ese documento
-    existe = db.query(Suscriptor).filter(Suscriptor.numero_documento == numero_documento).first()
-    if existe:
-        return JSONResponse(
-            status_code=400,
-            content={"error": "documento_existente"}
-        )
-
-    # Guardar el archivo si viene alguno
-    archivo_path = None
-    if archivo:
-        carpeta_destino = "app/static/archivos"
-        os.makedirs(carpeta_destino, exist_ok=True)
-        archivo_path = f"{carpeta_destino}/{numero_documento}_{archivo.filename}"
-        with open(archivo_path, "wb") as buffer:
-            shutil.copyfileobj(archivo.file, buffer)
-
-    # Guardar en base de datos
-    nuevo = Suscriptor(
-        nombre_completo=nombre_completo,
-        correo=correo,
-        tipo_documento=tipo_documento,
-        numero_documento=numero_documento,
-        celular=celular,
-        archivo_path=archivo_path,
-    )
-    db.add(nuevo)
-    db.commit()
-
     try:
+        print(">> Procesando suscripción")
+
+        if not acepto:
+            return JSONResponse(
+                status_code=400,
+                content={"error": "Debes aceptar los términos y condiciones."}
+            )
+
+        existe = db.query(Suscriptor).filter(Suscriptor.numero_documento == numero_documento).first()
+        if existe:
+            return JSONResponse(
+                status_code=400,
+                content={"error": "documento_existente"}
+            )
+
+        archivo_path = None
+        if archivo:
+            carpeta_destino = "app/static/archivos"
+            os.makedirs(carpeta_destino, exist_ok=True)
+            archivo_path = f"{carpeta_destino}/{numero_documento}_{archivo.filename}"
+            with open(archivo_path, "wb") as buffer:
+                shutil.copyfileobj(archivo.file, buffer)
+
+        nuevo = Suscriptor(
+            nombre_completo=nombre_completo,
+            correo=correo,
+            tipo_documento=tipo_documento,
+            numero_documento=numero_documento,
+            celular=celular,
+            archivo_path=archivo_path,
+        )
+        db.add(nuevo)
+        db.commit()
+
         await enviar_correo_bienvenida(nombre_completo, correo)
         await notificar_admin_suscripcion(nombre_completo, correo, tipo_documento, numero_documento, celular)
-    except Exception as e:
-        print("Error al enviar correos:", e)
 
-    return JSONResponse(
-        status_code=200,
-        content={"mensaje": "¡Gracias por unirte al club! Te hemos enviado un correo de bienvenida."}
-    )
+        return JSONResponse(
+            status_code=200,
+            content={"mensaje": "¡Gracias por unirte al club! Te hemos enviado un correo de bienvenida."}
+        )
+
+    except Exception as e:
+        print("❌ Error al procesar suscripción:", str(e))
+        return JSONResponse(
+            status_code=500,
+            content={"error": "registro_fallido"}
+        )
 
 @app.post("/guardar-suscriptor", response_class=HTMLResponse)
 async def guardar_suscriptor(
