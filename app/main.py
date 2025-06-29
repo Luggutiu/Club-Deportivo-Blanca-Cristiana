@@ -132,7 +132,7 @@ def confirmacion_suscripcion(request: Request):
     
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import IntegrityError
-from app.utils.email_utils import enviar_correo_bienvenida, notificar_admin
+from app.utils.email_utils import enviar_correo_bienvenida, notificar_admin_suscripcion
 
 @app.post("/suscribirse")
 async def procesar_suscripcion(
@@ -185,7 +185,7 @@ async def procesar_suscripcion(
 
     try:
         await enviar_correo_bienvenida(nombre_completo, correo)
-        await notificar_admin(nombre_completo, correo, tipo_documento, numero_documento, celular)
+        await notificar_admin_suscripcion(nombre_completo, correo, tipo_documento, numero_documento, celular)
     except Exception as e:
         print("Error al enviar correos:", e)
 
