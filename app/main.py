@@ -97,6 +97,8 @@ def contacto(request: Request, db=Depends(get_db)):
 
 # --------------------- Suscripción clásica ---------------------
 
+from fastapi.responses import JSONResponse
+
 @app.get("/suscribirse", response_class=HTMLResponse)
 async def mostrar_formulario_suscripcion(
     request: Request,
@@ -121,29 +123,67 @@ async def mostrar_formulario_suscripcion(
         "acepto": acepto
     })
 
-@app.post("/suscribirse", response_class=HTMLResponse)
-def procesar_suscripcion(
+from fastapi.responses import JSONResponse
+from sqlalchemy.exc import IntegrityError
+
+@app.post("/suscribirse")
+async def procesar_suscripcion(
     request: Request,
-    nombre: str = Form(...),
+    nombre_completo: str = Form(...),
     correo: str = Form(...),
+    tipo_documento: str = Form(...),
+    numero_documento: str = Form(...),
+    celular: str = Form(...),
+    acepto: str = Form(...),
     db: Session = Depends(get_db)
 ):
-    nuevo_suscriptor = Suscriptor(nombre=nombre, correo=correo)
+    if acepto != "on":
+        return JSONResponse(
+            content={"error": "Debes aceptar los términos y condiciones."},
+            status_code=400
+        )
+
+    # Validación extra si quieres (por ejemplo, correo único, etc.)
+    nuevo = Suscriptor(
+        nombre=nombre_completo,
+        nombre_completo=nombre_completo,
+        correo=correo,
+        tipo_documento=tipo_documento,
+        numero_documento=numero_documento,
+        celular=celular
+    )
+
     try:
-        db.add(nuevo_suscriptor)
+        db.add(nuevo)
         db.commit()
-        return templates.TemplateResponse("confirmacion_suscripcion.html", {
-            "request": request,
-            "nombre": nombre
-        })
-    except Exception:
+
+        # Correos de confirmación
+        await enviar_correo_bienvenida(destinatario=correo, nombre=nombre_completo)
+        await notificar_admin_suscripcion(
+            nombre=nombre_completo,
+            correo=correo,
+            documento=numero_documento,
+            tipo=tipo_documento,
+            celular=celular
+        )
+
+        return JSONResponse(
+            content={"mensaje": f"{nombre_completo}, tu suscripción fue exitosa."}
+        )
+
+    except IntegrityError:
         db.rollback()
-        return templates.TemplateResponse("suscribirse.html", {
-            "request": request,
-            "error": "correo_existente",
-            "nombre": nombre,
-            "correo": correo
-        })
+        return JSONResponse(
+            content={"error": "documento_existente"},
+            status_code=400
+        )
+
+    except Exception as e:
+        db.rollback()
+        return JSONResponse(
+            content={"error": "registro_fallido", "detalle": str(e)},
+            status_code=500
+        )
 
 @app.post("/guardar-suscriptor", response_class=HTMLResponse)
 async def guardar_suscriptor(
