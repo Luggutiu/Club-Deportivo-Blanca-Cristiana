@@ -1,32 +1,28 @@
-from fastapi_mail import FastMail, MessageSchema, MessageType, ConnectionConfig
-from typing import Optional
+from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
+from fastapi import UploadFile
+from starlette.requests import Request
+from pydantic import EmailStr
 import os
+import shutil
 
-from fastapi_mail import ConnectionConfig
-
+# Configuración desde variables de entorno
 conf = ConnectionConfig(
-    MAIL_USERNAME="tu-correo@gmail.com",
-    MAIL_PASSWORD="tu-contraseña-de-aplicacion",
-    MAIL_FROM="tu-correo@gmail.com",
+    MAIL_USERNAME=os.getenv("MAIL_USERNAME"),
+    MAIL_PASSWORD=os.getenv("MAIL_PASSWORD"),
+    MAIL_FROM=os.getenv("MAIL_FROM"),
     MAIL_PORT=587,
     MAIL_SERVER="smtp.gmail.com",
+    MAIL_FROM_NAME="Club Deportivo Blanca Cristiana",
     MAIL_STARTTLS=True,
     MAIL_SSL_TLS=False,
     USE_CREDENTIALS=True,
     TEMPLATE_FOLDER="app/templates"
 )
 
-async def notificar_admin_suscripcion(
-    nombre: str,
-    correo: str,
-    documento: str,
-    tipo: str,
-    celular: str,
-    ruta_foto: Optional[str] = None
-):
+# Correo de bienvenida al suscriptor
+async def notificar_admin_suscripcion(nombre: str, correo: str, documento: str, tipo: str, celular: str, archivo_path: str = None):
     asunto = f"Nuevo suscriptor: {nombre}"
-
-    cuerpo_html = f"""
+    cuerpo = f"""
     <h2>Nuevo suscriptor</h2>
     <ul>
         <li><strong>Nombre:</strong> {nombre}</li>
@@ -37,23 +33,30 @@ async def notificar_admin_suscripcion(
     </ul>
     """
 
-    attachments = None
-    if ruta_foto and os.path.exists(ruta_foto):
-        with open(ruta_foto, "rb") as f:
-            file_data = f.read()
-        attachments = [{
-            "file": file_data,
-            "filename": os.path.basename(ruta_foto),
-            "mime_type": "image/jpeg" if ruta_foto.endswith(".jpg") or ruta_foto.endswith(".jpeg") else "image/png"
-        }]
+    attachments = []
+    if archivo_path and os.path.exists(archivo_path):
+        with open(archivo_path, "rb") as f:
+            contenido = f.read()
+            ext = archivo_path.split(".")[-1]
+            attachments.append(
+                {
+                    "file": contenido,
+                    "filename": os.path.basename(archivo_path),
+                    "mime_type": f"application/{ext}" if ext != "jpg" else "image/jpeg"
+                }
+            )
 
     mensaje = MessageSchema(
         subject=asunto,
         recipients=["clubdeportivoblancacristiana@gmail.com"],
-        body=cuerpo_html,
-        subtype=MessageType.html,
+        body=cuerpo,
+        subtype="html",
         attachments=attachments
     )
 
     fm = FastMail(conf)
     await fm.send_message(mensaje)
+
+    # Limpieza: borrar el archivo temporal
+    if archivo_path and os.path.exists(archivo_path):
+        os.remove(archivo_path)

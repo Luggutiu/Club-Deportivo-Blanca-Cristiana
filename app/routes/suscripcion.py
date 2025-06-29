@@ -1,71 +1,65 @@
-from fastapi import APIRouter, Form, Request, Depends
-from fastapi.responses import RedirectResponse, HTMLResponse
+from fastapi import APIRouter, Request, Form, UploadFile, File, Depends
+from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
-from app.database import get_db
+from database import get_db
 from app.models import Suscriptor
-from app.utils.email_utils import enviar_correo_bienvenida, notificar_admin_suscripcion
-from fastapi.templating import Jinja2Templates
-from fastapi import UploadFile, File
-import shutil
+from utils.email_utils import enviar_correo_bienvenida, notificar_admin_suscripcion
 import os
-import uuid
+import shutil
 
 router = APIRouter()
 
-
-
-
-templates = Jinja2Templates(directory="app/templates")
-
-@router.post("/suscribirse", response_class=HTMLResponse)
+@router.post("/suscribirse")
 async def suscribirse_formulario(
-    request: Request,
     nombre_completo: str = Form(...),
     correo: str = Form(...),
     tipo_documento: str = Form(...),
     numero_documento: str = Form(...),
     celular: str = Form(...),
     acepto: bool = Form(...),
-    foto: UploadFile = File(None),
+    archivo: UploadFile = File(None),
     db: Session = Depends(get_db)
 ):
+    # Verificación explícita por seguridad
     if not acepto:
-        return HTMLResponse("<h3>Debes aceptar los términos y condiciones.</h3>")
+        return {"error": "Debes aceptar los términos y condiciones."}
 
-    existente = db.query(Suscriptor).filter_by(correo=correo).first()
-    if existente:
-        return HTMLResponse(f"<h3>El correo {correo} ya está registrado.</h3>")
+    # Guardar archivo temporal si se cargó
+    archivo_path = None
+    if archivo:
+        carpeta_temp = "temp_files"
+        os.makedirs(carpeta_temp, exist_ok=True)
+        archivo_path = os.path.join(carpeta_temp, archivo.filename)
+        with open(archivo_path, "wb") as buffer:
+            shutil.copyfileobj(archivo.file, buffer)
 
-    suscriptor = Suscriptor(
-        correo=correo,
+    # Guardar suscriptor en la base de datos
+    nuevo_suscriptor = Suscriptor(
         nombre_completo=nombre_completo,
+        correo=correo,
         tipo_documento=tipo_documento,
         numero_documento=numero_documento,
         celular=celular
     )
-    db.add(suscriptor)
+    db.add(nuevo_suscriptor)
     db.commit()
+    db.refresh(nuevo_suscriptor)
 
-    # Guardar archivo temporalmente
-    foto_path = None
-    if foto:
-        extension = foto.filename.split(".")[-1]
-        filename = f"foto_{uuid.uuid4()}.{extension}"
-        foto_path = os.path.join("temp", filename)
-        os.makedirs("temp", exist_ok=True)
-        with open(foto_path, "wb") as buffer:
-            shutil.copyfileobj(foto.file, buffer)
-
-    # Notificar al admin con la imagen adjunta
+    # Notificar al administrador (con archivo si se cargó)
     await notificar_admin_suscripcion(
-        nombre_completo, correo, numero_documento, tipo_documento, celular, foto_path
+        nombre=nombre_completo,
+        correo=correo,
+        documento=numero_documento,
+        tipo=tipo_documento,
+        celular=celular,
+        archivo_path=archivo_path
     )
 
-    # Correo de bienvenida (sin adjunto)
-    await enviar_correo_bienvenida(correo, nombre_completo)
+    # Enviar correo de bienvenida al suscriptor
+    await enviar_correo_bienvenida(nombre_completo, correo)
 
-    # Borrar archivo temporal si existe
-    if foto_path and os.path.exists(foto_path):
-        os.remove(foto_path)
+    # Eliminar archivo temporal después del envío
+    if archivo_path and os.path.exists(archivo_path):
+        os.remove(archivo_path)
 
-    return templates.TemplateResponse("confirmacion_suscripcion.html", {"request": request, "nombre": nombre_completo})
+    return RedirectResponse(url="/confirmacion_suscripcion", status_code=303)

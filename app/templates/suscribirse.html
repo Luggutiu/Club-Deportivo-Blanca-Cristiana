@@ -7,7 +7,7 @@
   <h1 style="color: #ff5e78;">Suscríbete</h1>
   <p>Por favor llena el siguiente formulario para suscribirte al club.</p>
 
-  <form method="post" action="/suscribirse" style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem;">
+  <form method="post" action="/suscribirse" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem;">
     <label for="nombre_completo">Nombre completo:</label>
     <input type="text" id="nombre_completo" name="nombre_completo" required>
 
@@ -28,6 +28,9 @@
 
     <label for="celular">Número de celular:</label>
     <input type="text" id="celular" name="celular" required>
+
+    <label for="archivo">Adjunta una imagen o documento (opcional):</label>
+    <input type="file" name="archivo" accept=".jpg,.jpeg,.png,.pdf">
 
     <div>
       <input type="checkbox" id="acepto" name="acepto" required>
