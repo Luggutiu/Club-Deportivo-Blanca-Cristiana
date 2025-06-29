@@ -1,7 +1,6 @@
-from fastapi import APIRouter, Form, File, UploadFile, Depends
-from fastapi.responses import JSONResponse
+from fastapi import Form, File, UploadFile, Request, Depends, APIRouter
+from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
 import os, shutil
 
 from app.database import get_db
@@ -12,6 +11,7 @@ router = APIRouter()
 
 @router.post("/suscribirse")
 async def suscribirse_formulario(
+    request: Request,
     nombre_completo: str = Form(...),
     correo: str = Form(...),
     tipo_documento: str = Form(...),
@@ -21,15 +21,22 @@ async def suscribirse_formulario(
     archivo: UploadFile = File(None),
     db: Session = Depends(get_db)
 ):
+    # Validación de términos
     if not acepto:
-        return JSONResponse(status_code=400, content={"error": "Debes aceptar los términos y condiciones."})
+        return RedirectResponse(
+            url=f"/suscribirse?error=formato_invalido&nombre_completo={nombre_completo}&correo={correo}&tipo_documento={tipo_documento}&numero_documento={numero_documento}&celular={celular}&acepto=true",
+            status_code=303
+        )
 
-    # Validar que el número de documento no esté registrado
+    # Verificar documento duplicado
     documento_existente = db.query(Suscriptor).filter(Suscriptor.numero_documento == numero_documento).first()
     if documento_existente:
-        return JSONResponse(status_code=400, content={"error": "documento_existente"})
+        return RedirectResponse(
+            url=f"/suscribirse?error=documento_existente&nombre_completo={nombre_completo}&correo={correo}&tipo_documento={tipo_documento}&numero_documento={numero_documento}&celular={celular}&acepto=true",
+            status_code=303
+        )
 
-    # Guardar archivo temporal si se cargó
+    # Guardar archivo temporal si existe
     archivo_path = None
     if archivo:
         carpeta_temp = "temp_files"
@@ -38,7 +45,7 @@ async def suscribirse_formulario(
         with open(archivo_path, "wb") as buffer:
             shutil.copyfileobj(archivo.file, buffer)
 
-    # Guardar suscriptor
+    # Crear objeto
     nuevo_suscriptor = Suscriptor(
         nombre_completo=nombre_completo,
         correo=correo,
@@ -47,6 +54,7 @@ async def suscribirse_formulario(
         celular=celular
     )
 
+    # Guardar en DB
     try:
         db.add(nuevo_suscriptor)
         db.commit()
@@ -55,9 +63,12 @@ async def suscribirse_formulario(
         db.rollback()
         if archivo_path and os.path.exists(archivo_path):
             os.remove(archivo_path)
-        return JSONResponse(status_code=500, content={"error": "registro_fallido"})
+        return RedirectResponse(
+            url=f"/suscribirse?error=registro_fallido&nombre_completo={nombre_completo}&correo={correo}&tipo_documento={tipo_documento}&numero_documento={numero_documento}&celular={celular}&acepto=true",
+            status_code=303
+        )
 
-    # Enviar correos
+    # Notificación y correo
     await notificar_admin_suscripcion(
         nombre=nombre_completo,
         correo=correo,
@@ -69,4 +80,7 @@ async def suscribirse_formulario(
 
     await enviar_correo_bienvenida(correo, nombre_completo)
 
-    return JSONResponse(content={"mensaje": "¡Suscripción exitosa!"})
+    return RedirectResponse(
+        url="/suscribirse?success=¡Gracias por unirte al club!",
+        status_code=303
+    )

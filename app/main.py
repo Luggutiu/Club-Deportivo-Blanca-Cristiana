@@ -398,15 +398,33 @@ def procesar_suscripcion(
             }
         )
         
+from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from fastapi import Request
 
+app = FastAPI()
 templates = Jinja2Templates(directory="app/templates")
 
-@app.get("/confirmacion_suscripcion", response_class=HTMLResponse)
-async def confirmacion_suscripcion(request: Request, nombre: str = "Querido suscriptor"):
-    return templates.TemplateResponse("confirmacion_suscripcion.html", {
+@app.get("/suscribirse", response_class=HTMLResponse)
+async def mostrar_formulario_suscripcion(
+    request: Request,
+    success: str = "",
+    error: str = "",
+    nombre_completo: str = "",
+    correo: str = "",
+    tipo_documento: str = "",
+    numero_documento: str = "",
+    celular: str = "",
+    acepto: bool = False
+):
+    return templates.TemplateResponse("suscribirse.html", {
         "request": request,
-        "nombre": nombre
+        "success": success,
+        "error": error,
+        "nombre_completo": nombre_completo,
+        "correo": correo,
+        "tipo_documento": tipo_documento,
+        "numero_documento": numero_documento,
+        "celular": celular,
+        "acepto": acepto
     })
