@@ -1,11 +1,9 @@
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
-from fastapi import UploadFile
-from starlette.requests import Request
 from pydantic import EmailStr
 import os
 import shutil
 
-# Configuración desde variables de entorno
+# Configuración de FastAPI-Mail con variables de entorno
 conf = ConnectionConfig(
     MAIL_USERNAME=os.getenv("MAIL_USERNAME"),
     MAIL_PASSWORD=os.getenv("MAIL_PASSWORD"),
@@ -19,8 +17,36 @@ conf = ConnectionConfig(
     TEMPLATE_FOLDER="app/templates"
 )
 
-# Correo de bienvenida al suscriptor
-async def notificar_admin_suscripcion(nombre: str, correo: str, documento: str, tipo: str, celular: str, archivo_path: str = None):
+# Correo de bienvenida al suscriptor (si decides agregarlo en el futuro)
+async def enviar_correo_bienvenida(destinatario: EmailStr, nombre: str):
+    asunto = "¡Bienvenido al Club Deportivo Blanca Cristiana!"
+    cuerpo = f"""
+    <h2>Hola {nombre},</h2>
+    <p>Gracias por suscribirte al Club Deportivo Blanca Cristiana.</p>
+    <p>Pronto recibirás noticias, eventos y actualizaciones del club.</p>
+    <br>
+    <p>¡Nos alegra tenerte con nosotros!</p>
+    """
+
+    mensaje = MessageSchema(
+        subject=asunto,
+        recipients=[destinatario],
+        body=cuerpo,
+        subtype="html"
+    )
+
+    fm = FastMail(conf)
+    await fm.send_message(mensaje)
+
+# Correo de notificación al administrador con posible archivo adjunto
+async def notificar_admin_suscripcion(
+    nombre: str,
+    correo: str,
+    documento: str,
+    tipo: str,
+    celular: str,
+    archivo_path: str = None
+):
     asunto = f"Nuevo suscriptor: {nombre}"
     cuerpo = f"""
     <h2>Nuevo suscriptor</h2>
@@ -33,18 +59,8 @@ async def notificar_admin_suscripcion(nombre: str, correo: str, documento: str, 
     </ul>
     """
 
-    attachments = []
-    if archivo_path and os.path.exists(archivo_path):
-        with open(archivo_path, "rb") as f:
-            contenido = f.read()
-            ext = archivo_path.split(".")[-1]
-            attachments.append(
-                {
-                    "file": contenido,
-                    "filename": os.path.basename(archivo_path),
-                    "mime_type": f"application/{ext}" if ext != "jpg" else "image/jpeg"
-                }
-            )
+    # Solo incluir archivo si existe
+    attachments = [archivo_path] if archivo_path and os.path.exists(archivo_path) else []
 
     mensaje = MessageSchema(
         subject=asunto,
@@ -57,27 +73,6 @@ async def notificar_admin_suscripcion(nombre: str, correo: str, documento: str, 
     fm = FastMail(conf)
     await fm.send_message(mensaje)
 
-    # Limpieza: borrar el archivo temporal
+    # Eliminar archivo después de enviarlo (si fue cargado)
     if archivo_path and os.path.exists(archivo_path):
         os.remove(archivo_path)
-        
-        # Correo de bienvenida al suscriptor
-async def enviar_correo_bienvenida(nombre: str, correo: EmailStr):
-    asunto = "¡Bienvenido al Club Deportivo Blanca Cristiana!"
-    cuerpo = f"""
-    <h2>Hola {nombre},</h2>
-    <p>Gracias por suscribirte al Club Deportivo Blanca Cristiana.</p>
-    <p>Nos alegra tenerte con nosotros. Pronto recibirás noticias y novedades del club.</p>
-    <p>Saludos deportivos,</p>
-    <strong>Club Deportivo Blanca Cristiana</strong>
-    """
-
-    mensaje = MessageSchema(
-        subject=asunto,
-        recipients=[correo],
-        body=cuerpo,
-        subtype="html"
-    )
-
-    fm = FastMail(conf)
-    await fm.send_message(mensaje)
