@@ -20,9 +20,13 @@ async def suscribirse_formulario(
     archivo: UploadFile = File(None),
     db: Session = Depends(get_db)
 ):
-    # Verificación explícita por seguridad
     if not acepto:
         return {"error": "Debes aceptar los términos y condiciones."}
+
+    # ✅ Verificar si el correo ya está registrado
+    existente = db.query(Suscriptor).filter(Suscriptor.correo == correo).first()
+    if existente:
+        return RedirectResponse(url="/suscribirse?error=correo_existente", status_code=303)
 
     # Guardar archivo temporal si se cargó
     archivo_path = None
@@ -33,7 +37,7 @@ async def suscribirse_formulario(
         with open(archivo_path, "wb") as buffer:
             shutil.copyfileobj(archivo.file, buffer)
 
-    # Guardar suscriptor en la base de datos
+    # Crear nuevo suscriptor
     nuevo_suscriptor = Suscriptor(
         nombre_completo=nombre_completo,
         correo=correo,
@@ -45,7 +49,7 @@ async def suscribirse_formulario(
     db.commit()
     db.refresh(nuevo_suscriptor)
 
-    # Notificar al administrador (con archivo si se cargó)
+    # Notificar al admin
     await notificar_admin_suscripcion(
         nombre=nombre_completo,
         correo=correo,
@@ -55,10 +59,10 @@ async def suscribirse_formulario(
         archivo_path=archivo_path
     )
 
-    # Enviar correo de bienvenida al suscriptor
+    # Enviar correo al suscriptor
     await enviar_correo_bienvenida(nombre_completo, correo)
 
-    # Eliminar archivo temporal después del envío
+    # Eliminar archivo temporal
     if archivo_path and os.path.exists(archivo_path):
         os.remove(archivo_path)
 
