@@ -1,5 +1,4 @@
 from fastapi import FastAPI, Request, Depends, Form, UploadFile, File, HTTPException, Query
-from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
@@ -23,7 +22,6 @@ from app.routes.auth import check_admin_logged
 from app.routes import like, auth, info, admin_info, admin, posts, dev, auth_google, healthcheck
 from app.routes.suscripcion import router as suscripcion_router
 
-from fastapi import FastAPI, Request, Depends, Form, UploadFile, File, HTTPException, Query
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -57,7 +55,7 @@ app.include_router(admin.router)
 app.include_router(posts.router)
 app.include_router(dev.router)
 app.include_router(auth.router)
-app.include_router(info.router)
+
 
 # --------------------- Rutas Públicas ---------------------
 
@@ -338,3 +336,5 @@ def editar_seccion_post(request: Request, titulo: str, contenido: str = Form(...
     seccion.contenido = contenido
     db.commit()
     return RedirectResponse(url="/admin", status_code=303)
+
+app.include_router(info.router)
