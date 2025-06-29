@@ -10,6 +10,7 @@ from app.utils.email_utils import enviar_correo_bienvenida, notificar_admin_susc
 from app.routes.auth import check_admin_logged
 import shutil
 import os
+from app.routes.info import router as info_router
 
 # Modelos y Base de Datos
 from app.database import get_db
@@ -27,6 +28,7 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
 
 # Montar rutas
+app.include_router(info_router)
 app.include_router(like.router)
 app.include_router(healthcheck.router)
 app.include_router(auth_google.router)

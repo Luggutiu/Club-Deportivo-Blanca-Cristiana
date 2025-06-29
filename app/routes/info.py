@@ -1,39 +1,37 @@
 from fastapi import APIRouter, Request, Depends
-from fastapi.responses import HTMLResponse, RedirectResponse
-from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import SeccionInformativa
-from fastapi import HTTPException
+from fastapi.templating import Jinja2Templates
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 
-SECCIONES = {
+# 🧠 Solo acepta ciertos slugs conocidos
+SECCIONES_VALIDAS = {
     "mision": "Misión",
     "vision": "Visión",
-    "quienes-somos": "¿Quiénes Somos?",
-    "contacto": "Contáctenos"
+    "quienes-somos": "¿Quiénes somos?"
 }
-
-
-templates = Jinja2Templates(directory="app/templates")
-router = APIRouter()
 
 @router.get("/{seccion_slug}", response_class=HTMLResponse)
 async def ver_seccion(request: Request, seccion_slug: str, db: Session = Depends(get_db)):
-    # Excluir rutas clave
-    if seccion_slug in ["suscribirse", "guardar-suscriptor", "admin", "login", "static"]:
-        raise HTTPException(status_code=404)
-
-    seccion = db.query(SeccionInformativa).filter_by(slug=seccion_slug).first()
-    if not seccion:
-        return templates.TemplateResponse("ver_seccion.html", {
+    # 🔒 Validar solo slugs definidos
+    if seccion_slug not in SECCIONES_VALIDAS:
+        return templates.TemplateResponse("error.html", {
             "request": request,
-            "titulo": "Sección no encontrada",
-            "contenido": "La sección solicitada no está disponible.",
-            "imagen_url": None
-        })
+            "error_message": "Sección no encontrada"
+        }, status_code=404)
+
+    titulo = SECCIONES_VALIDAS[seccion_slug]
+    seccion = db.query(SeccionInformativa).filter_by(titulo=titulo).first()
+
+    if not seccion:
+        return templates.TemplateResponse("error.html", {
+            "request": request,
+            "error_message": "Contenido no disponible para esta sección"
+        }, status_code=404)
 
     return templates.TemplateResponse("ver_seccion.html", {
         "request": request,
