@@ -1,61 +1,22 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>¡Suscripción Exitosa!</title>
-    <link rel="stylesheet" href="/static/styles.css">
-    <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(to bottom right, #f06, #f79);
-            color: white;
-            text-align: center;
-            padding: 4rem 1rem;
-        }
+{% extends "base_public.html" %}
 
-        .container {
-            max-width: 600px;
-            margin: auto;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 2rem;
-            border-radius: 20px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-        }
+{% block title %}¡Gracias por suscribirte!{% endblock %}
 
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
+{% block content %}
+<section style="max-width: 600px; margin: auto; padding: 3rem 1rem; text-align: center; background-color: #fff0f5; border-radius: 20px; box-shadow: 0 0 15px rgba(255, 65, 180, 0.2);">
+  <h1 style="color: #ff5e78; font-size: 2.2rem; margin-bottom: 1rem;">¡Gracias por suscribirte!</h1>
+  
+  <p style="font-size: 1.2rem; color: #444;">
+    Hola <strong>{{ nombre }}</strong>,<br>
+    tu suscripción al <strong>Club Deportivo Blanca Cristiana</strong> ha sido recibida con éxito.
+  </p>
 
-        p {
-            font-size: 1.2rem;
-            line-height: 1.8;
-        }
+  <p style="margin-top: 1.2rem; color: #555;">
+    Pronto te mantendremos informado sobre nuestras actividades, eventos y novedades especiales.
+  </p>
 
-        .btn-volver {
-            display: inline-block;
-            margin-top: 2rem;
-            padding: 0.8rem 1.5rem;
-            background-color: white;
-            color: #f06;
-            border: none;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn-volver:hover {
-            background-color: #ffe0f0;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>¡Gracias, {{ nombre }}!</h1>
-        <p>Hemos recibido tu información correctamente.<br>
-        Pronto recibirás noticias, eventos y actualizaciones del club.</p>
-        <a class="btn-volver" href="/">Volver al inicio</a>
-    </div>
-</body>
-</html>
+  <a href="/" style="display: inline-block; margin-top: 2rem; padding: 0.8rem 1.5rem; background-color: #ff5e78; color: white; text-decoration: none; border-radius: 10px; font-weight: bold;">
+    Volver al inicio
+  </a>
+</section>
+{% endblock %}

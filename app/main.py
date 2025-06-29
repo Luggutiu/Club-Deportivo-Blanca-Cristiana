@@ -9,6 +9,7 @@ import os
 from fastapi import UploadFile, File
 from app.routes import suscripcion 
 from app.routes import auth_google
+from app.routes import healthcheck 
 
 
 from app.routes import like
@@ -23,7 +24,7 @@ from app.database import get_db  # Importamos la dependencia de sesión de la ba
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key="2025*")
 app.include_router(like.router)
-
+app.include_router(healthcheck.router)
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
 
