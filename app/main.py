@@ -187,6 +187,49 @@ def formulario_publicar_post(request: Request):
         return RedirectResponse(url="/login", status_code=302)
     return templates.TemplateResponse("publicar_post.html", {"request": request})
 
+@app.get("/test-embed", response_class=HTMLResponse)
+def test_embed(request: Request):
+    return templates.TemplateResponse("test_embed.html", {"request": request})
+
+# -------- Gestión de horarios --------
+@app.get("/admin/gestionar-horarios", response_class=HTMLResponse)
+def mostrar_formulario_horario(request: Request, db=Depends(get_db)):
+    horarios = db.query(Horario).order_by(Horario.dia).all()
+    return templates.TemplateResponse("gestionar_horarios.html", {
+        "request": request,
+        "horarios": horarios
+    })
+    
+@app.get("/admin/editar-horario/{horario_id}", response_class=HTMLResponse)
+def mostrar_formulario_edicion(request: Request, horario_id: int, db=Depends(get_db)):
+    horario = db.query(Horario).filter(Horario.id == horario_id).first()
+    if not horario:
+        return HTMLResponse("Horario no encontrado", status_code=404)
+    return templates.TemplateResponse("editar_horario.html", {
+        "request": request,
+        "horario": horario
+    })
+    
+@app.post("/admin/guardar-horario")
+def guardar_horario(
+    request: Request,
+    dia: str = Form(...),
+    hora_inicio: str = Form(...),
+    hora_fin: str = Form(...),
+    actividad: str = Form(...),
+    db=Depends(get_db)
+):
+    nuevo_horario = Horario(
+        dia=dia,
+        hora_inicio=hora_inicio,
+        hora_fin=hora_fin,
+        actividad=actividad,
+        publicado=True
+    )
+    db.add(nuevo_horario)
+    db.commit()
+    return RedirectResponse(url="/admin/gestionar-horarios", status_code=303)
+
 @app.post("/admin/publicar-post")
 def guardar_post(request: Request, titulo: str = Form(...), texto: str = Form(None), imagen_url: str = Form(None), db=Depends(get_db)):
     nuevo_post = Post(titulo=titulo, texto=texto, imagen_url=imagen_url)
@@ -222,6 +265,34 @@ def editar_post(request: Request, post_id: int, titulo: str = Form(...), texto: 
     post.imagen_url = imagen_url
     db.commit()
     return RedirectResponse(url="/admin", status_code=303)
+
+@app.post("/admin/editar-horario/{horario_id}")
+def actualizar_horario(
+    request: Request,
+    horario_id: int,
+    dia: str = Form(...),
+    hora_inicio: str = Form(...),
+    hora_fin: str = Form(...),
+    actividad: str = Form(...),
+    db=Depends(get_db)
+):
+    horario = db.query(Horario).filter(Horario.id == horario_id).first()
+    if not horario:
+        return HTMLResponse("Horario no encontrado", status_code=404)
+    horario.dia = dia
+    horario.hora_inicio = hora_inicio
+    horario.hora_fin = hora_fin
+    horario.actividad = actividad
+    db.commit()
+    return RedirectResponse(url="/admin/gestionar-horarios", status_code=HTTP_303_SEE_OTHER)
+
+@app.get("/admin/eliminar-horario/{horario_id}")
+def eliminar_horario(horario_id: int, db=Depends(get_db)):
+    horario = db.query(Horario).filter(Horario.id == horario_id).first()
+    if horario:
+        db.delete(horario)
+        db.commit()
+    return RedirectResponse(url="/admin/gestionar-horarios", status_code=HTTP_303_SEE_OTHER)
 
 @app.get("/admin/publicar-video", response_class=HTMLResponse)
 def mostrar_formulario_video(request: Request):
