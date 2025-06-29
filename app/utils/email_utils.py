@@ -2,15 +2,16 @@ from fastapi_mail import FastMail, MessageSchema, MessageType, ConnectionConfig
 from typing import Optional
 import os
 
+from fastapi_mail import ConnectionConfig
+
 conf = ConnectionConfig(
     MAIL_USERNAME="tu-correo@gmail.com",
-    MAIL_PASSWORD="tu-clave-o-app-password",
+    MAIL_PASSWORD="tu-contraseña-de-aplicacion",
     MAIL_FROM="tu-correo@gmail.com",
     MAIL_PORT=587,
     MAIL_SERVER="smtp.gmail.com",
-    MAIL_FROM_NAME="Club Deportivo Blanca Cristiana",
-    MAIL_TLS=True,
-    MAIL_SSL=False,
+    MAIL_STARTTLS=True,
+    MAIL_SSL_TLS=False,
     USE_CREDENTIALS=True,
     TEMPLATE_FOLDER="app/templates"
 )
