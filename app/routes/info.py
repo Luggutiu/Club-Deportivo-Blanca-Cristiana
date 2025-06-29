@@ -4,6 +4,7 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import SeccionInformativa
+from fastapi import HTTPException
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
@@ -15,21 +16,14 @@ SECCIONES = {
     "contacto": "Contáctenos"
 }
 
-@router.get("/info/{seccion_slug}", response_class=HTMLResponse)
-async def ver_seccion(request: Request, seccion_slug: str, db: Session = Depends(get_db)):
-    # 🚫 Excluir rutas importantes que no deben tratarse como secciones
-    if seccion_slug in ["suscribirse", "auth", "login", "static"]:
-        return RedirectResponse(url=f"/{seccion_slug}")
+@router.get("/{seccion_slug}", response_class=HTMLResponse)
+async def ver_seccion_directa(request: Request, seccion_slug: str, db: Session = Depends(get_db)):
+    if seccion_slug in ["admin", "login", "logout", "static", "suscribirse", "auth"]:
+        raise HTTPException(status_code=404)
 
     seccion = db.query(SeccionInformativa).filter_by(slug=seccion_slug).first()
-
     if not seccion:
-        return templates.TemplateResponse("ver_seccion.html", {
-            "request": request,
-            "titulo": "Sección no encontrada",
-            "contenido": "La sección solicitada no está disponible.",
-            "imagen_url": None
-        })
+        raise HTTPException(status_code=404)
 
     return templates.TemplateResponse("ver_seccion.html", {
         "request": request,
