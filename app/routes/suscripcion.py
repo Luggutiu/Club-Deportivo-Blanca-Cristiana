@@ -3,7 +3,7 @@ from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import Suscriptor
-from utils.email_utils import enviar_correo_bienvenida, notificar_admin_suscripcion
+from app.utils.email_utils import enviar_correo_bienvenida, notificar_admin_suscripcion
 import os
 import shutil
 
