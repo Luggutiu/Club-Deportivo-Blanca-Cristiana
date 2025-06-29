@@ -90,8 +90,8 @@
     <h2>Iniciar Sesión</h2>
 
     <form method="post" action="/login">
-      <input type="text" name="username" placeholder="Usuario" required>
-      <input type="password" name="password" placeholder="Contraseña" required>
+      <input type="text" name="username" placeholder="Usuario" required autocomplete="username">
+      <input type="password" name="password" placeholder="Contraseña" required autocomplete="current-password">
 
       {% if error %}
         <div class="error-msg">{{ error }}</div>
