@@ -23,8 +23,26 @@ from app.routes.auth import check_admin_logged
 from app.routes import like, auth, info, admin_info, admin, posts, dev, auth_google, healthcheck
 from app.routes.suscripcion import router as suscripcion_router
 
+from fastapi import FastAPI, Request, Depends, Form, UploadFile, File, HTTPException, Query
+from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from starlette.middleware.sessions import SessionMiddleware
+from starlette.status import HTTP_303_SEE_OTHER
+from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
+
+from app.utils.email_utils import enviar_correo_bienvenida, notificar_admin_suscripcion
+from app.routes.auth import check_admin_logged
+from app.routes.embedder import generar_embed
+from app.database import get_db
+from app.models import Post, Horario, SeccionInformativa, Suscriptor
+from app.routes import like, auth, info, admin_info, admin, posts, dev, auth_google, healthcheck
+from app.routes.suscripcion import router as suscripcion_router
+
 # Inicialización
 app = FastAPI()
+app.add_middleware(SessionMiddleware, secret_key="supersecreto")  # Reemplaza por variable de entorno
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
 
@@ -34,12 +52,12 @@ app.include_router(like.router)
 app.include_router(healthcheck.router)
 app.include_router(auth_google.router)
 app.include_router(suscripcion_router)
-app.include_router(info.router)
 app.include_router(admin_info.router)
 app.include_router(admin.router)
 app.include_router(posts.router)
 app.include_router(dev.router)
 app.include_router(auth.router)
+
 # --------------------- Rutas Públicas ---------------------
 
 @app.get("/", response_class=HTMLResponse)
@@ -138,8 +156,6 @@ async def guardar_suscriptor(
     correo: str = Form(...),
     db: Session = Depends(get_db)
 ):
-    
-
     nuevo = Suscriptor(
         tipo_documento=tipo_documento,
         numero_documento=numero_documento,
@@ -148,27 +164,16 @@ async def guardar_suscriptor(
         celular=celular,
         correo=correo
     )
-
     try:
         db.add(nuevo)
         db.commit()
-
-        # Envío de correos
         await enviar_correo_bienvenida(destinatario=correo, nombre=nombre_completo)
-        await notificar_admin_suscripcion(
-            nombre=nombre_completo,
-            correo=correo,
-            documento=numero_documento,
-            tipo=tipo_documento,
-            celular=celular
-        )
-
+        await notificar_admin_suscripcion(nombre=nombre_completo, correo=correo, documento=numero_documento, tipo=tipo_documento, celular=celular)
         return templates.TemplateResponse("confirmacion_suscripcion.html", {
             "request": request,
             "nombre": nombre_completo,
             "correo": correo
         })
-
     except IntegrityError:
         db.rollback()
         return templates.TemplateResponse("error.html", {
@@ -187,10 +192,9 @@ def formulario_suscriptor(request: Request, correo: str = Query(None), nombre: s
 # --------------------- Panel de Administración ---------------------
 
 @app.get("/admin", response_class=HTMLResponse)
-def admin_panel(request: Request):
+def admin_panel(request: Request, db: Session = Depends(get_db)):
     if not check_admin_logged(request):
         return RedirectResponse(url="/login", status_code=302)
-    db = next(get_db())
     publicaciones = db.query(Post).all()
     horarios = db.query(Horario).filter(Horario.publicado == True).all()
     return templates.TemplateResponse("admin.html", {
@@ -209,7 +213,6 @@ def formulario_publicar_post(request: Request):
 def test_embed(request: Request):
     return templates.TemplateResponse("test_embed.html", {"request": request})
 
-# -------- Gestión de horarios --------
 @app.get("/admin/gestionar-horarios", response_class=HTMLResponse)
 def mostrar_formulario_horario(request: Request, db=Depends(get_db)):
     horarios = db.query(Horario).order_by(Horario.dia).all()
@@ -217,7 +220,7 @@ def mostrar_formulario_horario(request: Request, db=Depends(get_db)):
         "request": request,
         "horarios": horarios
     })
-    
+
 @app.get("/admin/editar-horario/{horario_id}", response_class=HTMLResponse)
 def mostrar_formulario_edicion(request: Request, horario_id: int, db=Depends(get_db)):
     horario = db.query(Horario).filter(Horario.id == horario_id).first()
@@ -227,7 +230,7 @@ def mostrar_formulario_edicion(request: Request, horario_id: int, db=Depends(get
         "request": request,
         "horario": horario
     })
-    
+
 @app.post("/admin/guardar-horario")
 def guardar_horario(
     request: Request,
@@ -237,13 +240,7 @@ def guardar_horario(
     actividad: str = Form(...),
     db=Depends(get_db)
 ):
-    nuevo_horario = Horario(
-        dia=dia,
-        hora_inicio=hora_inicio,
-        hora_fin=hora_fin,
-        actividad=actividad,
-        publicado=True
-    )
+    nuevo_horario = Horario(dia=dia, hora_inicio=hora_inicio, hora_fin=hora_fin, actividad=actividad, publicado=True)
     db.add(nuevo_horario)
     db.commit()
     return RedirectResponse(url="/admin/gestionar-horarios", status_code=303)
