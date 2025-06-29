@@ -125,11 +125,9 @@ async def mostrar_formulario_suscripcion(
 
 
 @app.get("/confirmacion-suscripcion", response_class=HTMLResponse)
-def confirmacion_suscripcion(
-    request: Request,
-    nombre: str = Query(default=None),
-    correo: str = Query(default=None)
-):
+def confirmacion_suscripcion(request: Request):
+    nombre = request.session.get("nombre_completo")
+    correo = request.session.get("correo")
     return templates.TemplateResponse("confirmacion_suscripcion.html", {
         "request": request,
         "nombre": nombre,
@@ -184,6 +182,13 @@ async def procesar_suscripcion(
         )
         db.add(nuevo)
         db.commit()
+        
+        print("DEBUG >> Datos recibidos:")
+        print("Nombre:", nombre_completo)
+        print("Correo:", correo)
+        print("Tipo documento:", tipo_documento)
+        print("Número documento:", numero_documento)
+        print("Celular:", celular)
 
         await enviar_correo_bienvenida(nombre_completo, correo)
         await notificar_admin_suscripcion(nombre_completo, correo, tipo_documento, numero_documento, celular, archivo_path)
