@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request, Depends
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from app.database import get_db
@@ -15,8 +15,12 @@ SECCIONES = {
     "contacto": "Contáctenos"
 }
 
-@router.get("/{seccion_slug}", response_class=HTMLResponse)
+@router.get("/info/{seccion_slug}", response_class=HTMLResponse)
 async def ver_seccion(request: Request, seccion_slug: str, db: Session = Depends(get_db)):
+    # 🚫 Excluir rutas importantes que no deben tratarse como secciones
+    if seccion_slug in ["suscribirse", "auth", "login", "static"]:
+        return RedirectResponse(url=f"/{seccion_slug}")
+
     seccion = db.query(SeccionInformativa).filter_by(slug=seccion_slug).first()
 
     if not seccion:
