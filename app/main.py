@@ -365,14 +365,19 @@ def formulario_suscriptor(
         "nombre": nombre
     })
     
-    from fastapi import Form
+from fastapi import Form
 
 @app.get("/suscribirse", response_class=HTMLResponse)
 def mostrar_formulario_suscripcion(request: Request):
     return templates.TemplateResponse("suscribirse.html", {"request": request})
 
 @app.post("/suscribirse", response_class=HTMLResponse)
-def procesar_suscripcion(request: Request, nombre: str = Form(...), correo: str = Form(...), db: Session = Depends(get_db)):
+def procesar_suscripcion(
+    request: Request,
+    nombre: str = Form(...),
+    correo: str = Form(...),
+    db: Session = Depends(get_db)
+):
     from app.models import Suscriptor
     nuevo_suscriptor = Suscriptor(nombre=nombre, correo=correo)
     try:
@@ -381,4 +386,26 @@ def procesar_suscripcion(request: Request, nombre: str = Form(...), correo: str 
         return templates.TemplateResponse("confirmacion_suscripcion.html", {"request": request, "nombre": nombre})
     except Exception as e:
         db.rollback()
-        return templates.TemplateResponse("error.html", {"request": request, "error_message": str(e)})
+        # Devuelve el formulario con datos y mensaje de error
+        return templates.TemplateResponse(
+            "suscribirse.html",
+            {
+                "request": request,
+                "error": "correo_existente",  # puedes mapear otros tipos si deseas
+                "nombre": nombre,
+                "correo": correo
+            }
+        )
+        
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+from fastapi import Request
+
+templates = Jinja2Templates(directory="app/templates")
+
+@app.get("/confirmacion_suscripcion", response_class=HTMLResponse)
+async def confirmacion_suscripcion(request: Request, nombre: str = "Querido suscriptor"):
+    return templates.TemplateResponse("confirmacion_suscripcion.html", {
+        "request": request,
+        "nombre": nombre
+    })

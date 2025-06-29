@@ -7,37 +7,44 @@
   <h1 style="color: #ff5e78;">Suscríbete</h1>
   <p>Por favor llena el siguiente formulario para suscribirte al club.</p>
 
-  {% if request.query_params.get('error') == 'correo_existente' %}
+  {% if error == 'correo_existente' %}
     <p style="color: red; font-weight: bold;">⚠️ Este correo ya ha sido registrado anteriormente.</p>
+  {% elif error == 'documento_existente' %}
+    <p style="color: red; font-weight: bold;">⚠️ Este número de documento ya ha sido registrado anteriormente.</p>
+  {% elif error == 'celular_existente' %}
+    <p style="color: red; font-weight: bold;">⚠️ Este número de celular ya ha sido registrado anteriormente.</p>
+  {% elif error == 'registro_fallido' %}
+    <p style="color: red; font-weight: bold;">⚠️ Ocurrió un error al registrar tu suscripción. Inténtalo de nuevo.</p>
   {% endif %}
 
   <form method="post" action="/suscribirse" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem;">
     <label for="nombre_completo">Nombre completo:</label>
-    <input type="text" id="nombre_completo" name="nombre_completo" required>
+    <input type="text" id="nombre_completo" name="nombre_completo" required value="{{ nombre_completo | default('') }}">
 
     <label for="correo">Correo electrónico:</label>
-    <input type="email" id="correo" name="correo" required>
+    <input type="email" id="correo" name="correo" required value="{{ correo | default('') }}">
 
     <label for="tipo_documento">Tipo de documento:</label>
     <select id="tipo_documento" name="tipo_documento" required>
+      {% set tipo_sel = tipo_documento | default('') %}
       <option value="">Selecciona una opción</option>
-      <option value="Cédula">Cédula</option>
-      <option value="Cédula de extranjería">Cédula de extranjería</option>
-      <option value="Tarjeta de identidad">Tarjeta de identidad</option>
-      <option value="Pasaporte">Pasaporte</option>
+      <option value="Cédula" {{ 'selected' if tipo_sel == 'Cédula' }}>Cédula</option>
+      <option value="Cédula de extranjería" {{ 'selected' if tipo_sel == 'Cédula de extranjería' }}>Cédula de extranjería</option>
+      <option value="Tarjeta de identidad" {{ 'selected' if tipo_sel == 'Tarjeta de identidad' }}>Tarjeta de identidad</option>
+      <option value="Pasaporte" {{ 'selected' if tipo_sel == 'Pasaporte' }}>Pasaporte</option>
     </select>
 
     <label for="numero_documento">Número de documento:</label>
-    <input type="text" id="numero_documento" name="numero_documento" required>
+    <input type="text" id="numero_documento" name="numero_documento" required value="{{ numero_documento | default('') }}">
 
     <label for="celular">Número de celular:</label>
-    <input type="text" id="celular" name="celular" required>
+    <input type="text" id="celular" name="celular" required value="{{ celular | default('') }}">
 
     <label for="archivo">Adjunta una imagen o documento (opcional):</label>
     <input type="file" name="archivo" accept=".jpg,.jpeg,.png,.pdf">
 
     <div>
-      <input type="checkbox" id="acepto" name="acepto" required>
+      <input type="checkbox" id="acepto" name="acepto" required {{ 'checked' if acepto else '' }}>
       <label for="acepto">
         Acepto los <a href="/condiciones-servicio" target="_blank">Términos y Condiciones</a> y la <a href="/politica-privacidad" target="_blank">Política de Privacidad</a>.
       </label>

@@ -1,7 +1,8 @@
-from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
+from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
 from pydantic import EmailStr
 import os
 import shutil
+import mimetypes
 
 # Configuración de FastAPI-Mail con variables de entorno
 conf = ConnectionConfig(
@@ -17,8 +18,8 @@ conf = ConnectionConfig(
     TEMPLATE_FOLDER="app/templates"
 )
 
-# Correo de bienvenida al suscriptor (si decides agregarlo en el futuro)
-async def enviar_correo_bienvenida(destinatario: EmailStr, nombre: str):
+# Correo de bienvenida al suscriptor
+async def enviar_correo_bienvenida(nombre: str, destinatario: EmailStr):
     asunto = "¡Bienvenido al Club Deportivo Blanca Cristiana!"
     cuerpo = f"""
     <h2>Hola {nombre},</h2>
@@ -32,7 +33,7 @@ async def enviar_correo_bienvenida(destinatario: EmailStr, nombre: str):
         subject=asunto,
         recipients=[destinatario],
         body=cuerpo,
-        subtype="html"
+        subtype=MessageType.html
     )
 
     fm = FastMail(conf)
@@ -59,20 +60,34 @@ async def notificar_admin_suscripcion(
     </ul>
     """
 
-    # Solo incluir archivo si existe
-    attachments = [archivo_path] if archivo_path and os.path.exists(archivo_path) else []
+    attachments = []
+
+    if archivo_path and os.path.exists(archivo_path):
+        # Validar tamaño del archivo (ej. máximo 5MB)
+        max_size = 5 * 1024 * 1024  # 5MB
+        if os.path.getsize(archivo_path) <= max_size:
+            mime_type, _ = mimetypes.guess_type(archivo_path)
+            with open(archivo_path, "rb") as f:
+                contenido = f.read()
+                attachments.append({
+                    "file": contenido,
+                    "filename": os.path.basename(archivo_path),
+                    "mime_type": mime_type or "application/octet-stream"
+                })
+        else:
+            print("Archivo excede el tamaño permitido y no será adjuntado.")
 
     mensaje = MessageSchema(
         subject=asunto,
         recipients=["clubdeportivoblancacristiana@gmail.com"],
         body=cuerpo,
-        subtype="html",
+        subtype=MessageType.html,
         attachments=attachments
     )
 
     fm = FastMail(conf)
     await fm.send_message(mensaje)
 
-    # Eliminar archivo después de enviarlo (si fue cargado)
+    # Eliminar archivo después de enviar
     if archivo_path and os.path.exists(archivo_path):
         os.remove(archivo_path)
