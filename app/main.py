@@ -4,6 +4,7 @@ from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.status import HTTP_303_SEE_OTHER
 from sqlalchemy.orm import Session
+from app.routes import auth
 
 from app.utils.email_utils import enviar_correo_bienvenida, notificar_admin_suscripcion  # si aún no lo tienes importado
 from app.routes.auth import check_admin_logged
@@ -54,6 +55,7 @@ app.include_router(admin.router)
 app.include_router(posts.router)
 app.include_router(dev.router)
 app.include_router(auth.router)
+
 
 
 # --------------------- Rutas Públicas ---------------------
