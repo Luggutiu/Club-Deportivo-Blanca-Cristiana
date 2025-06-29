@@ -11,34 +11,6 @@ from app.routes import suscripcion
 from app.routes import auth_google
 from app.routes import healthcheck 
 
-
-from app.routes import like
-from app.routes.suscripcion import router as suscripcion_router
-
-from app.routes import auth, info, admin_info, admin, posts, dev
-from app.routes.auth import check_admin_logged
-from app.routes.embedder import generar_embed
-from app.models import Horario, SeccionInformativa, Post
-from app.database import get_db  # Importamos la dependencia de sesión de la base
-
-app = FastAPI()
-app.add_middleware(SessionMiddleware, secret_key="2025*")
-app.include_router(like.router)
-app.include_router(healthcheck.router)
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
-templates = Jinja2Templates(directory="app/templates")
-
-# Luego importa rutas y usa app
-from app.routes import auth_google
-app.include_router(auth_google.router)
-app.include_router(suscripcion_router)
-app.include_router(info.router)
-app.include_router(suscripcion.router)
-app.include_router(auth_google.router)
-
-# -------- Rutas públicas --------
-from fastapi import Request, Depends
-from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import Post, Horario, SeccionInformativa
@@ -49,6 +21,36 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import Post, Horario, SeccionInformativa
 from app.main import templates  # Asegúrate de tener esto bien importado
+
+
+from app.routes import like
+from app.routes.suscripcion import router as suscripcion_router
+
+from app.routes import auth, info, admin_info, admin, posts, dev
+from app.routes.auth import check_admin_logged
+from app.routes.embedder import generar_embed
+from app.models import Horario, SeccionInformativa, Post
+from app.database import get_db  # Importamos la dependencia de sesión de la base
+from app.routes import auth_google
+
+app = FastAPI()
+
+templates = Jinja2Templates(directory="app/templates")
+
+# Luego importa rutas y usa app
+# Montar rutas en orden
+app.include_router(like.router)
+app.include_router(healthcheck.router)
+app.include_router(auth_google.router)
+app.include_router(suscripcion_router)
+app.include_router(info.router)
+app.include_router(admin_info.router)
+app.include_router(admin.router)
+app.include_router(posts.router)
+app.include_router(dev.router)
+
+
+
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request, db: Session = Depends(get_db)):
