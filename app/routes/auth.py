@@ -8,7 +8,7 @@ templates = Jinja2Templates(directory="app/templates")
 
 # ⚠️ Para producción, NO dejes las credenciales hardcodeadas
 ADMIN_USER = "admin"
-ADMIN_PASS = "admin123*"
+ADMIN_PASS = "admin123"
 
 @router.get("/login")
 async def login_form(request: Request):
