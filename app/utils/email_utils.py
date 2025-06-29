@@ -60,3 +60,24 @@ async def notificar_admin_suscripcion(nombre: str, correo: str, documento: str, 
     # Limpieza: borrar el archivo temporal
     if archivo_path and os.path.exists(archivo_path):
         os.remove(archivo_path)
+        
+        # Correo de bienvenida al suscriptor
+async def enviar_correo_bienvenida(nombre: str, correo: EmailStr):
+    asunto = "¡Bienvenido al Club Deportivo Blanca Cristiana!"
+    cuerpo = f"""
+    <h2>Hola {nombre},</h2>
+    <p>Gracias por suscribirte al Club Deportivo Blanca Cristiana.</p>
+    <p>Nos alegra tenerte con nosotros. Pronto recibirás noticias y novedades del club.</p>
+    <p>Saludos deportivos,</p>
+    <strong>Club Deportivo Blanca Cristiana</strong>
+    """
+
+    mensaje = MessageSchema(
+        subject=asunto,
+        recipients=[correo],
+        body=cuerpo,
+        subtype="html"
+    )
+
+    fm = FastMail(conf)
+    await fm.send_message(mensaje)
