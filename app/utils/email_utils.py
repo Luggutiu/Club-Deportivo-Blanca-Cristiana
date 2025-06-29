@@ -1,40 +1,32 @@
-from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
-from pydantic import EmailStr
+from fastapi_mail import FastMail, MessageSchema, MessageType, ConnectionConfig
+from typing import Optional
 import os
 
 conf = ConnectionConfig(
-    MAIL_USERNAME=os.getenv("MAIL_USERNAME"),
-    MAIL_PASSWORD=os.getenv("MAIL_PASSWORD"),
-    MAIL_FROM=os.getenv("MAIL_FROM"),
+    MAIL_USERNAME="tu-correo@gmail.com",
+    MAIL_PASSWORD="tu-clave-o-app-password",
+    MAIL_FROM="tu-correo@gmail.com",
     MAIL_PORT=587,
     MAIL_SERVER="smtp.gmail.com",
-    MAIL_STARTTLS=True,       # ← Reemplaza MAIL_TLS
-    MAIL_SSL_TLS=False,       # ← Reemplaza MAIL_SSL
+    MAIL_FROM_NAME="Club Deportivo Blanca Cristiana",
+    MAIL_TLS=True,
+    MAIL_SSL=False,
     USE_CREDENTIALS=True,
+    TEMPLATE_FOLDER="app/templates"
 )
 
-async def enviar_correo_bienvenida(destinatario: EmailStr, nombre: str):
-    asunto = "¡Bienvenido al Club Deportivo Blanca Cristiana!"
-    cuerpo = f"""
-    <h2>Hola {nombre},</h2>
-    <p>Gracias por suscribirte al Club Deportivo Blanca Cristiana.</p>
-    <p>Nos alegra contar contigo.</p>
-    """
-
-    mensaje = MessageSchema(
-        subject=asunto,
-        recipients=[destinatario],
-        body=cuerpo,
-        subtype="html",
-    )
-
-    fm = FastMail(conf)
-    await fm.send_message(mensaje)
-
-async def notificar_admin_suscripcion(nombre: str, correo: str, documento: str, tipo: str, celular: str):
+async def notificar_admin_suscripcion(
+    nombre: str,
+    correo: str,
+    documento: str,
+    tipo: str,
+    celular: str,
+    ruta_foto: Optional[str] = None
+):
     asunto = f"Nuevo suscriptor: {nombre}"
-    cuerpo = f"""
-    <h2>Nuevo suscriptor vía Google</h2>
+
+    cuerpo_html = f"""
+    <h2>Nuevo suscriptor</h2>
     <ul>
         <li><strong>Nombre:</strong> {nombre}</li>
         <li><strong>Correo:</strong> {correo}</li>
@@ -44,11 +36,22 @@ async def notificar_admin_suscripcion(nombre: str, correo: str, documento: str, 
     </ul>
     """
 
+    attachments = None
+    if ruta_foto and os.path.exists(ruta_foto):
+        with open(ruta_foto, "rb") as f:
+            file_data = f.read()
+        attachments = [{
+            "file": file_data,
+            "filename": os.path.basename(ruta_foto),
+            "mime_type": "image/jpeg" if ruta_foto.endswith(".jpg") or ruta_foto.endswith(".jpeg") else "image/png"
+        }]
+
     mensaje = MessageSchema(
         subject=asunto,
-        recipients=["clubdeportivoblancacristiana@gmail.com"],  # ← Cambia este por el tuyo
-        body=cuerpo,
-        subtype="html",
+        recipients=["clubdeportivoblancacristiana@gmail.com"],
+        body=cuerpo_html,
+        subtype=MessageType.html,
+        attachments=attachments
     )
 
     fm = FastMail(conf)
