@@ -22,13 +22,18 @@ router = APIRouter()
 
 @router.get("/{seccion_slug}", response_class=HTMLResponse)
 async def ver_seccion(request: Request, seccion_slug: str, db: Session = Depends(get_db)):
-    # Excluir rutas reservadas
-    if seccion_slug in ["admin", "login", "logout", "static", "suscribirse", "auth", "guardar-suscriptor", "formulario-suscriptor"]:
+    # Excluir rutas clave
+    if seccion_slug in ["suscribirse", "guardar-suscriptor", "admin", "login", "static"]:
         raise HTTPException(status_code=404)
 
     seccion = db.query(SeccionInformativa).filter_by(slug=seccion_slug).first()
     if not seccion:
-        raise HTTPException(status_code=404)
+        return templates.TemplateResponse("ver_seccion.html", {
+            "request": request,
+            "titulo": "Sección no encontrada",
+            "contenido": "La sección solicitada no está disponible.",
+            "imagen_url": None
+        })
 
     return templates.TemplateResponse("ver_seccion.html", {
         "request": request,

@@ -7,15 +7,16 @@ from starlette.status import HTTP_303_SEE_OTHER
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from app.utils.email_utils import enviar_correo_bienvenida, notificar_admin_suscripcion  # si aún no lo tienes importado
-
+from app.routes.auth import check_admin_logged
 import shutil
 import os
+from starlette.middleware.sessions import SessionMiddleware
 
 # Modelos y Base de Datos
 from app.database import get_db
 from app.models import Post, Horario, SeccionInformativa, Suscriptor
 from app.routes.embedder import generar_embed
-from app.routes.auth import check_admin_logged
+
 
 # Rutas
 from app.routes import like, auth, info, admin_info, admin, posts, dev, auth_google, healthcheck
@@ -25,19 +26,19 @@ from app.routes.suscripcion import router as suscripcion_router
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
+app.add_middleware(SessionMiddleware, secret_key="admin123*")
 
 # Montar rutas
 app.include_router(like.router)
 app.include_router(healthcheck.router)
 app.include_router(auth_google.router)
 app.include_router(suscripcion_router)
-app.include_router(info.router, prefix="/info")
+app.include_router(info.router)
 app.include_router(admin_info.router)
 app.include_router(admin.router)
 app.include_router(posts.router)
 app.include_router(dev.router)
 app.include_router(auth.router)
-
 # --------------------- Rutas Públicas ---------------------
 
 @app.get("/", response_class=HTMLResponse)
