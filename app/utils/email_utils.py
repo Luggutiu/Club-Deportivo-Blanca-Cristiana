@@ -58,8 +58,8 @@ async def notificar_admin_suscripcion(
     </ul>
     """
 
-    # Asegúrate de que sea string si se incluye
-    attachments = [str(archivo_path)] if archivo_path and os.path.exists(archivo_path) else []
+    # Adjuntar archivo solo si existe y es válido
+    attachments = [archivo_path] if archivo_path and os.path.isfile(archivo_path) else None
 
     mensaje = MessageSchema(
         subject=asunto,
@@ -73,5 +73,5 @@ async def notificar_admin_suscripcion(
     await fm.send_message(mensaje)
 
     # Eliminar archivo temporal después del envío
-    if archivo_path and os.path.exists(archivo_path):
+    if archivo_path and os.path.isfile(archivo_path):
         os.remove(archivo_path)
