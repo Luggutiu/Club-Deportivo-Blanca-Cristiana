@@ -143,7 +143,7 @@ async def procesar_suscripcion(
     numero_documento: str = Form(...),
     celular: str = Form(...),
     archivo: UploadFile = File(None),  # ← CORRECTO
-    acepto: str = Form(...),
+    acepto: bool = Form(...),
     db: Session = Depends(get_db),
 ):
     try:
@@ -176,13 +176,13 @@ async def procesar_suscripcion(
             tipo_documento=tipo_documento,
             numero_documento=numero_documento,
             celular=celular,
-            archivo_path=archivo_path,
+            
         )
         db.add(nuevo)
         db.commit()
 
         await enviar_correo_bienvenida(nombre_completo, correo)
-        await notificar_admin_suscripcion(nombre_completo, correo, tipo_documento, numero_documento, celular)
+        await notificar_admin_suscripcion(nombre_completo, correo, tipo_documento, numero_documento, celular, archivo_path)
 
         return JSONResponse(
             status_code=200,
