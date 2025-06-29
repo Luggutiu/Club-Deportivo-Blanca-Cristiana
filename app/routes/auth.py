@@ -16,12 +16,13 @@ async def login_form(request: Request):
 
 @router.post("/login")
 async def login_post(request: Request, username: str = Form(...), password: str = Form(...)):
-    # Validación con limpieza de espacios y tolerancia a mayúsculas
+    print(f">>> Usuario ingresado: '{username}'")
+    print(f">>> Contraseña ingresada: '{password}'")
+
     if username.strip().lower() == ADMIN_USER.lower() and password.strip() == ADMIN_PASS:
         request.session["admin_logged"] = True
         return RedirectResponse(url="/admin", status_code=HTTP_302_FOUND)
 
-    # Si falla, vuelve al login con mensaje
     return templates.TemplateResponse("login.html", {
         "request": request,
         "error": "Usuario o contraseña incorrectos"
