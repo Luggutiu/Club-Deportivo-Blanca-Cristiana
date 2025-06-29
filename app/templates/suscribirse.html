@@ -81,7 +81,7 @@ document.getElementById("form-suscripcion").addEventListener("submit", async fun
         title: "¡Gracias por suscribirte!",
         text: result.mensaje,
       }).then(() => {
-        form.reset();
+        window.location.href = "/confirmacion-suscripcion";  // Redirige aquí
       });
     } else {
       let mensaje = "Ocurrió un error.";
