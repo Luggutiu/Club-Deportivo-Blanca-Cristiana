@@ -16,9 +16,14 @@ SECCIONES = {
     "contacto": "Contáctenos"
 }
 
+
+templates = Jinja2Templates(directory="app/templates")
+router = APIRouter()
+
 @router.get("/{seccion_slug}", response_class=HTMLResponse)
-async def ver_seccion_directa(request: Request, seccion_slug: str, db: Session = Depends(get_db)):
-    if seccion_slug in ["admin", "login", "logout", "static", "suscribirse", "auth"]:
+async def ver_seccion(request: Request, seccion_slug: str, db: Session = Depends(get_db)):
+    # Excluir rutas reservadas
+    if seccion_slug in ["admin", "login", "logout", "static", "suscribirse", "auth", "guardar-suscriptor", "formulario-suscriptor"]:
         raise HTTPException(status_code=404)
 
     seccion = db.query(SeccionInformativa).filter_by(slug=seccion_slug).first()
