@@ -168,14 +168,13 @@
         <a href="/">Inicio</a>
         {% for s in secciones %}
           {% if s.slug != 'suscribirse' %}
-          <a href="/{{ s.slug }}">{{ s.titulo }}</a>
+            <a href="/{{ s.slug }}">{{ s.titulo }}</a>
           {% endif %}
         {% endfor %}
-          <!-- Respaldo estático -->
-          <a href="/mision">Misión</a>
-          <a href="/vision">Visión</a>
-          <a href="/quienes-somos">¿Quiénes somos?</a>
-        {% endif %}
+        <!-- Respaldo estático -->
+        <a href="/mision">Misión</a>
+        <a href="/vision">Visión</a>
+        <a href="/quienes-somos">¿Quiénes somos?</a>
         <a href="/contacto">Contáctenos</a>
       </nav>
     </aside>

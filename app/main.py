@@ -11,7 +11,7 @@ from app.utils.email_utils import enviar_correo_bienvenida, notificar_admin_susc
 from app.routes.auth import check_admin_logged
 import shutil
 import os
-from app.routes import info
+
 
 
 # Modelos y Base de Datos
@@ -21,7 +21,7 @@ from app.routes.embedder import generar_embed
 from app.routes.auth import check_admin_logged
 
 # Rutas
-from app.routes import like, auth, info, admin_info, admin, posts, dev, auth_google, healthcheck
+from app.routes import like, auth, admin_info, admin, posts, dev, auth_google, healthcheck
 from app.routes.suscripcion import router as suscripcion_router
 
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -36,7 +36,7 @@ from app.routes.auth import check_admin_logged
 from app.routes.embedder import generar_embed
 from app.database import get_db
 from app.models import Post, Horario, SeccionInformativa, Suscriptor
-from app.routes import like, auth, info, admin_info, admin, posts, dev, auth_google, healthcheck
+from app.routes import like, auth, admin_info, admin, posts, dev, auth_google, healthcheck
 from app.routes.suscripcion import router as suscripcion_router
 
 # Inicialización
@@ -45,7 +45,7 @@ app = FastAPI()
 
 app.add_middleware(
     SessionMiddleware,
-    secret_key=os.getenv("SECRET_KEY", "clave-insegura-por-defecto")
+    secret_key=os.getenv("SECRET_KEY", "w$#&&vaz17b5dkb)hi@onbfb_^(52wycj&+&zh_+k4*5o=3ty3")
 ) # Reemplaza por variable de entorno
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
@@ -416,12 +416,6 @@ def editar_seccion_post(request: Request, titulo: str, contenido: str = Form(...
     db.commit()
     return RedirectResponse(url="/admin", status_code=303)
 
-
-#esta es la linea al final
-
-#app.include_router(info.router)
-
-#app.include_router(info.router, prefix="/seccion")
 
 
 @app.get("/mision", response_class=HTMLResponse)
