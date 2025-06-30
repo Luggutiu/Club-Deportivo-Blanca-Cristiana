@@ -168,7 +168,7 @@
         <a href="/">Inicio</a>
         {% if secciones %}
           {% for s in secciones %}
-            <a href="/{{ s.slug }}">{{ s.titulo }}</a>
+              <a href="/seccion/{{ s.slug }}">{{ s.titulo }}</a>
           {% endfor %}
         {% else %}
           <!-- Si no se pasan secciones, usar fijo -->

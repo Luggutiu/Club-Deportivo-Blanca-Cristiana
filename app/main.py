@@ -71,14 +71,15 @@ async def home(request: Request, db: Session = Depends(get_db)):
     try:
         posts = db.query(Post).all()
         horarios = db.query(Horario).filter(Horario.publicado == True).all()
-        secciones = {s.titulo: s.contenido for s in db.query(SeccionInformativa).all()}
+        secciones = db.query(SeccionInformativa).all()  # ✅
+
         publicaciones = posts + horarios
         publicaciones.sort(key=lambda x: getattr(x, 'fecha_creacion', None) or x.id, reverse=True)
 
         return templates.TemplateResponse("index.html", {
             "request": request,
             "publicaciones": publicaciones,
-            "secciones": secciones
+            "secciones": secciones  # ✅
         })
     except Exception as e:
         return templates.TemplateResponse("error.html", {
@@ -97,9 +98,12 @@ def condiciones_servicio(request: Request):
 @app.get("/contacto", response_class=HTMLResponse)
 def contacto(request: Request, db=Depends(get_db)):
     seccion = db.query(SeccionInformativa).filter(SeccionInformativa.titulo == "contacto").first()
+    secciones = db.query(SeccionInformativa).all()  # ✅ Para el menú lateral
+
     return templates.TemplateResponse("contacto.html", {
         "request": request,
-        "contenido": seccion
+        "contenido": seccion,
+        "secciones": secciones  # ✅ Asegura que el menú funcione
     })
 
 # --------------------- Suscripción clásica ---------------------
@@ -116,8 +120,10 @@ async def mostrar_formulario_suscripcion(
     tipo_documento: str = "",
     numero_documento: str = "",
     celular: str = "",
-    acepto: bool = False
+    acepto: bool = False,
+    db: Session = Depends(get_db)  # 👈 se añade para obtener las secciones
 ):
+    secciones = db.query(SeccionInformativa).all()
     return templates.TemplateResponse("suscribirse.html", {
         "request": request,
         "success": success,
@@ -127,18 +133,21 @@ async def mostrar_formulario_suscripcion(
         "tipo_documento": tipo_documento,
         "numero_documento": numero_documento,
         "celular": celular,
-        "acepto": acepto
+        "acepto": acepto,
+        "secciones": secciones  # 👈 añadido
     })
 
 
 @app.get("/confirmacion-suscripcion", response_class=HTMLResponse)
-def confirmacion_suscripcion(request: Request):
+def confirmacion_suscripcion(request: Request, db: Session = Depends(get_db)):
     nombre = request.session.get("nombre_completo")
     correo = request.session.get("correo")
+    secciones = db.query(SeccionInformativa).all()
     return templates.TemplateResponse("confirmacion_suscripcion.html", {
         "request": request,
         "nombre": nombre,
-        "correo": correo
+        "correo": correo,
+        "secciones": secciones
     })
 
 
@@ -248,11 +257,13 @@ async def guardar_suscriptor(
         }, status_code=400)
 
 @app.get("/formulario-suscriptor", response_class=HTMLResponse)
-def formulario_suscriptor(request: Request, correo: str = Query(None), nombre: str = Query(None)):
+def formulario_suscriptor(request: Request, correo: str = Query(None), nombre: str = Query(None), db: Session = Depends(get_db)):
+    secciones = db.query(SeccionInformativa).all()
     return templates.TemplateResponse("formulario_suscriptor.html", {
         "request": request,
         "correo": correo,
-        "nombre": nombre
+        "nombre": nombre,
+        "secciones": secciones
     })
 
 # --------------------- Panel de Administración ---------------------
