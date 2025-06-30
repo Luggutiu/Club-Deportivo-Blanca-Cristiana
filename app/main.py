@@ -404,7 +404,12 @@ def editar_seccion_post(request: Request, titulo: str, contenido: str = Form(...
     db.commit()
     return RedirectResponse(url="/admin", status_code=303)
 
-app.include_router(info.router)
+
+#esta es la linea al final
+
+#app.include_router(info.router)
+
+app.include_router(info.router, prefix="/seccion")
 
 
 
