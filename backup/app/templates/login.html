@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Iniciar Sesión - Club Deportivo Blanca Cristiana</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #ff5e78, #ff91a4, #ff41b4, #000);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: white;
+    }
+
+    .login-box {
+      background-color: rgba(0, 0, 0, 0.85);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 0 25px rgba(255, 65, 180, 0.5);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .login-box h2 {
+      margin-bottom: 30px;
+      color: #ffb3c6;
+    }
+
+    .login-box input[type="text"],
+    .login-box input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: none;
+      border-radius: 10px;
+      background-color: #2c2c2c;
+      color: white;
+    }
+
+    .login-box input[type="submit"] {
+      width: 100%;
+      padding: 12px;
+      background-color: #ff41b4;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .login-box input[type="submit"]:hover {
+      background-color: #ff91a4;
+    }
+
+    .login-box p {
+      margin-top: 15px;
+      font-size: 0.9em;
+      color: #ccc;
+    }
+
+    .login-box img {
+      max-width: 100px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 480px) {
+      .login-box {
+        padding: 25px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <img src="{{ url_for('static', path='logo.png') }}" alt="Logo del Club">
+    <h2>Iniciar Sesión</h2>
+    <form method="post">
+      <input type="text" name="username" placeholder="Usuario" required>
+      <input type="password" name="password" placeholder="Contraseña" required>
+      <input type="submit" value="Ingresar">
+    </form>
+    <p>Acceso solo para administradores</p>
+  </div>
+</body>
+</html>

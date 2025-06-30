@@ -8,7 +8,6 @@ from app.routes import auth
 
 
 from app.utils.email_utils import enviar_correo_bienvenida, notificar_admin_suscripcion  # si aún no lo tienes importado
-from app.routes.auth import check_admin_logged
 import shutil
 import os
 
@@ -31,8 +30,6 @@ from starlette.status import HTTP_303_SEE_OTHER
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
-
-from app.routes.auth import check_admin_logged
 from app.routes.embedder import generar_embed
 from app.database import get_db
 from app.models import Post, Horario, SeccionInformativa, Suscriptor
@@ -45,7 +42,7 @@ app = FastAPI()
 
 app.add_middleware(
     SessionMiddleware,
-    secret_key=os.getenv("SECRET_KEY", "w$#&&vaz17b5dkb)hi@onbfb_^(52wycj&+&zh_+k4*5o=3ty3")
+    secret_key=os.getenv("SECRET_KEY", "2025*")
 ) # Reemplaza por variable de entorno
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")

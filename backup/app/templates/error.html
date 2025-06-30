@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Error{% endblock %}
+
+{% block content %}
+  <div style="padding: 2rem; text-align: center;">
+    <h2 style="color: red;">¡Algo salió mal!</h2>
+    <p>{{ error_message }}</p>
+    <a href="/" style="color: #fff; text-decoration: underline;">Volver al inicio</a>
+  </div>
+{% endblock %}
