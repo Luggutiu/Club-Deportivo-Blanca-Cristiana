@@ -66,37 +66,27 @@ app.include_router(dev.router)
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request, db: Session = Depends(get_db)):
-    print("🚨 HOME ACTIVADO", flush=True)
-
     try:
         posts = db.query(Post).all()
         horarios = db.query(Horario).filter(Horario.publicado == True).all()
 
-        print("🎯 HORARIOS ENCONTRADOS:")
+        print("HORARIOS ENCONTRADOS:")
         for h in horarios:
-            print(f"🗓️ {h.dia} - {h.hora_inicio} a {h.hora_fin}", flush=True)
+            print(f"{h.dia} - {h.hora_inicio} a {h.hora_fin}")
 
         publicaciones = posts + horarios
         publicaciones.sort(key=lambda x: getattr(x, 'fecha_creacion', None) or x.id, reverse=True)
 
         return templates.TemplateResponse("index.html", {
             "request": request,
-            "posts": publicaciones,
-            "horarios": horarios,
-            "publicaciones": publicaciones
+            "publicaciones": publicaciones,
         })
-
     except Exception as e:
-        print("❌ ERROR EN HOME:", e, flush=True)
         return templates.TemplateResponse("index.html", {
-            "request": request,
-            "posts": [],
-            "horarios": [],
-            "publicaciones": []
-        }, status_code=500)
-        
-        
-        
+        "request": request,
+        "publicaciones": publicaciones
+    })
+
 @app.get("/politica-privacidad", response_class=HTMLResponse)
 def politica_privacidad(request: Request):
     return templates.TemplateResponse("politica_privacidad.html", {"request": request})
@@ -283,7 +273,7 @@ def admin_panel(request: Request, db: Session = Depends(get_db)):
     if not check_admin_logged(request):
         return RedirectResponse(url="/login", status_code=302)
     publicaciones = db.query(Post).all()
-    horarios = db.query(Horario).order_by(Horario.dia).all()
+    horarios = db.query(Horario).filter(Horario.publicado == True).all()
     return templates.TemplateResponse("admin.html", {
         "request": request,
         "publicaciones": publicaciones,
@@ -303,11 +293,15 @@ def test_embed(request: Request):
 @app.get("/admin/gestionar-horarios", response_class=HTMLResponse)
 def mostrar_formulario_horario(request: Request, db=Depends(get_db)):
     horarios = db.query(Horario).order_by(Horario.dia).all()
+
+    print("HORARIOS EN ADMIN:")
+    for h in horarios:
+        print(f"- {h.dia} | {h.hora_inicio} - {h.hora_fin} | {h.actividad} | Publicado: {h.publicado}")
+
     return templates.TemplateResponse("gestionar_horarios.html", {
         "request": request,
         "horarios": horarios
     })
-
 
 @app.get("/admin/editar-horario/{horario_id}", response_class=HTMLResponse)
 def mostrar_formulario_edicion(request: Request, horario_id: int, db=Depends(get_db)):
@@ -328,18 +322,29 @@ def guardar_horario(
     actividad: str = Form(...),
     db=Depends(get_db)
 ):
-    nuevo_horario = Horario(
-        dia=dia,
-        hora_inicio=hora_inicio,
-        hora_fin=hora_fin,
-        actividad=actividad,
-        publicado=True
-    )
+    nuevo_horario = Horario(dia=dia, hora_inicio=hora_inicio, hora_fin=hora_fin, actividad=actividad, publicado=True)
     db.add(nuevo_horario)
     db.commit()
     return RedirectResponse(url="/admin/gestionar-horarios", status_code=303)
 
 
+from fastapi import Request
+from fastapi.responses import RedirectResponse
+from app.database import SessionLocal
+from app import models
+
+@app.post("/admin/publicar-horario/{horario_id}")
+def publicar_horario(horario_id: int, request: Request):
+    db = SessionLocal()
+    try:
+        horario = db.query(models.Horario).filter(models.Horario.id == horario_id).first()
+        if horario:
+            horario.publicado = True
+            db.commit()
+    finally:
+        db.close()
+    
+    return RedirectResponse(url="/admin/gestionar-horarios", status_code=303)
 
 @app.post("/admin/publicar-post")
 def guardar_post(request: Request, titulo: str = Form(...), texto: str = Form(None), imagen_url: str = Form(None), db=Depends(get_db)):

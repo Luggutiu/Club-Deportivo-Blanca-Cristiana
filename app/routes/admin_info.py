@@ -1,3 +1,4 @@
+# admin_info.py
 
 from fastapi import APIRouter, Request, Form, UploadFile, File, Depends, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -10,12 +11,12 @@ from app.models import SeccionInformativa, Horario, Post
 from app.routes.auth import check_admin_logged
 from app.routes.embedder import generar_embed
 
-router = APIRouter(prefix="/admin")
+router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 
 # ------------------------ SECCIONES ------------------------
 
-@router.get("/editar/{seccion}", response_class=HTMLResponse)
+@router.get("/admin/editar/{seccion}", response_class=HTMLResponse)
 def editar_seccion(seccion: str, request: Request, db: Session = Depends(get_db)):
     if not check_admin_logged(request):
         return RedirectResponse(url="/login")
@@ -31,7 +32,7 @@ def editar_seccion(seccion: str, request: Request, db: Session = Depends(get_db)
     })
 
 
-@router.post("/editar/{seccion}")
+@router.post("/admin/editar/{seccion}")
 def guardar_seccion(
     seccion: str,
     contenido: str = Form(...),
@@ -54,7 +55,7 @@ def guardar_seccion(
 
 # ------------------------ PUBLICAR VIDEO ------------------------
 
-@router.get("/publicar-video", response_class=HTMLResponse)
+@router.get("/admin/publicar-video", response_class=HTMLResponse)
 def publicar_video_form(request: Request):
     if not check_admin_logged(request):
         return RedirectResponse(url="/login")
@@ -62,7 +63,7 @@ def publicar_video_form(request: Request):
     return templates.TemplateResponse("publicar_video.html", {"request": request})
 from typing import Optional
 
-@router.post("/publicar-video")
+@router.post("/admin/publicar-video")
 async def procesar_video(
     request: Request,
     titulo: Optional[str] = Form(""),
@@ -88,7 +89,7 @@ async def procesar_video(
 
 # ------------------------ GESTIONAR HORARIOS ------------------------
 
-@router.get("/gestionar-horarios", response_class=HTMLResponse)
+@router.get("/admin/gestionar-horarios", response_class=HTMLResponse)
 def gestionar_horarios(request: Request, db: Session = Depends(get_db)):
     if not check_admin_logged(request):
         return RedirectResponse(url="/login")
@@ -100,7 +101,7 @@ def gestionar_horarios(request: Request, db: Session = Depends(get_db)):
     })
 
 
-@router.post("/guardar-horario")
+@router.post("/admin/guardar-horario")
 def guardar_horario(
     request: Request,
     dia: str = Form(...),
@@ -110,22 +111,20 @@ def guardar_horario(
     db: Session = Depends(get_db)
 ):
     if not check_admin_logged(request):
-        return RedirectResponse(url="/login", status_code=302)
-
+        return RedirectResponse(url="/login")
+    
     nuevo_horario = Horario(
         dia=dia,
         hora_inicio=hora_inicio,
         hora_fin=hora_fin,
-        actividad=actividad,
-        publicado=False  # Cambia a True si quieres que se publique de una vez
+        actividad=actividad
     )
     db.add(nuevo_horario)
     db.commit()
     return RedirectResponse(url="/admin/gestionar-horarios", status_code=303)
 
 
-
-@router.post("/publicar-horario/{horario_id}")
+@router.post("/admin/publicar-horario/{horario_id}")
 def publicar_horario(
     request: Request,
     horario_id: int,
@@ -143,8 +142,8 @@ def publicar_horario(
 
 # ------------------------ PUBLICAR POST ------------------------
 
-
-
+from fastapi import APIRouter, Request, Form, UploadFile, File, Depends
+from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 import os, shutil
 from app.database import get_db
@@ -152,8 +151,9 @@ from app.models import Post
 from app.utils import check_admin_logged
 from app.routes.embedder import generar_embed
 
+router = APIRouter()
 
-@router.post("/publicar-post")
+@router.post("/admin/publicar-post")
 async def publicar_post(
     request: Request,
     titulo: str = Form(...),
