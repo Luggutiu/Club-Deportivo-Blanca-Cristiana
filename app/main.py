@@ -293,6 +293,11 @@ def test_embed(request: Request):
 @app.get("/admin/gestionar-horarios", response_class=HTMLResponse)
 def mostrar_formulario_horario(request: Request, db=Depends(get_db)):
     horarios = db.query(Horario).order_by(Horario.dia).all()
+
+    print("HORARIOS EN ADMIN:")
+    for h in horarios:
+        print(f"- {h.dia} | {h.hora_inicio} - {h.hora_fin} | {h.actividad} | Publicado: {h.publicado}")
+
     return templates.TemplateResponse("gestionar_horarios.html", {
         "request": request,
         "horarios": horarios
