@@ -66,32 +66,37 @@ app.include_router(dev.router)
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request, db: Session = Depends(get_db)):
+    print("🚨 HOME ACTIVADO", flush=True)
+
     try:
         posts = db.query(Post).all()
         horarios = db.query(Horario).filter(Horario.publicado == True).all()
 
-        print("HORARIOS ENCONTRADOS:")
+        print("🎯 HORARIOS ENCONTRADOS:")
         for h in horarios:
-            print(f"{h.dia} - {h.hora_inicio} a {h.hora_fin}")
+            print(f"🗓️ {h.dia} - {h.hora_inicio} a {h.hora_fin}", flush=True)
 
         publicaciones = posts + horarios
         publicaciones.sort(key=lambda x: getattr(x, 'fecha_creacion', None) or x.id, reverse=True)
 
         return templates.TemplateResponse("index.html", {
             "request": request,
-            "posts": publicaciones,          # Usamos la lista combinada
-            "horarios": horarios,            # También disponible para la sección de horarios
-            "publicaciones": publicaciones   # Para la sección de DEBUG si quieres
+            "posts": publicaciones,
+            "horarios": horarios,
+            "publicaciones": publicaciones
         })
+
     except Exception as e:
-        print("ERROR EN HOME:", e)
+        print("❌ ERROR EN HOME:", e, flush=True)
         return templates.TemplateResponse("index.html", {
             "request": request,
             "posts": [],
             "horarios": [],
             "publicaciones": []
         }, status_code=500)
-
+        
+        
+        
 @app.get("/politica-privacidad", response_class=HTMLResponse)
 def politica_privacidad(request: Request):
     return templates.TemplateResponse("politica_privacidad.html", {"request": request})
