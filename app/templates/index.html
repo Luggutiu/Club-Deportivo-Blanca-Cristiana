@@ -1,4 +1,4 @@
-{% extends "base_public.html" %}
+{% extends{% extends "base_public.html" %}
 
 {% block title %}Inicio - Club Deportivo Blanca Cristiana{% endblock %}
 
@@ -15,16 +15,6 @@
   <h2>📣 Últimas Publicaciones y Horarios</h2>
 
   <div id="publicaciones-container">
-
-    <!-- DEBUG opcional -->
-    <div style="color: yellow;">
-      <h3>DEBUG: Mostrando tipos de publicaciones</h3>
-      <ul>
-        {% for item in publicaciones %}
-          <li>{{ item.__class__.__name__ }}</li>
-        {% endfor %}
-      </ul>
-    </div>
 
     {% for item in publicaciones %}
       {% if item.__table__.name == "horarios" %}
