@@ -67,9 +67,9 @@ app.include_router(dev.router)
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request, db: Session = Depends(get_db)):
     try:
-        posts = db.query(Post).all()
+        posts = db.query(Post).filter(Post.publicado == True).all()  # ✅
         horarios = db.query(Horario).filter(Horario.publicado == True).all()
-        secciones = db.query(SeccionInformativa).all()  # ✅
+        secciones = db.query(SeccionInformativa).all()
 
         publicaciones = posts + horarios
         publicaciones.sort(key=lambda x: getattr(x, 'fecha_creacion', None) or x.id, reverse=True)
@@ -77,7 +77,7 @@ async def home(request: Request, db: Session = Depends(get_db)):
         return templates.TemplateResponse("index.html", {
             "request": request,
             "publicaciones": publicaciones,
-            "secciones": secciones  # ✅
+            "secciones": secciones
         })
     except Exception as e:
         return templates.TemplateResponse("error.html", {
