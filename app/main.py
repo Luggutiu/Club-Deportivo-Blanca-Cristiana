@@ -78,15 +78,19 @@ async def home(request: Request, db: Session = Depends(get_db)):
         publicaciones.sort(key=lambda x: getattr(x, 'fecha_creacion', None) or x.id, reverse=True)
 
         return templates.TemplateResponse("index.html", {
-                "request": request,
-                "posts": posts,
-                "horarios": horarios
-            })
+            "request": request,
+            "posts": publicaciones,          # Usamos la lista combinada
+            "horarios": horarios,            # También disponible para la sección de horarios
+            "publicaciones": publicaciones   # Para la sección de DEBUG si quieres
+        })
     except Exception as e:
+        print("ERROR EN HOME:", e)
         return templates.TemplateResponse("index.html", {
-        "request": request,
-        "publicaciones": publicaciones
-    })
+            "request": request,
+            "posts": [],
+            "horarios": [],
+            "publicaciones": []
+        }, status_code=500)
 
 @app.get("/politica-privacidad", response_class=HTMLResponse)
 def politica_privacidad(request: Request):
