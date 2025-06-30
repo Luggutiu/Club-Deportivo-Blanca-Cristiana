@@ -15,6 +15,15 @@
   <h2>📣 Últimas Publicaciones</h2>
 
   <div id="publicaciones-container">
+
+    <div style="color: yellow;">
+  <h3>DEBUG: Mostrando tipos de publicaciones</h3>
+  <ul>
+    {% for item in publicaciones %}
+      <li>{{ item.__class__.__name__ }}</li>
+    {% endfor %}
+  </ul>
+</div>
     {% for item in posts %}
       <div class="post" data-plataforma="{{ item.plataforma or 'Texto' }}" data-id="{{ item.id }}">
         {% if item.titulo %}
