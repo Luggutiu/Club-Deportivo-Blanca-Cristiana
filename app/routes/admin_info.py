@@ -11,7 +11,7 @@ from app.models import SeccionInformativa, Horario, Post
 from app.routes.auth import check_admin_logged
 from app.routes.embedder import generar_embed
 
-router = APIRouter()
+router = APIRouter(prefix="/admin")
 templates = Jinja2Templates(directory="app/templates")
 
 # ------------------------ SECCIONES ------------------------
@@ -144,7 +144,7 @@ def publicar_horario(
 
 # ------------------------ PUBLICAR POST ------------------------
 
-from fastapi import APIRouter, Request, Form, UploadFile, File, Depends
+
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 import os, shutil

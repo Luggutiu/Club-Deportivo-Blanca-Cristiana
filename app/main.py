@@ -78,9 +78,10 @@ async def home(request: Request, db: Session = Depends(get_db)):
         publicaciones.sort(key=lambda x: getattr(x, 'fecha_creacion', None) or x.id, reverse=True)
 
         return templates.TemplateResponse("index.html", {
-            "request": request,
-            "publicaciones": publicaciones,
-        })
+                "request": request,
+                "posts": posts,
+                "horarios": horarios
+            })
     except Exception as e:
         return templates.TemplateResponse("index.html", {
         "request": request,
@@ -273,7 +274,7 @@ def admin_panel(request: Request, db: Session = Depends(get_db)):
     if not check_admin_logged(request):
         return RedirectResponse(url="/login", status_code=302)
     publicaciones = db.query(Post).all()
-    horarios = db.query(Horario).filter(Horario.publicado == True).all()
+    horarios = db.query(Horario).order_by(Horario.dia).all()
     return templates.TemplateResponse("admin.html", {
         "request": request,
         "publicaciones": publicaciones,
