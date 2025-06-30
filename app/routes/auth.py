@@ -1,16 +1,14 @@
-import os
-from fastapi import APIRouter, Request, Form, Depends
+from fastapi import APIRouter, Request, Form
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from starlette.status import HTTP_302_FOUND
-from starlette.middleware.sessions import SessionMiddleware
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 
-# ⚠️ Toma credenciales solo de variables de entorno
-ADMIN_USER = os.getenv("ADMIN_USER")
-ADMIN_PASS = os.getenv("ADMIN_PASS")
+# Credenciales estáticas
+ADMIN_USER = "admin"
+ADMIN_PASS = "admin123*"
 
 def check_admin_logged(request: Request) -> bool:
     return bool(request.session.get("admin_logged"))
@@ -21,14 +19,9 @@ async def login_form(request: Request):
 
 @router.post("/login")
 async def login_post(request: Request, username: str = Form(...), password: str = Form(...)):
-    # Limpia espacios
-    user = username.strip()
-    pwd  = password.strip()
-
-    if user == ADMIN_USER and pwd == ADMIN_PASS:
+    if username.strip() == ADMIN_USER and password.strip() == ADMIN_PASS:
         request.session["admin_logged"] = True
         return RedirectResponse(url="/admin", status_code=HTTP_302_FOUND)
-
     return templates.TemplateResponse("login.html", {
         "request": request,
         "error": "Usuario o contraseña incorrectos"
