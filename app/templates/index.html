@@ -11,7 +11,7 @@
     <input type="text" id="busqueda" placeholder="Escribe una palabra clave..." style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ff5e78; background-color: #1c1c1c; color: #fff;">
   </div>
 
-  <!-- ÚLTIMAS PUBLICACIONES -->
+  <!-- Título -->
   <h2>📣 Últimas Publicaciones</h2>
 
   <div id="publicaciones-container">
@@ -36,7 +36,10 @@
             </div>
           {% elif item.plataforma in ["YouTube", "Facebook", "TikTok", "Instagram"] %}
             <div class="video-embed-container">
-              <iframe src="{{ item.embed_url }}" allowfullscreen loading="lazy" title="Publicación en {{ item.plataforma }}"></iframe>
+              <iframe src="{{ item.embed_url }}"
+                      allowfullscreen
+                      loading="lazy"
+                      title="Publicación en {{ item.plataforma }}"></iframe>
             </div>
           {% elif item.plataforma == "Twitter" %}
             <blockquote class="twitter-tweet">
@@ -59,9 +62,9 @@
 
       {% elif item.__class__.__name__ == "Horario" %}
         <div class="horario-card">
-          <h3>{{ item.dia|capitalize }}</h3>
+          <h3 style="color: #ffb3c6;">{{ item.dia|capitalize }}</h3>
           <p><strong>{{ item.hora_inicio }} - {{ item.hora_fin }}</strong></p>
-          <p>{{ item.actividad }}</p>
+          <p style="color: white;">{{ item.actividad }}</p>
         </div>
       {% endif %}
     {% endfor %}
@@ -102,16 +105,6 @@
     margin-bottom: 30px;
   }
 
-  .horario-card h3 {
-    color: #ffb3c6;
-    margin-bottom: 10px;
-  }
-
-  .horario-card p {
-    margin: 5px 0;
-    color: #fff;
-  }
-
   .plataforma {
     margin-top: 10px;
     color: #ffb3c6;
@@ -135,8 +128,7 @@
     background-color: #000;
   }
 
-  .video-embed-container iframe,
-  .video-embed-container .video-embed {
+  .video-embed-container iframe {
     position: absolute;
     top: 0;
     left: 0;
