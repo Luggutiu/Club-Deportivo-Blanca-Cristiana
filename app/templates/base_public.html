@@ -168,10 +168,10 @@
         <a href="/">Inicio</a>
         {% if secciones %}
           {% for s in secciones %}
-              <a href="/seccion/{{ s.slug }}">{{ s.titulo }}</a>
+            <a href="/{{ s.slug }}">{{ s.titulo }}</a>
           {% endfor %}
         {% else %}
-          <!-- Si no se pasan secciones, usar fijo -->
+          <!-- Respaldo estático -->
           <a href="/mision">Misión</a>
           <a href="/vision">Visión</a>
           <a href="/quienes-somos">¿Quiénes somos?</a>

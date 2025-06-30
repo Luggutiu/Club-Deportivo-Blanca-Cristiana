@@ -4,7 +4,7 @@ from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.status import HTTP_303_SEE_OTHER
 from sqlalchemy.orm import Session
-from app.routes import auth
+
 
 from app.utils.email_utils import enviar_correo_bienvenida, notificar_admin_suscripcion  # si aún no lo tienes importado
 from app.routes.auth import check_admin_logged
@@ -420,7 +420,41 @@ def editar_seccion_post(request: Request, titulo: str, contenido: str = Form(...
 
 #app.include_router(info.router)
 
-app.include_router(info.router, prefix="/seccion")
+#app.include_router(info.router, prefix="/seccion")
+
+
+@app.get("/mision", response_class=HTMLResponse)
+async def seccion_mision(request: Request, db: Session = Depends(get_db)):
+    seccion = db.query(SeccionInformativa).filter_by(slug="mision").first()
+    return templates.TemplateResponse("ver_seccion.html", {
+        "request": request,
+        "titulo": seccion.titulo if seccion else "Misión",
+        "contenido": seccion.contenido if seccion else "Contenido no disponible.",
+        "imagen_url": seccion.imagen_url if seccion else None,
+        "secciones": db.query(SeccionInformativa).all()
+    })
+
+@app.get("/vision", response_class=HTMLResponse)
+async def seccion_vision(request: Request, db: Session = Depends(get_db)):
+    seccion = db.query(SeccionInformativa).filter_by(slug="vision").first()
+    return templates.TemplateResponse("ver_seccion.html", {
+        "request": request,
+        "titulo": seccion.titulo if seccion else "Visión",
+        "contenido": seccion.contenido if seccion else "Contenido no disponible.",
+        "imagen_url": seccion.imagen_url if seccion else None,
+        "secciones": db.query(SeccionInformativa).all()
+    })
+
+@app.get("/quienes-somos", response_class=HTMLResponse)
+async def seccion_quienes(request: Request, db: Session = Depends(get_db)):
+    seccion = db.query(SeccionInformativa).filter_by(slug="quienes-somos").first()
+    return templates.TemplateResponse("ver_seccion.html", {
+        "request": request,
+        "titulo": seccion.titulo if seccion else "¿Quiénes somos?",
+        "contenido": seccion.contenido if seccion else "Contenido no disponible.",
+        "imagen_url": seccion.imagen_url if seccion else None,
+        "secciones": db.query(SeccionInformativa).all()
+    })
 
 
 
