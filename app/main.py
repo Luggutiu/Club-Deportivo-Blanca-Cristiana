@@ -82,10 +82,10 @@ async def home(request: Request, db: Session = Depends(get_db)):
             "publicaciones": publicaciones,
         })
     except Exception as e:
-        return templates.TemplateResponse("error.html", {
-            "request": request,
-            "error_message": str(e)
-        }, status_code=500)
+        return templates.TemplateResponse("index.html", {
+        "request": request,
+        "publicaciones": publicaciones
+    })
 
 @app.get("/politica-privacidad", response_class=HTMLResponse)
 def politica_privacidad(request: Request):

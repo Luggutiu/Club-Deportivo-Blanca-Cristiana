@@ -15,16 +15,6 @@
   <h2>📣 Últimas Publicaciones</h2>
 
   <div id="publicaciones-container">
-
-    <div style="color: yellow;">
-      <h3>DEBUG: Mostrando tipos de publicaciones</h3>
-      <ul>
-        {% for item in publicaciones %}
-          <li>{{ item.__class__.__name__ }}</li>
-        {% endfor %}
-      </ul>
-    </div>
-
     {% for item in publicaciones %}
       {% if item.__class__.__name__ == "Post" %}
         <div class="post" data-plataforma="{{ item.plataforma or 'Texto' }}" data-id="{{ item.id }}">
@@ -46,10 +36,7 @@
             </div>
           {% elif item.plataforma in ["YouTube", "Facebook", "TikTok", "Instagram"] %}
             <div class="video-embed-container">
-              <iframe src="{{ item.embed_url }}"
-                      allowfullscreen
-                      loading="lazy"
-                      title="Publicación en {{ item.plataforma }}"></iframe>
+              <iframe src="{{ item.embed_url }}" allowfullscreen loading="lazy" title="Publicación en {{ item.plataforma }}"></iframe>
             </div>
           {% elif item.plataforma == "Twitter" %}
             <blockquote class="twitter-tweet">
@@ -78,7 +65,6 @@
         </div>
       {% endif %}
     {% endfor %}
-
   </div>
 
 </div>
