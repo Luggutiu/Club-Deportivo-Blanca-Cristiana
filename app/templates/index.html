@@ -12,9 +12,10 @@
   </div>
 
   <!-- ÚLTIMAS PUBLICACIONES -->
-  <h2>📣 Últimas Publicaciones</h2>
+  <h2>📣 Últimas Publicaciones y Horarios</h2>
 
   <div id="publicaciones-container">
+
     <div style="color: yellow;">
       <h3>DEBUG: Mostrando tipos de publicaciones</h3>
       <ul>
@@ -25,7 +26,15 @@
     </div>
 
     {% for item in posts %}
-      {% if item.__class__.__name__ == "Post" %}
+      {% if item.__class__.__name__ == "Horario" %}
+        <!-- Horario publicado -->
+        <div class="horario-box" style="background-color:#222; padding:15px; border-radius:10px; margin-bottom:20px; border-left: 5px solid #25d366;">
+          <h3 style="color:#25d366;">🗓️ {{ item.dia }}</h3>
+          <p style="color:white;">🕐 {{ item.hora_inicio }} - {{ item.hora_fin }}</p>
+          <p style="color:white;">🏃 Actividad: {{ item.actividad }}</p>
+        </div>
+      {% else %}
+        <!-- Publicación (post/video/texto) -->
         <div class="post" data-plataforma="{{ item.plataforma or 'Texto' }}" data-id="{{ item.id }}">
           {% if item.titulo %}
             <h3 style="color:#ffb3c6;">{{ item.titulo }}</h3>
@@ -68,19 +77,12 @@
             </button>
           </div>
         </div>
-
-      {% elif item.__class__.__name__ == "Horario" %}
-        <div class="post" style="background-color: #2b2b2b; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
-          <h3 style="color:#ff91a4;">🕒 {{ item.dia }} – {{ item.hora_inicio }} a {{ item.hora_fin }}</h3>
-          <p style="color: white;">Actividad: <strong>{{ item.actividad }}</strong></p>
-          <p style="font-size: 0.9em; color: #bbb;">(Horario publicado)</p>
-        </div>
       {% endif %}
     {% else %}
-      <p style="color: #ccc;">No hay publicaciones ni horarios disponibles.</p>
+      <p style="color: #ccc;">No hay publicaciones disponibles.</p>
     {% endfor %}
-  </div>
 
+  </div>
 </div>
 {% endblock %}
 
@@ -104,6 +106,15 @@
     border-radius: 15px;
     margin-bottom: 30px;
     box-shadow: 0 0 10px rgba(255, 65, 180, 0.3);
+  }
+
+  .horario-box {
+    background-color: rgba(0, 255, 0, 0.05);
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+    border: 1px solid #25d366;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
   }
 
   .plataforma {
