@@ -78,6 +78,7 @@ async def home(request: Request, db: Session = Depends(get_db)):
             "publicaciones": publicaciones
         })
     except Exception as e:
+        print("ERROR EN HOME:", str(e))
         return templates.TemplateResponse("error.html", {
             "request": request,
             "error_message": str(e)
