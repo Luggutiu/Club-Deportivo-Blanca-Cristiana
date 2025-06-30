@@ -337,7 +337,7 @@ def publicar_horario(horario_id: int, request: Request):
     finally:
         db.close()
     
-    return RedirectResponse(url="/admin/horarios", status_code=303)
+    return RedirectResponse(url="/admin/gestionar-horarios", status_code=303)
 
 @app.post("/admin/publicar-post")
 def guardar_post(request: Request, titulo: str = Form(...), texto: str = Form(None), imagen_url: str = Form(None), db=Depends(get_db)):
