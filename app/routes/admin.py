@@ -2,7 +2,6 @@ from fastapi import APIRouter, Request, Form, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
-from fastapi import HTTPException 
 
 from app.database import get_db
 from app.models import Post, SeccionInformativa, Horario
@@ -58,34 +57,40 @@ def publicar_post(
 # -----------------------------------------
 # Editar secciones informativas
 # -----------------------------------------
+@router.get("/admin/editar/{seccion}", response_class=HTMLResponse)
+def editar_seccion(request: Request, seccion: str, db: Session = Depends(get_db)):
+    if not check_admin_logged(request):
+        return RedirectResponse(url="/login", status_code=302)
 
-@router.get("/admin/editar/{seccion_slug}", response_class=HTMLResponse)
-async def editar_seccion_get(request: Request, seccion_slug: str, db: Session = Depends(get_db)):
-    seccion = db.query(SeccionInformativa).filter_by(slug=seccion_slug).first()
-    if not seccion:
-        raise HTTPException(status_code=404, detail="Sección no encontrada")
+    contenido = db.query(SeccionInformativa).filter_by(titulo=seccion).first()
+    if not contenido:
+        contenido = SeccionInformativa(titulo=seccion, contenido="")
 
     return templates.TemplateResponse("editar_seccion.html", {
         "request": request,
-        "titulo": seccion.titulo,
-        "contenido": seccion.contenido,
-        "imagen_url": seccion.imagen_url
+        "seccion": seccion,
+        "contenido": contenido
     })
 
-@router.post("/admin/editar/{seccion_slug}")
-async def editar_seccion_post(request: Request, seccion_slug: str, db: Session = Depends(get_db)):
-    form = await request.form()
-    contenido = form.get("contenido")
-    imagen_url = form.get("imagen_url")
+@router.post("/admin/editar/{seccion}")
+def guardar_seccion(
+    request: Request,
+    seccion: str,
+    contenido: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    if not check_admin_logged(request):
+        return RedirectResponse(url="/login", status_code=302)
 
-    seccion = db.query(SeccionInformativa).filter_by(slug=seccion_slug).first()
-    if not seccion:
-        raise HTTPException(status_code=404, detail="Sección no encontrada")
+    seccion_obj = db.query(SeccionInformativa).filter_by(titulo=seccion).first()
 
-    seccion.contenido = contenido
-    seccion.imagen_url = imagen_url
+    if not seccion_obj:
+        seccion_obj = SeccionInformativa(titulo=seccion, contenido=contenido)
+        db.add(seccion_obj)
+    else:
+        seccion_obj.contenido = contenido
+
     db.commit()
-
     return RedirectResponse(url="/admin", status_code=302)
 
 # -----------------------------------------

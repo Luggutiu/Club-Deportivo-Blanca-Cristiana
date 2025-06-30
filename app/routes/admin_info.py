@@ -61,14 +61,14 @@ def publicar_video_form(request: Request):
         return RedirectResponse(url="/login")
     
     return templates.TemplateResponse("publicar_video.html", {"request": request})
-from typing import Optional
+
 
 @router.post("/admin/publicar-video")
 async def procesar_video(
     request: Request,
-    titulo: Optional[str] = Form(""),
-    url: Optional[str] = Form(""),
-    plataforma: Optional[str] = Form(""),
+    titulo: str = Form(...),
+    url: str = Form(...),
+    plataforma: str = Form(...),
     db: Session = Depends(get_db)
 ):
     if not check_admin_logged(request):

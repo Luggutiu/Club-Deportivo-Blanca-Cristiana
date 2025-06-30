@@ -70,13 +70,6 @@
       margin-bottom: 20px;
     }
 
-    .error-msg {
-      color: #ffb3b3;
-      font-size: 0.9em;
-      margin-top: -15px;
-      margin-bottom: 15px;
-    }
-
     @media (max-width: 480px) {
       .login-box {
         padding: 25px;
@@ -88,18 +81,11 @@
   <div class="login-box">
     <img src="{{ url_for('static', path='logo.png') }}" alt="Logo del Club">
     <h2>Iniciar Sesión</h2>
-
-    <form method="post" action="/login">
-      <input type="text" name="username" placeholder="Usuario" required autocomplete="username">
-      <input type="password" name="password" placeholder="Contraseña" required autocomplete="current-password">
-
-      {% if error %}
-        <div class="error-msg">{{ error }}</div>
-      {% endif %}
-
+    <form method="post">
+      <input type="text" name="username" placeholder="Usuario" required>
+      <input type="password" name="password" placeholder="Contraseña" required>
       <input type="submit" value="Ingresar">
     </form>
-
     <p>Acceso solo para administradores</p>
   </div>
 </body>

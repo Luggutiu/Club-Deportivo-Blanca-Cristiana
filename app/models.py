@@ -23,7 +23,6 @@ class Post(Base):
     video_embed = Column(Text, nullable=True)
     plataforma = Column(String, nullable=True)
     fecha_creacion = Column(DateTime, default=datetime.utcnow)
-    likes = Column(Integer, default=0)  # Nuevo campo
 
     publicado = Column(Boolean, default=True) 
 # ---------------------------
@@ -33,10 +32,9 @@ class SeccionInformativa(Base):
     __tablename__ = "secciones"
 
     id = Column(Integer, primary_key=True, index=True)
-    titulo = Column(String, unique=True, nullable=False)
-    slug = Column(String, unique=True, nullable=False)  # Nuevo campo
+    titulo = Column(String, unique=True, index=True, nullable=False)
     contenido = Column(Text, nullable=False)
-    imagen_url = Column(String, nullable=True)
+    imagen_url = Column(String, nullable=True)  # ← ESTE DEBE EXISTIR
 
 # ---------------------------
 # Modelo: Horario de actividad
@@ -52,16 +50,3 @@ class Horario(Base):
     publicado = Column(Boolean, default=False, nullable=False)
     
     fecha_creacion = Column(DateTime, default=datetime.utcnow)
-    
-from sqlalchemy import Column, Integer, String
-from app.database import Base
-
-class Suscriptor(Base):
-    __tablename__ = "suscriptores"
-
-    id = Column(Integer, primary_key=True, index=True)
-    tipo_documento = Column(String, nullable=False)
-    numero_documento = Column(String, unique=True, nullable=False)
-    nombre_completo = Column(String, nullable=False)
-    celular = Column(String, nullable=False)
-    correo = Column(String, unique=True, nullable=False)
