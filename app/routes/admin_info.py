@@ -61,14 +61,14 @@ def publicar_video_form(request: Request):
         return RedirectResponse(url="/login")
     
     return templates.TemplateResponse("publicar_video.html", {"request": request})
-
+from typing import Optional
 
 @router.post("/admin/publicar-video")
 async def procesar_video(
     request: Request,
-    titulo: str = Form(...),
-    url: str = Form(...),
-    plataforma: str = Form(...),
+    titulo: Optional[str] = Form(""),
+    url: Optional[str] = Form(""),
+    plataforma: Optional[str] = Form(""),
     db: Session = Depends(get_db)
 ):
     if not check_admin_logged(request):
@@ -111,17 +111,19 @@ def guardar_horario(
     db: Session = Depends(get_db)
 ):
     if not check_admin_logged(request):
-        return RedirectResponse(url="/login")
-    
+        return RedirectResponse(url="/login", status_code=302)
+
     nuevo_horario = Horario(
         dia=dia,
         hora_inicio=hora_inicio,
         hora_fin=hora_fin,
-        actividad=actividad
+        actividad=actividad,
+        publicado=False  # Cambia a True si quieres que se publique de una vez
     )
     db.add(nuevo_horario)
     db.commit()
     return RedirectResponse(url="/admin/gestionar-horarios", status_code=303)
+
 
 
 @router.post("/admin/publicar-horario/{horario_id}")

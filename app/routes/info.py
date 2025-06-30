@@ -1,32 +1,42 @@
-from fastapi import APIRouter, Request, Depends
+from fastapi import APIRouter, Request, Depends, HTTPException
 from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
+from fastapi.templating import Jinja2Templates
+
 from app.database import get_db
 from app.models import SeccionInformativa
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 
-SECCIONES = {
-    "mision": "Misión",
-    "vision": "Visión",
-    "quienes-somos": "¿Quiénes Somos?",
-    "contacto": "Contáctenos"
+# ✅ Lista de rutas que no deben ser capturadas por /{slug}
+RUTAS_EXCLUIDAS = {
+    "suscribirse", "contacto", "admin", "login", "logout",
+    "static", "favicon.ico", "formulario-suscriptor", "guardar-suscriptor"
 }
 
-@router.get("/{seccion_slug}", response_class=HTMLResponse)
-async def ver_seccion(request: Request, seccion_slug: str, db: Session = Depends(get_db)):
-    if seccion_slug not in SECCIONES:
+@router.get("/{slug}", response_class=HTMLResponse)
+async def ver_seccion_individual(
+    request: Request,
+    slug: str,
+    db: Session = Depends(get_db)
+):
+    if slug in RUTAS_EXCLUIDAS:
+        raise HTTPException(status_code=404, detail="Ruta no válida")
+
+    seccion = db.query(SeccionInformativa).filter_by(slug=slug).first()
+
+    if not seccion:
         return templates.TemplateResponse("ver_seccion.html", {
             "request": request,
             "titulo": "Sección no encontrada",
-            "contenido": "La sección solicitada no está disponible."
+            "contenido": "La sección solicitada no está disponible.",
+            "imagen_url": None
         })
 
-    contenido = db.query(SeccionInformativa).filter_by(titulo=seccion_slug).first()
     return templates.TemplateResponse("ver_seccion.html", {
         "request": request,
-        "titulo": SECCIONES[seccion_slug],
-        "contenido": contenido.contenido if contenido else "Contenido no disponible"
+        "titulo": seccion.titulo,
+        "contenido": seccion.contenido,
+        "imagen_url": seccion.imagen_url
     })

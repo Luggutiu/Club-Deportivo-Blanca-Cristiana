@@ -56,11 +56,19 @@
   <!-- Secciones informativas -->
   <div class="secciones-section">
     <h3>Secciones informativas</h3>
+
+    {% set SECCIONES = {
+      'mision': 'Misión',
+      'vision': 'Visión',
+      'quienes-somos': '¿Quiénes Somos?',
+      'contacto': 'Contáctenos'
+    } %}
+
     <ul class="secciones-list">
-      {% for titulo in ['mision', 'vision', 'quienes-somos', 'contacto'] %}
+      {% for slug, nombre in SECCIONES.items() %}
         <li class="seccion-item">
-          <strong>{{ titulo|replace('-', ' ')|title }}</strong>
-          <a href="/admin/editar/{{ titulo }}" class="btn-editar" aria-label="Editar sección">✏️ Editar</a>
+          <strong>{{ nombre }}</strong>
+          <a href="/admin/editar/{{ slug }}" class="btn-editar" aria-label="Editar sección">✏️ Editar</a>
         </li>
       {% endfor %}
     </ul>
