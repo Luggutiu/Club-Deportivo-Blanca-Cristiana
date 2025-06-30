@@ -17,59 +17,68 @@
   <div id="publicaciones-container">
 
     <div style="color: yellow;">
-  <h3>DEBUG: Mostrando tipos de publicaciones</h3>
-  <ul>
+      <h3>DEBUG: Mostrando tipos de publicaciones</h3>
+      <ul>
+        {% for item in publicaciones %}
+          <li>{{ item.__class__.__name__ }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+
     {% for item in publicaciones %}
-      <li>{{ item.__class__.__name__ }}</li>
-    {% endfor %}
-  </ul>
-</div>
-    {% for item in posts %}
-      <div class="post" data-plataforma="{{ item.plataforma or 'Texto' }}" data-id="{{ item.id }}">
-        {% if item.titulo %}
-          <h3 style="color:#ffb3c6;">{{ item.titulo }}</h3>
-        {% endif %}
-        {% if item.texto %}
-          <p style="color:white;">{{ item.texto }}</p>
-        {% endif %}
-        {% if item.imagen_url %}
-          <img src="{{ item.imagen_url }}" alt="Imagen del post" style="max-width:100%; border-radius: 8px; margin:10px 0;">
-        {% elif item.imagen_archivo %}
-          <img src="/static/uploads/{{ item.imagen_archivo }}" alt="Imagen subida" style="max-width:100%; border-radius: 8px; margin:10px 0;">
-        {% endif %}
+      {% if item.__class__.__name__ == "Post" %}
+        <div class="post" data-plataforma="{{ item.plataforma or 'Texto' }}" data-id="{{ item.id }}">
+          {% if item.titulo %}
+            <h3 style="color:#ffb3c6;">{{ item.titulo }}</h3>
+          {% endif %}
+          {% if item.texto %}
+            <p style="color:white;">{{ item.texto }}</p>
+          {% endif %}
+          {% if item.imagen_url %}
+            <img src="{{ item.imagen_url }}" alt="Imagen del post" style="max-width:100%; border-radius: 8px; margin:10px 0;">
+          {% elif item.imagen_archivo %}
+            <img src="/static/uploads/{{ item.imagen_archivo }}" alt="Imagen subida" style="max-width:100%; border-radius: 8px; margin:10px 0;">
+          {% endif %}
 
-        {% if item.video_embed %}
-          <div class="video-embed-container">
-            {{ item.video_embed | safe }}
-          </div>
-        {% elif item.plataforma in ["YouTube", "Facebook", "TikTok", "Instagram"] %}
-          <div class="video-embed-container">
-            <iframe src="{{ item.embed_url }}"
-                    allowfullscreen
-                    loading="lazy"
-                    title="Publicación en {{ item.plataforma }}"></iframe>
-          </div>
-        {% elif item.plataforma == "Twitter" %}
-          <blockquote class="twitter-tweet">
-            <a href="{{ item.url }}"></a>
-          </blockquote>
-        {% endif %}
+          {% if item.video_embed %}
+            <div class="video-embed-container">
+              {{ item.video_embed | safe }}
+            </div>
+          {% elif item.plataforma in ["YouTube", "Facebook", "TikTok", "Instagram"] %}
+            <div class="video-embed-container">
+              <iframe src="{{ item.embed_url }}"
+                      allowfullscreen
+                      loading="lazy"
+                      title="Publicación en {{ item.plataforma }}"></iframe>
+            </div>
+          {% elif item.plataforma == "Twitter" %}
+            <blockquote class="twitter-tweet">
+              <a href="{{ item.url }}"></a>
+            </blockquote>
+          {% endif %}
 
-        <div class="plataforma">Plataforma: {{ item.plataforma or 'Texto' }}</div>
+          <div class="plataforma">Plataforma: {{ item.plataforma or 'Texto' }}</div>
 
-        <div class="acciones-post" style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
-          <div class="likes" id="likes-{{ item.id }}" style="color: #fff;">
-            ❤️ {{ item.likes or 0 }} Me gusta
+          <div class="acciones-post" style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
+            <div class="likes" id="likes-{{ item.id }}" style="color: #fff;">
+              ❤️ {{ item.likes or 0 }} Me gusta
+            </div>
+            <button onclick="darLike('{{ item.id }}')"
+                    style="background-color: #ff5e78; color: white; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer;">
+              ❤️ Me gusta
+            </button>
           </div>
-          <button onclick="darLike('{{ item.id }}')"
-                  style="background-color: #ff5e78; color: white; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer;">
-            ❤️ Me gusta
-          </button>
         </div>
-      </div>
-    {% else %}
-      <p style="color: #ccc;">No hay publicaciones disponibles.</p>
+
+      {% elif item.__class__.__name__ == "Horario" %}
+        <div class="horario-card">
+          <h3>{{ item.dia|capitalize }}</h3>
+          <p><strong>{{ item.hora_inicio }} - {{ item.hora_fin }}</strong></p>
+          <p>{{ item.actividad }}</p>
+        </div>
+      {% endif %}
     {% endfor %}
+
   </div>
 
 </div>
@@ -95,6 +104,26 @@
     border-radius: 15px;
     margin-bottom: 30px;
     box-shadow: 0 0 10px rgba(255, 65, 180, 0.3);
+  }
+
+  .horario-card {
+    background-color: #1c1c1c;
+    border: 1px solid #ff5e78;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(255, 65, 180, 0.2);
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .horario-card h3 {
+    color: #ffb3c6;
+    margin-bottom: 10px;
+  }
+
+  .horario-card p {
+    margin: 5px 0;
+    color: #fff;
   }
 
   .plataforma {
