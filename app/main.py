@@ -320,6 +320,25 @@ def guardar_horario(
     db.commit()
     return RedirectResponse(url="/admin/gestionar-horarios", status_code=303)
 
+
+from fastapi import Request
+from fastapi.responses import RedirectResponse
+from app.database import SessionLocal
+from app import models
+
+@app.post("/admin/publicar-horario/{horario_id}")
+def publicar_horario(horario_id: int, request: Request):
+    db = SessionLocal()
+    try:
+        horario = db.query(models.Horario).filter(models.Horario.id == horario_id).first()
+        if horario:
+            horario.publicado = True
+            db.commit()
+    finally:
+        db.close()
+    
+    return RedirectResponse(url="/admin/horarios", status_code=303)
+
 @app.post("/admin/publicar-post")
 def guardar_post(request: Request, titulo: str = Form(...), texto: str = Form(None), imagen_url: str = Form(None), db=Depends(get_db)):
     nuevo_post = Post(titulo=titulo, texto=texto, imagen_url=imagen_url)
