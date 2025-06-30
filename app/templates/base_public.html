@@ -171,7 +171,7 @@
             <a href="/{{ s.slug }}">{{ s.titulo }}</a>
           {% endif %}
         {% endfor %}
-        <!-- Enlaces fijos como respaldo -->
+        <!-- Respaldo estático -->
         <a href="/mision">Misión</a>
         <a href="/vision">Visión</a>
         <a href="/quienes-somos">¿Quiénes somos?</a>
@@ -196,14 +196,14 @@
       sidebar.classList.toggle("open");
     }
 
-    // Cierra el menú lateral al hacer clic en un enlace (modo móvil)
+    // Cierra menú en móvil al hacer clic en un enlace
     document.querySelectorAll("aside nav a").forEach(link => {
-      link.addEventListener("click", () => {
+      link.addEventListener("click", function () {
         document.getElementById("sidebar").classList.remove("open");
       });
     });
 
-    // Navegación SPA opcional (puedes eliminar esto si prefieres recargas completas)
+    // Navegación tipo SPA (puedes quitar si prefieres carga completa)
     document.querySelectorAll("aside nav a").forEach(link => {
       link.addEventListener("click", function (e) {
         const url = this.getAttribute("href");
