@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
   <title>Suscribirse - Club Deportivo Blanca Cristiana</title>
-  <link rel="stylesheet" href="/static/styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body style="background-color: #0e0e0e; color: white; font-family: 'Segoe UI', sans-serif; padding: 2rem;">
 
-  <!-- Botón de regreso -->
+  <!-- Botón para ir al inicio -->
   <div style="margin-bottom: 2rem;">
     <a href="/" style="color: #ff5e78; text-decoration: none; font-weight: bold;">⬅ Ir al inicio</a>
   </div>
 
-  <section style="max-width: 600px; margin: auto;">
+  <section style="max-width: 600px; margin: auto; padding: 2rem;">
     <h1 style="color: #ff5e78;">Suscríbete</h1>
     <p>Por favor llena el siguiente formulario para suscribirte al club.</p>
 
@@ -43,18 +43,17 @@
       <input type="text" id="celular" name="celular" required pattern="3\d{9}" placeholder="Ej: 3001234567">
 
       <label for="archivo">Adjuntar foto para carnet:</label>
-      <input type="file" id="archivo" name="archivo" accept=".jpg,.jpeg,.png" required>
+      <input type="file" name="archivo" id="archivo" accept=".jpg,.jpeg,.png,.pdf" required>
 
       <div>
         <input type="checkbox" id="acepto" name="acepto" required>
         <label for="acepto">
-          Acepto los <a href="/condiciones-servicio" target="_blank" style="color:#ffb3c6;">Términos y Condiciones</a> y la 
-          <a href="/politica-privacidad" target="_blank" style="color:#ffb3c6;">Política de Privacidad</a>.
+          Acepto los <a href="/condiciones-servicio" target="_blank">Términos y Condiciones</a> y la 
+          <a href="/politica-privacidad" target="_blank">Política de Privacidad</a>.
         </label>
       </div>
 
-      <button type="submit"
-              style="background-color: #ff5e78; color: white; padding: 0.7rem; border: none; border-radius: 8px; font-weight: bold;">
+      <button type="submit" style="background-color: #ff5e78; color: white; padding: 0.7rem; border: none; border-radius: 8px; font-weight: bold;">
         Suscribirme
       </button>
     </form>
@@ -174,5 +173,6 @@
       });
     });
   </script>
+
 </body>
 </html>
