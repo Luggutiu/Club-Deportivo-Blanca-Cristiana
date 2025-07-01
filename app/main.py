@@ -66,25 +66,15 @@ app.include_router(dev.router)
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request, db: Session = Depends(get_db)):
-    try:
-        posts = db.query(Post).all()
-        horarios = db.query(Horario).filter(Horario.publicado == True).all()
+    posts = db.query(Post).all()
+    horarios = db.query(Horario).filter(Horario.publicado == True).all()
 
-        print("HORARIOS ENCONTRADOS:")
-        for h in horarios:
-            print(f"{h.dia} - {h.hora_inicio} a {h.hora_fin}")
+    publicaciones = posts + horarios
+    publicaciones.sort(key=lambda x: getattr(x, 'fecha_creacion', None) or x.id, reverse=True)
 
-        publicaciones = posts + horarios
-        publicaciones.sort(key=lambda x: getattr(x, 'fecha_creacion', None) or x.id, reverse=True)
-
-        return templates.TemplateResponse("index.html", {
-            "request": request,
-            "publicaciones": publicaciones,
-        })
-    except Exception as e:
-        return templates.TemplateResponse("index.html", {
+    return templates.TemplateResponse("index.html", {
         "request": request,
-        "publicaciones": publicaciones
+        "publicaciones": publicaciones,
     })
 
 @app.get("/politica-privacidad", response_class=HTMLResponse)
