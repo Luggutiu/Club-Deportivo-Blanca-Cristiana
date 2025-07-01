@@ -221,7 +221,7 @@ footer {
 /* Mejora visual de publicaciones en pantallas grandes */
 @media (min-width: 769px) {
   .publicaciones-wrapper {
-    max-width: 680px; /* más angosto */
+    max-width: 900px; /* más angosto */
     margin: 0 auto;
   }
 
