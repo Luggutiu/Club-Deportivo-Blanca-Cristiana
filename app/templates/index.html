@@ -109,25 +109,22 @@
       display: block;
     }
 
-    .video-embed-container {
-    position: relative;
+   .video-embed-container {
     width: 100%;
-    padding-top: 56.25%; /* Proporción correcta para 16:9 */
+    aspect-ratio: 16 / 9;
     border-radius: 8px;
     overflow: hidden;
     margin-top: 10px;
     background-color: #000;
   }
 
-    .video-embed-container iframe,
-    .video-embed-container .video-embed {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
+  .video-embed-container iframe,
+  .video-embed-container .video-embed {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+  }
   </style>
   {% endblock %}
 
