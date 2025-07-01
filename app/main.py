@@ -21,7 +21,7 @@ from app.routes.auth import check_admin_logged
 
 # Rutas
 from app.routes import like, auth, admin_info, admin, posts, dev, auth_google, healthcheck
-from app.routes.suscripcion import router as suscripcion_router
+
 
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -53,7 +53,6 @@ app.include_router(auth.router)
 app.include_router(like.router)
 app.include_router(healthcheck.router)
 app.include_router(auth_google.router)
-app.include_router(suscripcion_router)
 app.include_router(admin_info.router)
 app.include_router(admin.router)
 app.include_router(posts.router)
