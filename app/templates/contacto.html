@@ -15,37 +15,9 @@
     {% endif %}
   </div>
 
-  <div class="nav-buttons">
-    <a href="/" class="btn-nav">Volver al inicio</a>
-  </div>
 </div>
 {% endblock %}
 
 {% block extra_css %}
 {% include "partials/estilo_seccion.html" %}
-
-<style>
-  .imagen-contacto {
-    display: flex;
-    justify-content: center;
-    margin-top: -20px; /* sube la tarjeta un poco */
-    margin-bottom: 40px;
-  }
-
-  .imagen-contacto img {
-    max-width: 700px;  /* ✔️ más ancha */
-    width: 90%;
-    border-radius: 20px;
-    box-shadow: 0 0 24px rgba(255, 94, 120, 0.3);
-    transition: transform 0.3s ease;
-  }
-
-  .imagen-contacto img:hover {
-    transform: scale(1.02);
-  }
-
-  .section-container {
-    text-align: center;
-  }
-</style>
 {% endblock %}
