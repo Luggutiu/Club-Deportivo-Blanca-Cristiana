@@ -1,169 +1,177 @@
-{% extends "base_public.html" %}
-
-{% block title %}Suscribirse - Club Deportivo Blanca Cristiana{% endblock %}
-
-{% block head_extra %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Suscribirse - Club Deportivo Blanca Cristiana</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-{% endblock %}
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body style="background-color: #0e0e0e; color: white; font-family: 'Segoe UI', sans-serif; padding: 2rem;">
 
-{% block content %}
-<section style="max-width: 600px; margin: auto; padding: 2rem;">
-  <h1 style="color: #ff5e78;">Suscríbete</h1>
-  <p>Por favor llena el siguiente formulario para suscribirte al club.</p>
-
-  <form id="form-suscripcion" method="post" enctype="multipart/form-data"
-        style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem;">
-    
-    <label for="nombre_completo">Nombre completo:</label>
-    <input type="text" id="nombre_completo" name="nombre_completo" required>
-
-    <label for="correo">Correo electrónico:</label>
-    <input type="email" id="correo" name="correo" required>
-
-    <label for="tipo_documento">Tipo de documento:</label>
-    <select id="tipo_documento" name="tipo_documento" required>
-      <option value="">Selecciona una opción</option>
-      <option value="Cédula">Cédula</option>
-      <option value="Cédula de extranjería">Cédula de extranjería</option>
-      <option value="Tarjeta de identidad">Tarjeta de identidad</option>
-      <option value="Pasaporte">Pasaporte</option>
-    </select>
-
-    <label for="numero_documento">Número de documento:</label>
-    <input type="text" id="numero_documento" name="numero_documento" required pattern="\d{6,15}">
-
-    <label for="celular">Número de celular:</label>
-    <input type="text" id="celular" name="celular" required pattern="3\d{9}" placeholder="Ej: 3001234567">
-
-    <label for="archivo">Adjunta una imagen o documento (opcional):</label>
-    <input type="file" name="archivo" accept=".jpg,.jpeg,.png,.pdf">
-
-    <div>
-      <input type="checkbox" id="acepto" name="acepto" required>
-      <label for="acepto">
-        Acepto los <a href="/condiciones-servicio" target="_blank">Términos y Condiciones</a> y la 
-        <a href="/politica-privacidad" target="_blank">Política de Privacidad</a>.
-      </label>
-    </div>
-
-    <button type="submit" style="background-color: #ff5e78; color: white; padding: 0.7rem; border: none; border-radius: 8px; font-weight: bold;">
-      Suscribirme
-    </button>
-  </form>
-
-  <div style="text-align: center; margin-top: 2.5rem;">
-    <p style="margin-bottom: 1rem; font-size: 1rem; color: #ccc;">
-      <strong>¿Prefieres una opción rápida?</strong><br>
-      También puedes suscribirte con tu cuenta de Google:
-    </p>
-    <a href="/auth/google/login" style="display: inline-block; background-color: white; color: #444; padding: 0.6rem 1.2rem; border-radius: 10px; text-decoration: none; box-shadow: 0 0 8px rgba(255, 65, 180, 0.2); display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-      <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" style="width: 20px; height: 20px;">
-      <span>Suscribirme con Google</span>
-    </a>
+  <!-- Botón para ir al inicio -->
+  <div style="margin-bottom: 2rem;">
+    <a href="/" style="color: #ff5e78; text-decoration: none; font-weight: bold;">⬅ Ir al inicio</a>
   </div>
-</section>
 
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-  const form = document.getElementById("form-suscripcion");
+  <section style="max-width: 600px; margin: auto; padding: 2rem;">
+    <h1 style="color: #ff5e78;">Suscríbete</h1>
+    <p>Por favor llena el siguiente formulario para suscribirte al club.</p>
 
-  form.addEventListener("submit", async function (e) {
-    e.preventDefault();
+    <form id="form-suscripcion" method="post" enctype="multipart/form-data"
+          style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem;">
+      
+      <label for="nombre_completo">Nombre completo:</label>
+      <input type="text" id="nombre_completo" name="nombre_completo" required>
 
-    const formData = new FormData(form);
+      <label for="correo">Correo electrónico:</label>
+      <input type="email" id="correo" name="correo" required>
 
-    const nombre = form.nombre_completo.value.trim();
-    const correo = form.correo.value.trim();
-    const tipo = form.tipo_documento.value;
-    const documento = form.numero_documento.value.trim();
-    const celular = form.celular.value.trim();
-    const acepto = form.acepto.checked;
+      <label for="tipo_documento">Tipo de documento:</label>
+      <select id="tipo_documento" name="tipo_documento" required>
+        <option value="">Selecciona una opción</option>
+        <option value="Cédula">Cédula</option>
+        <option value="Cédula de extranjería">Cédula de extranjería</option>
+        <option value="Tarjeta de identidad">Tarjeta de identidad</option>
+        <option value="Pasaporte">Pasaporte</option>
+      </select>
 
-    // Validación personalizada
-    const correoRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const celularRegex = /^3\d{9}$/;
-    const documentoRegex = /^\d{6,15}$/;
+      <label for="numero_documento">Número de documento:</label>
+      <input type="text" id="numero_documento" name="numero_documento" required pattern="\d{6,15}">
 
-    if (!nombre || !correo || !tipo || !documento || !celular) {
-      return Swal.fire({
-        icon: "warning",
-        title: "Campos incompletos",
-        text: "Por favor completa todos los campos obligatorios.",
-      });
-    }
+      <label for="celular">Número de celular:</label>
+      <input type="text" id="celular" name="celular" required pattern="3\d{9}" placeholder="Ej: 3001234567">
 
-    if (!correoRegex.test(correo)) {
-      return Swal.fire({
-        icon: "error",
-        title: "Correo inválido",
-        text: "Por favor ingresa un correo electrónico válido.",
-      });
-    }
+      <label for="archivo">Adjuntar foto para carnet:</label>
+      <input type="file" name="archivo" accept=".jpg,.jpeg,.png,.pdf" required>
 
-    if (!documentoRegex.test(documento)) {
-      return Swal.fire({
-        icon: "error",
-        title: "Documento inválido",
-        text: "El número de documento debe tener entre 6 y 15 dígitos.",
-      });
-    }
+      <div>
+        <input type="checkbox" id="acepto" name="acepto" required>
+        <label for="acepto">
+          Acepto los <a href="/condiciones-servicio" target="_blank">Términos y Condiciones</a> y la 
+          <a href="/politica-privacidad" target="_blank">Política de Privacidad</a>.
+        </label>
+      </div>
 
-    if (!celularRegex.test(celular)) {
-      return Swal.fire({
-        icon: "error",
-        title: "Celular inválido",
-        text: "El número de celular debe comenzar con 3 y tener 10 dígitos.",
-      });
-    }
+      <button type="submit" style="background-color: #ff5e78; color: white; padding: 0.7rem; border: none; border-radius: 8px; font-weight: bold;">
+        Suscribirme
+      </button>
+    </form>
 
-    if (!acepto) {
-      return Swal.fire({
-        icon: "warning",
-        title: "Términos no aceptados",
-        text: "Debes aceptar los términos y condiciones.",
-      });
-    }
+    <div style="text-align: center; margin-top: 2.5rem;">
+      <p style="margin-bottom: 1rem; font-size: 1rem; color: #ccc;">
+        <strong>¿Prefieres una opción rápida?</strong><br>
+        También puedes suscribirte con tu cuenta de Google:
+      </p>
+      <a href="/auth/google/login" style="display: inline-block; background-color: white; color: #444; padding: 0.6rem 1.2rem; border-radius: 10px; text-decoration: none; box-shadow: 0 0 8px rgba(255, 65, 180, 0.2); display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+        <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" style="width: 20px; height: 20px;">
+        <span>Suscribirme con Google</span>
+      </a>
+    </div>
+  </section>
 
-    try {
-      const response = await fetch("/suscribirse", {
-        method: "POST",
-        body: formData,
-      });
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("form-suscripcion");
 
-      const result = await response.json();
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
 
-      if (response.ok) {
-        await Swal.fire({
-          icon: "success",
-          title: "¡Gracias por suscribirte!",
-          text: result.mensaje || "Tu suscripción fue exitosa.",
-        });
-        window.location.href = "/confirmacion-suscripcion";
-      } else {
-        let mensaje = "Ocurrió un error al enviar el formulario.";
-        if (result?.error === "documento_existente") {
-          mensaje = "⚠️ Este número de documento ya ha sido registrado anteriormente.";
-        } else if (result?.error === "registro_fallido") {
-          mensaje = "⚠️ No se pudo completar la suscripción. Intenta nuevamente.";
-        } else if (result?.error) {
-          mensaje = result.error;
-        }
+      const formData = new FormData(form);
 
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: mensaje,
+      const nombre = form.nombre_completo.value.trim();
+      const correo = form.correo.value.trim();
+      const tipo = form.tipo_documento.value;
+      const documento = form.numero_documento.value.trim();
+      const celular = form.celular.value.trim();
+      const acepto = form.acepto.checked;
+
+      const correoRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const celularRegex = /^3\d{9}$/;
+      const documentoRegex = /^\d{6,15}$/;
+
+      if (!nombre || !correo || !tipo || !documento || !celular) {
+        return Swal.fire({
+          icon: "warning",
+          title: "Campos incompletos",
+          text: "Por favor completa todos los campos obligatorios.",
         });
       }
-    } catch (err) {
-      console.error("Error en la solicitud:", err);
-      Swal.fire({
-        icon: "error",
-        title: "Error inesperado",
-        text: "No se pudo enviar el formulario. Verifica tu conexión.",
-      });
-    }
+
+      if (!correoRegex.test(correo)) {
+        return Swal.fire({
+          icon: "error",
+          title: "Correo inválido",
+          text: "Por favor ingresa un correo electrónico válido.",
+        });
+      }
+
+      if (!documentoRegex.test(documento)) {
+        return Swal.fire({
+          icon: "error",
+          title: "Documento inválido",
+          text: "El número de documento debe tener entre 6 y 15 dígitos.",
+        });
+      }
+
+      if (!celularRegex.test(celular)) {
+        return Swal.fire({
+          icon: "error",
+          title: "Celular inválido",
+          text: "El número de celular debe comenzar con 3 y tener 10 dígitos.",
+        });
+      }
+
+      if (!acepto) {
+        return Swal.fire({
+          icon: "warning",
+          title: "Términos no aceptados",
+          text: "Debes aceptar los términos y condiciones.",
+        });
+      }
+
+      try {
+        const response = await fetch("/suscribirse", {
+          method: "POST",
+          body: formData,
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          await Swal.fire({
+            icon: "success",
+            title: "¡Gracias por suscribirte!",
+            text: result.mensaje || "Tu suscripción fue exitosa.",
+          });
+          window.location.href = "/confirmacion-suscripcion";
+        } else {
+          let mensaje = "Ocurrió un error al enviar el formulario.";
+          if (result?.error === "documento_existente") {
+            mensaje = "⚠️ Este número de documento ya ha sido registrado anteriormente.";
+          } else if (result?.error === "registro_fallido") {
+            mensaje = "⚠️ No se pudo completar la suscripción. Intenta nuevamente.";
+          } else if (result?.error) {
+            mensaje = result.error;
+          }
+
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: mensaje,
+          });
+        }
+      } catch (err) {
+        console.error("Error en la solicitud:", err);
+        Swal.fire({
+          icon: "error",
+          title: "Error inesperado",
+          text: "No se pudo enviar el formulario. Verifica tu conexión.",
+        });
+      }
+    });
   });
-});
-</script>
-{% endblock %}
+  </script>
+
+</body>
+</html>
