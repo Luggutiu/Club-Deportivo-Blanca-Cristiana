@@ -21,7 +21,7 @@ from app.routes.auth import check_admin_logged
 
 # Rutas
 from app.routes import like, auth, admin_info, admin, posts, dev, auth_google, healthcheck
-
+from app.routes.suscripcion import router as suscripcion_router
 
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -34,7 +34,7 @@ from app.routes.embedder import generar_embed
 from app.database import get_db
 from app.models import Post, Horario, SeccionInformativa, Suscriptor
 from app.routes import like, auth, admin_info, admin, posts, dev, auth_google, healthcheck
-
+from app.routes.suscripcion import router as suscripcion_router
 
 # Inicialización
 app = FastAPI()
@@ -53,6 +53,7 @@ app.include_router(auth.router)
 app.include_router(like.router)
 app.include_router(healthcheck.router)
 app.include_router(auth_google.router)
+app.include_router(suscripcion_router)
 app.include_router(admin_info.router)
 app.include_router(admin.router)
 app.include_router(posts.router)
@@ -65,12 +66,25 @@ app.include_router(dev.router)
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request, db: Session = Depends(get_db)):
-    posts = db.query(Post).all()
-    horarios = db.query(Horario).filter(Horario.publicado == True).all()
-    return templates.TemplateResponse("index.html", {
+    try:
+        posts = db.query(Post).all()
+        horarios = db.query(Horario).filter(Horario.publicado == True).all()
+
+        print("HORARIOS ENCONTRADOS:")
+        for h in horarios:
+            print(f"{h.dia} - {h.hora_inicio} a {h.hora_fin}")
+
+        publicaciones = posts + horarios
+        publicaciones.sort(key=lambda x: getattr(x, 'fecha_creacion', None) or x.id, reverse=True)
+
+        return templates.TemplateResponse("index.html", {
+            "request": request,
+            "publicaciones": publicaciones,
+        })
+    except Exception as e:
+        return templates.TemplateResponse("index.html", {
         "request": request,
-        "posts": posts,
-        "horarios_publicados": horarios
+        "publicaciones": publicaciones
     })
 
 @app.get("/politica-privacidad", response_class=HTMLResponse)
@@ -84,12 +98,7 @@ def condiciones_servicio(request: Request):
 @app.get("/contacto", response_class=HTMLResponse)
 def contacto(request: Request, db=Depends(get_db)):
     seccion = db.query(SeccionInformativa).filter(SeccionInformativa.titulo == "contacto").first()
-    secciones = (
-        db.query(SeccionInformativa)
-        .group_by(SeccionInformativa.slug)
-        .order_by(SeccionInformativa.id)
-        .all()
-    ) # ✅ Para el menú lateral
+    secciones = db.query(SeccionInformativa).all()  # ✅ Para el menú lateral
 
     return templates.TemplateResponse("contacto.html", {
         "request": request,

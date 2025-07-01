@@ -42,7 +42,7 @@ class SeccionInformativa(Base):
 # Modelo: Horario de actividad
 # ---------------------------
 class Horario(Base):
-    __tablename__ = "horario"
+    __tablename__ = "horarios"
 
     id = Column(Integer, primary_key=True, index=True)
     dia = Column(String, nullable=False)
