@@ -65,21 +65,16 @@
   </div>
 
   <!-- HORARIOS PUBLICADOS -->
-h2>Horarios</h2>
+<h2>Horarios</h2>
 {% if horarios_publicados %}
-    <ul>
-    {% for h in horarios_publicados %}
-        <li>{{ h.dia }}: {{ h.hora_inicio }} - {{ h.hora_fin }} → {{ h.actividad }}</li>
-    {% endfor %}
-    </ul>
+  {% for horario in horarios_publicados %}
+    <p>{{ horario.dia }}: {{ horario.hora_inicio }} - {{ horario.hora_fin }} ({{ horario.actividad }})</p>
+  {% endfor %}
 {% else %}
-    <p>No hay horarios publicados.</p>
+  <p>No hay horarios publicados.</p>
 {% endif %}
 
-{% if not tiene_horarios %}
-  <h2 style="margin-top: 40px;">🗓️ Horarios Publicados</h2>
-  <p style="color: #ccc;">No hay horarios publicados.</p>
-{% endif %}
+
 
 </div>
 {% endblock %}
