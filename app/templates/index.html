@@ -1,32 +1,30 @@
-{% extends "base_public.html" %}
+  {% extends "base_public.html" %}
 
-{% block title %}Inicio - Club Deportivo Blanca Cristiana{% endblock %}
+  {% block title %}Inicio - Club Deportivo Blanca Cristiana{% endblock %}
 
-{% block content %}
-<div class="publicaciones-wrapper">
+  {% block content %}
+  <div class="publicaciones-wrapper">
 
-  <!-- Buscador -->
-  <div style="margin-bottom: 20px;">
-    <label for="busqueda" style="color:#ffb3c6; font-weight:bold;">🔍 Buscar:</label><br>
-    <input type="text" id="busqueda" placeholder="Escribe una palabra clave..." style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ff5e78; background-color: #1c1c1c; color: #fff;">
-  </div>
-
-  <!-- ÚLTIMAS PUBLICACIONES -->
-  <h2>📣 Últimas Publicaciones</h2>
-
-  <div id="publicaciones-container">
-
-    <div style="color: yellow;">
-      <h3>DEBUG: Mostrando tipos de publicaciones</h3>
-      <ul>
-        {% for item in publicaciones %}
-          <li>{{ item.__class__.__name__ }}</li>
-        {% endfor %}
-      </ul>
+    <!-- Buscador -->
+    <div style="margin-bottom: 20px;">
+      <label for="busqueda" style="color:#ffb3c6; font-weight:bold;">🔍 Buscar:</label><br>
+      <input type="text" id="busqueda" placeholder="Escribe una palabra clave..." style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ff5e78; background-color: #1c1c1c; color: #fff;">
     </div>
 
-    {% for item in publicaciones %}
-      {% if item.__class__.__name__ == "Post" %}
+    <!-- ÚLTIMAS PUBLICACIONES -->
+    <h2>📣 Últimas Publicaciones</h2>
+
+    <div id="publicaciones-container">
+
+      <div style="color: yellow;">
+    <h3>DEBUG: Mostrando tipos de publicaciones</h3>
+    <ul>
+      {% for item in publicaciones %}
+        <li>{{ item.__class__.__name__ }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+      {% for item in posts %}
         <div class="post" data-plataforma="{{ item.plataforma or 'Texto' }}" data-id="{{ item.id }}">
           {% if item.titulo %}
             <h3 style="color:#ffb3c6;">{{ item.titulo }}</h3>
@@ -69,97 +67,88 @@
             </button>
           </div>
         </div>
-
-      {% elif item.__class__.__name__ == "Horario" %}
-        <div class="post">
-          <h3 style="color:#ffb3c6;">🕒 {{ item.dia }}</h3>
-          <p style="color:white;"><strong>{{ item.hora_inicio }} - {{ item.hora_fin }}</strong></p>
-          <p style="color:white;">{{ item.actividad }}</p>
-        </div>
-      {% endif %}
-    {% else %}
-      <p style="color: #ccc;">No hay publicaciones disponibles.</p>
-    {% endfor %}
+      {% else %}
+        <p style="color: #ccc;">No hay publicaciones disponibles.</p>
+      {% endfor %}
+    </div>
 
   </div>
+  {% endblock %}
 
-</div>
-{% endblock %}
+  {% block extra_css %}
+  <style>
+    .publicaciones-wrapper {
+      padding: 20px;
+    }
 
-{% block extra_css %}
-<style>
-  .publicaciones-wrapper {
-    padding: 20px;
-  }
+    h2 {
+      color: #ff91a4;
+      margin-top: 30px;
+      margin-bottom: 20px;
+      border-left: 5px solid #ff5e78;
+      padding-left: 15px;
+    }
 
-  h2 {
-    color: #ff91a4;
-    margin-top: 30px;
-    margin-bottom: 20px;
-    border-left: 5px solid #ff5e78;
-    padding-left: 15px;
-  }
+    .post {
+      background-color: rgba(255, 255, 255, 0.05);
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 30px;
+      box-shadow: 0 0 10px rgba(255, 65, 180, 0.3);
+    }
 
-  .post {
-    background-color: rgba(255, 255, 255, 0.05);
-    padding: 20px;
-    border-radius: 15px;
-    margin-bottom: 30px;
-    box-shadow: 0 0 10px rgba(255, 65, 180, 0.3);
-  }
+    .plataforma {
+      margin-top: 10px;
+      color: #ffb3c6;
+      font-size: 0.9em;
+      text-align: right;
+    }
 
-  .plataforma {
-    margin-top: 10px;
-    color: #ffb3c6;
-    font-size: 0.9em;
-    text-align: right;
-  }
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
 
-  img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-  }
+    .video-embed-container {
+      position: relative;
+      width: 100%;
+      padding-top: 75%;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 10px;
+      background-color: #000;
+    }
 
-  .video-embed-container {
-    position: relative;
-    width: 100%;
-    padding-top: 75%;
-    border-radius: 8px;
-    overflow: hidden;
-    margin-top: 10px;
-    background-color: #000;
-  }
+    .video-embed-container iframe,
+    .video-embed-container .video-embed {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+  </style>
+  {% endblock %}
 
-  .video-embed-container iframe,
-  .video-embed-container .video-embed {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: none;
-  }
-</style>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-  function darLike(postId) {
-    fetch(`/like/${postId}`, {
-      method: 'POST'
-    })
-    .then(response => {
-      if (response.ok) return response.json();
-      throw new Error("Error al dar like");
-    })
-    .then(data => {
-      const likesDiv = document.getElementById(`likes-${postId}`);
-      if (likesDiv) {
-        likesDiv.innerText = `❤️ ${data.likes} Me gusta`;
-      }
-    })
-    .catch(error => console.error("Error al dar like:", error));
-  }
-</script>
-{% endblock %}
+  {% block extra_js %}
+  <script>
+    function darLike(postId) {
+      fetch(`/like/${postId}`, {
+        method: 'POST'
+      })
+      .then(response => {
+        if (response.ok) return response.json();
+        throw new Error("Error al dar like");
+      })
+      .then(data => {
+        const likesDiv = document.getElementById(`likes-${postId}`);
+        if (likesDiv) {
+          likesDiv.innerText = `❤️ ${data.likes} Me gusta`;
+        }
+      })
+      .catch(error => console.error("Error al dar like:", error));
+    }
+  </script>
+  {% endblock %}
