@@ -1,0 +1,15 @@
+{% extends "base_public.html" %}
+
+{% block title %}Nuestros Servicios - Club Deportivo{% endblock %}
+
+{% block content %}
+  <div class="contenedor-seccion">
+    <h1>{{ contenido.titulo }}</h1>
+    <div class="contenido-seccion">
+      {{ contenido.contenido | safe }}
+    </div>
+    {% if contenido.imagen_url %}
+      <img src="{{ contenido.imagen_url }}" alt="Imagen de la sección" class="imagen-seccion">
+    {% endif %}
+  </div>
+{% endblock %}
