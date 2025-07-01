@@ -16,39 +16,40 @@ templates = Jinja2Templates(directory="app/templates")
 
 # ------------------------ SECCIONES ------------------------
 
-@router.get("/admin/editar/{seccion}", response_class=HTMLResponse)
-def editar_seccion(seccion: str, request: Request, db: Session = Depends(get_db)):
+@router.get("/admin/editar/{slug}", response_class=HTMLResponse)
+def editar_seccion(slug: str, request: Request, db: Session = Depends(get_db)):
     if not check_admin_logged(request):
         return RedirectResponse(url="/login")
-    
-    contenido = db.query(SeccionInformativa).filter_by(titulo=seccion).first()
+
+    contenido = db.query(SeccionInformativa).filter_by(slug=slug).first()
     if not contenido:
         raise HTTPException(status_code=404, detail="Sección no encontrada")
 
     return templates.TemplateResponse("editar_seccion.html", {
         "request": request,
-        "seccion": seccion,
-        "contenido": contenido
+        "seccion": contenido.titulo,
+        "contenido": contenido,
+        "imagen_url": contenido.imagen_url
     })
 
 
-@router.post("/admin/editar/{seccion}")
+@router.post("/admin/editar/{slug}")
 def guardar_seccion(
-    seccion: str,
+    slug: str,
     contenido: str = Form(...),
+    imagen_url: str = Form(None),
     db: Session = Depends(get_db),
     request: Request = None
 ):
     if not check_admin_logged(request):
         return RedirectResponse(url="/login", status_code=303)
 
-    seccion_bd = db.query(SeccionInformativa).filter_by(titulo=seccion).first()
+    seccion_bd = db.query(SeccionInformativa).filter_by(slug=slug).first()
     if not seccion_bd:
-        seccion_bd = SeccionInformativa(titulo=seccion, contenido=contenido)
-        db.add(seccion_bd)
-    else:
-        seccion_bd.contenido = contenido
+        raise HTTPException(status_code=404, detail="Sección no encontrada")
 
+    seccion_bd.contenido = contenido
+    seccion_bd.imagen_url = imagen_url
     db.commit()
     return RedirectResponse(url="/admin", status_code=303)
 
