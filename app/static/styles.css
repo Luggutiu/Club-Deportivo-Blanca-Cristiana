@@ -221,17 +221,19 @@ footer {
 /* Mejora visual de publicaciones en pantallas grandes */
 @media (min-width: 769px) {
   .publicaciones-wrapper {
-    max-width: 900px;
+    max-width: 680px; /* más angosto */
     margin: 0 auto;
   }
 
   .publicaciones-wrapper .post {
-    padding: 25px;
-    border-radius: 16px;
+    padding: 16px 20px; /* menos padding interno */
+    border-radius: 12px;
+    margin-bottom: 12px; /* controla el espacio entre publicaciones */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); /* suaviza si hay sombra */
   }
 
   .publicaciones-wrapper iframe {
-    max-height: 400px;
+    max-height: 280px; /* opcional: más compacto */
     aspect-ratio: 16/9;
   }
 }
