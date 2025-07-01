@@ -475,4 +475,13 @@ async def seccion_quienes(request: Request, db: Session = Depends(get_db)):
     })
 
 
-
+@app.get("/servicios", response_class=HTMLResponse)
+async def seccion_servicios(request: Request, db: Session = Depends(get_db)):
+    seccion = db.query(SeccionInformativa).filter_by(slug="servicios").first()
+    return templates.TemplateResponse("ver_seccion.html", {
+        "request": request,
+        "titulo": seccion.titulo if seccion else "Nuestros Servicios",
+        "contenido": seccion.contenido if seccion else "Contenido no disponible.",
+        "imagen_url": seccion.imagen_url if seccion else None,
+        "secciones": db.query(SeccionInformativa).all()
+    })
