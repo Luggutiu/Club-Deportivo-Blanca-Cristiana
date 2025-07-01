@@ -1,30 +1,85 @@
-{% extends "base_public.html" %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Suscripción Confirmada - Club Deportivo Blanca Cristiana</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #ff5e78, #ff91a4, #ff41b4, #000);
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+    }
 
-{% block title %}Suscripción Confirmada - Club Deportivo Blanca Cristiana{% endblock %}
+    section {
+      max-width: 600px;
+      background-color: rgba(0, 0, 0, 0.8);
+      padding: 3rem 2rem;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(255, 65, 180, 0.4);
+    }
 
-{% block content %}
-<section style="max-width: 600px; margin: auto; padding: 3rem 2rem; text-align: center;">
-  <h1 style="color: #ff5e78;">¡Gracias por unirte al club!</h1>
-  <p style="font-size: 1.1rem; color: #ccc; margin-top: 1rem;">
-    Tu suscripción ha sido registrada exitosamente. Pronto recibirás noticias, eventos y novedades del <strong>Club Deportivo Blanca Cristiana</strong>.
-  </p>
+    h1 {
+      color: #ff5e78;
+    }
 
-  {% if nombre %}
-  <p style="margin-top: 2rem; color: #eee;">
-    Bienvenido, <strong>{{ nombre }}</strong>.
-  </p>
-  {% endif %}
+    p {
+      font-size: 1.1rem;
+      margin-top: 1rem;
+      color: #ccc;
+    }
 
-  {% if correo %}
-  <p style="margin-top: 0.5rem; color: #aaa;">
-    Se ha enviado un correo de bienvenida a <strong>{{ correo }}</strong>.
-  </p>
-  {% endif %}
+    strong {
+      color: #fff;
+    }
 
-  <div style="margin-top: 3rem;">
-    <a href="/" style="background-color: #ff5e78; color: white; padding: 0.8rem 1.5rem; border-radius: 10px; text-decoration: none; font-weight: bold;">
-      Ir al inicio
-    </a>
-  </div>
-</section>
-{% endblock %}
+    a.boton-inicio {
+      display: inline-block;
+      margin-top: 2.5rem;
+      background-color: #ff5e78;
+      color: white;
+      padding: 0.8rem 1.5rem;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    a.boton-inicio:hover {
+      background-color: #ff91a4;
+    }
+  </style>
+</head>
+<body>
+  <section>
+    <h1>¡Gracias por unirte al club!</h1>
+    <p>
+      Tu suscripción ha sido registrada exitosamente. Pronto recibirás noticias, eventos y novedades del
+      <strong>Club Deportivo Blanca Cristiana</strong>.
+    </p>
+
+    {% if nombre %}
+    <p style="margin-top: 2rem;">
+      Bienvenido, <strong>{{ nombre }}</strong>.
+    </p>
+    {% endif %}
+
+    {% if correo %}
+    <p style="margin-top: 0.5rem; color: #aaa;">
+      Se ha enviado un correo de bienvenida a <strong>{{ correo }}</strong>.
+    </p>
+    {% endif %}
+
+    <div>
+      <a href="/" class="boton-inicio">Ir al inicio</a>
+    </div>
+  </section>
+</body>
+</html>
