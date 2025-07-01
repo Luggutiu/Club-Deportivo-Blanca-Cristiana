@@ -29,29 +29,6 @@
     {% endif %}
   </div>
 
-  <!-- Horarios -->
-  <div class="horarios-section">
-    <h3>Horarios registrados</h3>
-    <a href="/admin/gestionar-horarios" class="btn-agregar" aria-label="Agregar nuevo horario">➕ Agregar nuevo horario</a>
-    {% if horarios %}
-      <ul class="horarios-list">
-        {% for horario in horarios %}
-          <li class="horario-item">
-            <strong>{{ horario.dia }}:</strong> {{ horario.hora_inicio }} - {{ horario.hora_fin }} → {{ horario.actividad }}
-            {% if horario.publicado %}
-              <span class="badge-publicado">Publicado</span>
-            {% endif %}
-            <div class="acciones-horario">
-              <a href="/admin/editar-horario/{{ horario.id }}" class="btn-editar" aria-label="Editar horario">✏️ Editar</a>
-              <a href="/admin/eliminar-horario/{{ horario.id }}" class="btn-eliminar" onclick="return confirm('¿Eliminar este horario?')" aria-label="Eliminar horario">🗑️ Eliminar</a>
-            </div>
-          </li>
-        {% endfor %}
-      </ul>
-    {% else %}
-      <p class="no-items">No hay horarios registrados.</p>
-    {% endif %}
-  </div>
 
   <!-- Secciones informativas -->
   <div class="secciones-section">
