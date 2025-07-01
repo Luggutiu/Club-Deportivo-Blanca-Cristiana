@@ -1,15 +1,33 @@
 {% extends "base_public.html" %}
-
-{% block title %}Nuestros Servicios - Club Deportivo{% endblock %}
+{% block title %}Nuestros Servicios{% endblock %}
 
 {% block content %}
-  <div class="contenedor-seccion">
-    <h1>{{ contenido.titulo }}</h1>
-    <div class="contenido-seccion">
-      {{ contenido.contenido | safe }}
+<div class="section-container">
+  <h2>Nuestros Servicios</h2>
+  
+  <p>{{ contenido.contenido if contenido else "Contenido no disponible" }}</p>
+
+  {% if contenido.imagen_url %}
+    <div class="imagen-contacto">
+      <img src="{{ contenido.imagen_url }}" alt="Imagen de servicios" />
     </div>
-    {% if contenido.imagen_url %}
-      <img src="{{ contenido.imagen_url }}" alt="Imagen de la sección" class="imagen-seccion">
-    {% endif %}
+  {% endif %}
+
+  <div class="nav-buttons">
+    <a href="/" class="btn-nav">Volver al inicio</a>
   </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+{% include "partials/estilo_seccion.html" %}
+
+<style>
+  .imagen-contacto img {
+    max-width: 100%;
+    margin-top: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 12px rgba(255, 94, 120, 0.4);
+  }
+</style>
 {% endblock %}
