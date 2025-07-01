@@ -4,12 +4,45 @@
 
 {% block head_extra %}
 <style>
-  body {
+  .publicaciones-wrapper {
     background-image: url('/static/background.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
+    padding: 2rem;
+    border-radius: 20px;
+  }
+
+  .post, .buscador, h2 {
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 1rem;
+    border-radius: 12px;
+    color: white;
+    margin-bottom: 1rem;
+  }
+
+  .buscador input {
+    background: #fff;
+    color: #000;
+    padding: 0.5rem;
+    border-radius: 8px;
+    border: none;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+
+  .titulo-post {
+    color: #ffb3c6;
+  }
+
+  .texto-post {
+    color: #eee;
+  }
+
+  .plataforma {
+    font-size: 0.85rem;
+    color: #ccc;
   }
 </style>
 {% endblock %}
