@@ -34,7 +34,7 @@ from app.routes.embedder import generar_embed
 from app.database import get_db
 from app.models import Post, Horario, SeccionInformativa, Suscriptor
 from app.routes import like, auth, admin_info, admin, posts, dev, auth_google, healthcheck
-from app.routes.suscripcion import router as suscripcion_router
+
 
 # Inicialización
 app = FastAPI()
