@@ -15,49 +15,66 @@
   <h2>📣 Últimas Publicaciones</h2>
 
   <div id="publicaciones-container">
-    {% for item in publicaciones %}
-      {% if item.__class__.__name__ == "Post" %}
-        <div class="post" data-plataforma="{{ item.plataforma or 'Texto' }}" data-id="{{ item.id }}">
-          {% if item.titulo %}
-            <h3 style="color:#ffb3c6;">{{ item.titulo }}</h3>
-          {% endif %}
-          {% if item.texto %}
-            <p style="color:white;">{{ item.texto }}</p>
-          {% endif %}
-          {% if item.imagen_url %}
-            <img src="{{ item.imagen_url }}" alt="Imagen del post" style="max-width:100%; border-radius: 8px; margin:10px 0;">
-          {% elif item.imagen_archivo %}
-            <img src="/static/uploads/{{ item.imagen_archivo }}" alt="Imagen subida" style="max-width:100%; border-radius: 8px; margin:10px 0;">
-          {% endif %}
 
-          {% if item.video_embed %}
-            <div class="video-embed-container">
-              {{ item.video_embed | safe }}
-            </div>
-          {% elif item.plataforma in ["YouTube", "Facebook", "TikTok", "Instagram"] %}
-            <div class="video-embed-container">
-              <iframe src="{{ item.embed_url }}"
-                allowfullscreen
-                loading="lazy"
-                title="Publicación en {{ item.plataforma }}"></iframe>
-            </div>
-          {% elif item.plataforma == "Twitter" %}
-            <blockquote class="twitter-tweet">
-              <a href="{{ item.url }}"></a>
-            </blockquote>
-          {% endif %}
-          <div class="plataforma">Plataforma: {{ item.plataforma or 'Texto' }}</div>
-        </div>
+    {% for item in posts %}
+      <div class="post" data-plataforma="{{ item.plataforma or 'Texto' }}" data-id="{{ item.id }}">
+        {% if item.titulo %}
+          <h3 style="color:#ffb3c6;">{{ item.titulo }}</h3>
+        {% endif %}
+        {% if item.texto %}
+          <p style="color:white;">{{ item.texto }}</p>
+        {% endif %}
+        {% if item.imagen_url %}
+          <img src="{{ item.imagen_url }}" alt="Imagen del post" style="max-width:100%; border-radius: 8px; margin:10px 0;">
+        {% elif item.imagen_archivo %}
+          <img src="/static/uploads/{{ item.imagen_archivo }}" alt="Imagen subida" style="max-width:100%; border-radius: 8px; margin:10px 0;">
+        {% endif %}
 
-      {% elif item.__class__.__name__ == "Horario" %}
-        <div class="horario-card">
-          <h3>{{ item.dia|capitalize }}</h3>
-          <p><strong>{{ item.hora_inicio }} - {{ item.hora_fin }}</strong></p>
-          <p>{{ item.actividad }}</p>
+        {% if item.video_embed %}
+          <div class="video-embed-container">
+            {{ item.video_embed | safe }}
+          </div>
+        {% elif item.plataforma in ["YouTube", "Facebook", "TikTok", "Instagram"] %}
+          <div class="video-embed-container">
+            <iframe src="{{ item.embed_url }}"
+                    allowfullscreen
+                    loading="lazy"
+                    title="Publicación en {{ item.plataforma }}"></iframe>
+          </div>
+        {% elif item.plataforma == "Twitter" %}
+          <blockquote class="twitter-tweet">
+            <a href="{{ item.url }}"></a>
+          </blockquote>
+        {% endif %}
+
+        <div class="plataforma">Plataforma: {{ item.plataforma or 'Texto' }}</div>
+
+        <div class="acciones-post" style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
+          <div class="likes" id="likes-{{ item.id }}" style="color: #fff;">
+            ❤️ {{ item.likes or 0 }} Me gusta
+          </div>
+          <button onclick="darLike('{{ item.id }}')"
+                  style="background-color: #ff5e78; color: white; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer;">
+            ❤️ Me gusta
+          </button>
         </div>
-      {% endif %}
+      </div>
+    {% else %}
+      <p style="color: #ccc;">No hay publicaciones disponibles.</p>
     {% endfor %}
   </div>
+
+  <!-- HORARIOS PUBLICADOS -->
+  <h2>🗓️ Horarios Publicados</h2>
+  {% for horario in horarios_publicados %}
+    <div class="post">
+      <h3 style="color:#ffb3c6;">🕒 {{ horario.dia }}</h3>
+      <p style="color:white;"><strong>{{ horario.hora_inicio }} - {{ horario.hora_fin }}</strong></p>
+      <p style="color:white;">{{ horario.actividad }}</p>
+    </div>
+  {% else %}
+    <p style="color: #ccc;">No hay horarios publicados.</p>
+  {% endfor %}
 
 </div>
 {% endblock %}
@@ -84,26 +101,6 @@
     box-shadow: 0 0 10px rgba(255, 65, 180, 0.3);
   }
 
-  .horario-card {
-    background-color: #1c1c1c;
-    border: 1px solid #ff5e78;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 0 10px rgba(255, 65, 180, 0.2);
-    text-align: center;
-    margin-bottom: 30px;
-  }
-
-  .horario-card h3 {
-    color: #ffb3c6;
-    margin-bottom: 10px;
-  }
-
-  .horario-card p {
-    margin: 5px 0;
-    color: #fff;
-  }
-
   .plataforma {
     margin-top: 10px;
     color: #ffb3c6;
@@ -118,14 +115,14 @@
   }
 
   .video-embed-container {
-  position: relative;
-  width: 100%;
-  padding-top: 75%; /* Relación 4:3: más alto que 16:9 pero menos que cuadrado */
-  border-radius: 8px;
-  overflow: hidden;
-  margin-top: 10px;
-  background-color: #000; /* fondo negro mientras carga */
-}
+    position: relative;
+    width: 100%;
+    padding-top: 75%;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 10px;
+    background-color: #000;
+  }
 
   .video-embed-container iframe,
   .video-embed-container .video-embed {
@@ -137,4 +134,25 @@
     border: none;
   }
 </style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function darLike(postId) {
+    fetch(`/like/${postId}`, {
+      method: 'POST'
+    })
+    .then(response => {
+      if (response.ok) return response.json();
+      throw new Error("Error al dar like");
+    })
+    .then(data => {
+      const likesDiv = document.getElementById(`likes-${postId}`);
+      if (likesDiv) {
+        likesDiv.innerText = `❤️ ${data.likes} Me gusta`;
+      }
+    })
+    .catch(error => console.error("Error al dar like:", error));
+  }
+</script>
 {% endblock %}
