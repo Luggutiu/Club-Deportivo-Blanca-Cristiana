@@ -217,3 +217,21 @@ footer {
 .publicaciones-wrapper select {
   color: #ffb3c6;
 }
+
+/* Mejora visual de publicaciones en pantallas grandes */
+@media (min-width: 769px) {
+  .publicaciones-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .publicaciones-wrapper .post {
+    padding: 25px;
+    border-radius: 16px;
+  }
+
+  .publicaciones-wrapper iframe {
+    max-height: 400px;
+    aspect-ratio: 16/9;
+  }
+}

@@ -1,4 +1,4 @@
-from fastapi import Form, File, UploadFile, Request, Depends, APIRouter
+'''from fastapi import Form, File, UploadFile, Request, Depends, APIRouter
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 import os, shutil
@@ -9,7 +9,7 @@ from app.utils.email_utils import notificar_admin_suscripcion, enviar_correo_bie
 
 router = APIRouter()
 
-'''@router.post("/suscribirse")
+@router.post("/suscribirse")
 async def suscribirse_formulario(
     request: Request,
     nombre_completo: str = Form(...),

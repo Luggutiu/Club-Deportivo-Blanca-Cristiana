@@ -85,7 +85,12 @@ def condiciones_servicio(request: Request):
 @app.get("/contacto", response_class=HTMLResponse)
 def contacto(request: Request, db=Depends(get_db)):
     seccion = db.query(SeccionInformativa).filter(SeccionInformativa.titulo == "contacto").first()
-    secciones = db.query(SeccionInformativa).all()  # ✅ Para el menú lateral
+    secciones = (
+        db.query(SeccionInformativa)
+        .group_by(SeccionInformativa.slug)
+        .order_by(SeccionInformativa.id)
+        .all()
+    ) # ✅ Para el menú lateral
 
     return templates.TemplateResponse("contacto.html", {
         "request": request,
