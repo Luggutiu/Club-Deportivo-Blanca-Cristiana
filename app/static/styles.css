@@ -146,3 +146,11 @@
     font-size: 0.85rem;
   }
 }
+
+/* Fondo más oscuro para cada tarjeta */
+.post {
+  background-color: rgba(0, 0, 0, 0.75); /* Más oscuro pero con transparencia */
+  padding: 1rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+}
