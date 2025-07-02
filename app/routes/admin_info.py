@@ -14,6 +14,16 @@ from app.database import get_db
 from app.models import SeccionInformativa, Horario, Post
 from app.routes.auth import check_admin_logged
 from app.routes.embedder import generar_embed
+from fastapi import APIRouter, Request, Depends
+from fastapi.responses import HTMLResponse, RedirectResponse
+from sqlalchemy.orm import Session
+from app.models import Suscriptor
+from app.database import get_db
+from app.routes.auth import check_admin_logged
+from fastapi.templating import Jinja2Templates
+from starlette.status import HTTP_303_SEE_OTHER
+
+
 
 import openpyxl
 

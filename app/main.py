@@ -28,6 +28,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import Post
 from fastapi.responses import FileResponse
+from app.routes import admin_info
 
 # Rutas
 from app.routes import like, auth, admin_info, admin, posts, dev, auth_google, healthcheck
