@@ -21,6 +21,7 @@ from app.database import get_db
 from app.models import Post, Horario, SeccionInformativa, Suscriptor
 from app.routes.embedder import generar_embed
 from app.routes.auth import check_admin_logged
+from datetime import date
 
 from fastapi.responses import FileResponse
 
@@ -47,13 +48,36 @@ app = FastAPI()
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
 
-
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 @app.get("/sitemap.xml", include_in_schema=False)
 def sitemap():
-    sitemap_path = os.path.join(BASE_DIR, "static", "sitemap.xml")
-    return FileResponse(sitemap_path, media_type="application/xml")
+    today = date.today().isoformat()
+    base_url = "https://club-deportivo-blanca-cristiana.onrender.com"
+    
+    urls = [
+        {"loc": f"{base_url}/", "priority": "1.0"},
+        {"loc": f"{base_url}/mision"},
+        {"loc": f"{base_url}/vision"},
+        {"loc": f"{base_url}/quienes-somos"},
+        {"loc": f"{base_url}/contacto"},
+        {"loc": f"{base_url}/servicios"},
+    ]
+    
+    sitemap_xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    sitemap_xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+
+    for url in urls:
+        sitemap_xml += "  <url>\n"
+        sitemap_xml += f"    <loc>{url['loc']}</loc>\n"
+        sitemap_xml += f"    <lastmod>{today}</lastmod>\n"
+        if "priority" in url:
+            sitemap_xml += f"    <priority>{url['priority']}</priority>\n"
+        sitemap_xml += "  </url>\n"
+
+    sitemap_xml += "</urlset>"
+
+    return Response(content=sitemap_xml, media_type="application/xml")
 
 @app.get("/robots.txt", include_in_schema=False)
 def robots():
@@ -506,34 +530,3 @@ def servicios(request: Request, db=Depends(get_db)):
     })
     
 
-@app.get("/sitemap.xml", include_in_schema=False)
-def sitemap(db: Session = Depends(get_db)):
-    urls = [
-        {"loc": "/", "priority": "1.0"},
-        {"loc": "/mision"},
-        {"loc": "/vision"},
-        {"loc": "/quienes-somos"},
-        {"loc": "/contacto"},
-        {"loc": "/servicios"},
-    ]
-
-    # Opcional: incluir también las secciones dinámicas
-    secciones = db.query(SeccionInformativa).all()
-    for s in secciones:
-        if s.slug != "suscribirse":
-            urls.append({"loc": f"/{s.slug}"})
-
-    today = datetime.today().strftime("%Y-%m-%d")
-    xml_items = ""
-    for url in urls:
-        xml_items += f"""
-  <url>
-    <loc>https://club-deportivo-blanca-cristiana.onrender.com{url['loc']}</loc>
-    <lastmod>{today}</lastmod>""" + (f"\n    <priority>{url['priority']}</priority>" if "priority" in url else "") + """
-  </url>"""
-
-    xml = f"""<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{xml_items}
-</urlset>"""
-
-    return Response(content=xml.strip(), media_type="application/xml")
