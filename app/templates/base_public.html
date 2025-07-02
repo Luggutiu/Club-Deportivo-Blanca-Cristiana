@@ -8,7 +8,7 @@
   <meta name="google-site-verification" content="JSxPDq2cVyWz0V_gkmTJ1m87kAeJH1Qo5A73NjXJncY" />
 
   <title>{% block title %}Club Deportivo Blanca Cristiana{% endblock %}</title>
-
+  <link type="text/plain" rel="author" href="{{ url_for('static', path='humans.txt') }}" />
   <link rel="icon" href="{{ url_for('static', path='favicon.ico') }}" type="image/x-icon" />
   <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -149,6 +149,7 @@
     }
   </style>
 </head>
+<!-- Desarrollado por Luis Gutierrez | https://club-deportivo-blanca-cristiana.onrender.com -->
 <body>
 
   <div style="text-align: right; padding: 1rem;">
@@ -238,5 +239,8 @@
   </script>
 
   {% block extra_js %}{% endblock %}
+  <footer style="text-align: center; padding: 1rem; color: #999; font-size: 0.8rem;">
+  Desarrollado por <a href="https://tusitio.dev" target="_blank" style="color: #ccc; text-decoration: underline;">Luis Gutierrez</a>
+</footer>
 </body>
 </html>

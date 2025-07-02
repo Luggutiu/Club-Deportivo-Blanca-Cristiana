@@ -1,4 +1,12 @@
-# admin_info.py
+# ========================================
+# Proyecto desarrollado exclusivamente para:
+# Club Deportivo Blanca Cristiana
+# Desarrollador: Luis Gutierrez
+# Sitio: https://club-deportivo-blanca-cristiana.onrender.com
+# Email: clubdeportivoblancacristiana@gmail.com
+# Año: 2025
+# Todos los derechos reservados
+# ========================================
 
 from fastapi import APIRouter, Request, Form, UploadFile, File, Depends, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse

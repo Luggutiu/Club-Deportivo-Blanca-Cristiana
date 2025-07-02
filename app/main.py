@@ -1,3 +1,13 @@
+# ========================================
+# Proyecto desarrollado exclusivamente para:
+# Club Deportivo Blanca Cristiana
+# Desarrollador: Luis Gutierrez
+# Sitio: https://club-deportivo-blanca-cristiana.onrender.com
+# Email: clubdeportivoblancacristiana@gmail.com
+# Año: 2025
+# Todos los derechos reservados
+# ========================================
+
 from fastapi import FastAPI, Request, Depends, Form, UploadFile, File, HTTPException, Query
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -141,6 +151,18 @@ async def home(request: Request, db: Session = Depends(get_db)):
         return templates.TemplateResponse("index.html", {
         "request": request,
         "publicaciones": publicaciones
+    })
+        
+
+@app.get("/terminos-condiciones", response_class=HTMLResponse)
+async def terminos_condiciones(request: Request):
+    return templates.TemplateResponse("terminos_condiciones.html", {"request": request})
+
+@app.get("/derechos-reservados", response_class=HTMLResponse)
+async def derechos_reservados(request: Request):
+    return templates.TemplateResponse("derechos_reservados.html", {
+        "request": request,
+        "current_year": datetime.now().year
     })
 
 @app.get("/politica-privacidad", response_class=HTMLResponse)

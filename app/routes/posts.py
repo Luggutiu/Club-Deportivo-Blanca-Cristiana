@@ -1,3 +1,12 @@
+# ========================================
+# Proyecto desarrollado exclusivamente para:
+# Club Deportivo Blanca Cristiana
+# Desarrollador: Luis Gutierrez
+# Sitio: https://club-deportivo-blanca-cristiana.onrender.com
+# Email: clubdeportivoblancacristiana@gmail.com
+# Año: 2025
+# Todos los derechos reservados
+# ========================================
 from fastapi import APIRouter, Request, Form, status
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, RedirectResponse
