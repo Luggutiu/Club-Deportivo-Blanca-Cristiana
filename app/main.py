@@ -14,6 +14,14 @@ from fastapi.templating import Jinja2Templates
 from fastapi.exceptions import RequestValidationError
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.status import HTTP_303_SEE_OTHER
+
+from sqlalchemy.orm import Session
+from io import BytesIO
+from openpyxl import Workbook
+
+from app.database import get_db
+from app.models import Suscriptor
+from app.routes.auth import check_admin_logged
 from app.routes import admin_info
 
 # ------------------------- Utilidades estándar -------------------------
@@ -561,3 +569,47 @@ def servicios(request: Request, db=Depends(get_db)):
     })
     
 
+@app.get("/admin/reporte-suscriptores", response_class=HTMLResponse)
+async def ver_reporte_suscriptores(
+    request: Request,
+    db: Session = Depends(get_db),
+    admin: bool = Depends(check_admin_logged)
+):
+    suscriptores = db.query(Suscriptor).all()
+    return templates.TemplateResponse("reporte_suscriptores.html", {
+        "request": request,
+        "suscriptores": suscriptores
+    })
+    
+@app.get("/admin/descargar-suscriptores")
+async def descargar_excel_suscriptores(
+    db: Session = Depends(get_db),
+    admin: bool = Depends(check_admin_logged)
+):
+    suscriptores = db.query(Suscriptor).all()
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Suscriptores"
+
+    headers = ["ID", "Nombre", "Correo", "Teléfono", "Fecha de Suscripción"]
+    ws.append(headers)
+
+    for s in suscriptores:
+        ws.append([
+            s.id,
+            s.nombre,
+            s.correo,
+            s.telefono,
+            s.fecha.strftime("%Y-%m-%d %H:%M:%S")
+        ])
+
+    output = BytesIO()
+    wb.save(output)
+    output.seek(0)
+
+    return StreamingResponse(
+        output,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": "attachment; filename=suscriptores.xlsx"}
+    )
