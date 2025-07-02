@@ -19,6 +19,8 @@ from app.models import Post, Horario, SeccionInformativa, Suscriptor
 from app.routes.embedder import generar_embed
 from app.routes.auth import check_admin_logged
 
+from fastapi.responses import FileResponse
+
 # Rutas
 from app.routes import like, auth, admin_info, admin, posts, dev, auth_google, healthcheck
 from app.routes.suscripcion import router as suscripcion_router
@@ -39,15 +41,20 @@ from app.routes.suscripcion import router as suscripcion_router
 # Inicialización
 app = FastAPI()
 
-from fastapi.responses import FileResponse
+
+
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 @app.get("/sitemap.xml", include_in_schema=False)
 def sitemap():
-    return FileResponse("static/sitemap.xml", media_type="application/xml")
+    sitemap_path = os.path.join(BASE_DIR, "static", "sitemap.xml")
+    return FileResponse(sitemap_path, media_type="application/xml")
 
 @app.get("/robots.txt", include_in_schema=False)
 def robots():
-    return FileResponse("static/robots.txt", media_type="text/plain")
+    robots_path = os.path.join(BASE_DIR, "static", "robots.txt")
+    return FileResponse(robots_path, media_type="text/plain")
 
 
 app.add_middleware(
