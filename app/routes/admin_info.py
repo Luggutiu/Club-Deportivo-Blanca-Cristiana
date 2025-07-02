@@ -8,12 +8,11 @@
 # Todos los derechos reservados
 # ========================================
 
-from fastapi import APIRouter,  Form, UploadFile, File, Depends, HTTPException
+from fastapi import APIRouter, Form, UploadFile, File, Depends, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from starlette.status import HTTP_303_SEE_OTHER
-from fastapi import Request
 
 from app.models import Suscriptor, SeccionInformativa, Horario, Post
 from app.database import get_db
@@ -28,12 +27,58 @@ import os
 import shutil
 
 
-
-
-import openpyxl
-
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
+
+# ------------------------ REPORTE DE SUSCRIPTORES ------------------------
+
+@router.get("/admin/reporte-suscriptores", response_class=HTMLResponse)
+async def ver_reporte_suscriptores(
+    request: Request,
+    db: Session = Depends(get_db),
+    admin: bool = Depends(check_admin_logged)
+):
+    suscriptores = db.query(Suscriptor).all()
+    return templates.TemplateResponse("reporte_suscriptores.html", {
+        "request": request,
+        "suscriptores": suscriptores
+    })
+
+
+@router.get("/admin/descargar-suscriptores")
+async def descargar_excel_suscriptores(
+    db: Session = Depends(get_db),
+    admin: bool = Depends(check_admin_logged)
+):
+    suscriptores = db.query(Suscriptor).all()
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Suscriptores"
+
+    headers = ["ID", "Nombre", "Correo", "Teléfono", "Fecha de Suscripción"]
+    ws.append(headers)
+
+    for s in suscriptores:
+        ws.append([
+            s.id,
+            s.nombre,
+            s.correo,
+            s.telefono,
+            s.fecha.strftime("%Y-%m-%d %H:%M:%S")
+        ])
+
+    output = BytesIO()
+    wb.save(output)
+    output.seek(0)
+
+    return StreamingResponse(
+        output,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={
+            "Content-Disposition": "attachment; filename=suscriptores.xlsx"
+        }
+    )
 
 # ------------------------ SECCIONES ------------------------
 
@@ -203,61 +248,3 @@ async def publicar_post(
 
 
 
-
-# ============================
-# Reporte de Suscriptores - Vista HTML
-# ============================
-
-@router.get("/admin/reporte-suscriptores", response_class=HTMLResponse)
-async def ver_reporte_suscriptores(
-    request: Request,
-    db: Session = Depends(get_db),
-    admin: bool = Depends(check_admin_logged)
-):
-    suscriptores = db.query(Suscriptor).all()
-    return templates.TemplateResponse("reporte_suscriptores.html", {
-        "request": request,
-        "suscriptores": suscriptores
-    })
-
-# ============================
-# Descargar Suscriptores en Excel (.xlsx)
-# ============================
-
-@router.get("/admin/descargar-suscriptores")
-async def descargar_excel_suscriptores(
-    db: Session = Depends(get_db),
-    admin: bool = Depends(check_admin_logged)
-):
-    suscriptores = db.query(Suscriptor).all()
-
-    wb = openpyxl.Workbook()
-    ws = wb.active
-    ws.title = "Suscriptores"
-
-    # Encabezados
-    headers = ["ID", "Nombre", "Correo", "Teléfono", "Fecha de Suscripción"]
-    ws.append(headers)
-
-    # Agregar datos
-    for s in suscriptores:
-        ws.append([
-            s.id,
-            s.nombre,
-            s.correo,
-            s.telefono,
-            s.fecha.strftime("%Y-%m-%d %H:%M:%S")
-        ])
-
-    # Preparar archivo para descarga
-    output = BytesIO()
-    wb.save(output)
-    output.seek(0)
-
-    return StreamingResponse(
-        output,
-        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers={
-            "Content-Disposition": "attachment; filename=suscriptores.xlsx"
-        }
-    )

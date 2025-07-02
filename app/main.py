@@ -7,58 +7,43 @@
 # Año: 2025
 # Todos los derechos reservados
 # ========================================
-
 from fastapi import FastAPI, Request, Depends, Form, UploadFile, File, HTTPException, Query
+from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse, FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from fastapi.exceptions import RequestValidationError
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.status import HTTP_303_SEE_OTHER
-from sqlalchemy.orm import Session
-from app.routes import auth
-from fastapi.responses import Response
-from datetime import datetime
 
-
-
-from app.utils.email_utils import enviar_correo_bienvenida, notificar_admin_suscripcion  # si aún no lo tienes importado
-import shutil
+# ------------------------- Utilidades estándar -------------------------
+from datetime import datetime, date
 import os
+import shutil
 
-
-
-# Modelos y Base de Datos
-from app.database import get_db
-from app.models import Post, Horario, SeccionInformativa, Suscriptor
-from app.routes.embedder import generar_embed
-from app.routes.auth import check_admin_logged
-from datetime import date
-from fastapi.responses import Response
-from datetime import datetime
-from sqlalchemy.orm import Session
-from app.database import get_db
-from app.models import Post, SeccionInformativa
-from fastapi.responses import FileResponse
-from app.routes import admin_info
-
-
-# Rutas
-from app.routes import like, auth, admin_info, admin, posts, dev, auth_google, healthcheck
-from app.routes.suscripcion import router as suscripcion_router
-
-from fastapi.responses import HTMLResponse, RedirectResponse
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
-from starlette.status import HTTP_303_SEE_OTHER
+# ------------------------- Base de Datos y Modelos -------------------------
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
-from fastapi.responses import JSONResponse
-from fastapi.exceptions import RequestValidationError
-
-from app.routes.embedder import generar_embed
 from app.database import get_db
 from app.models import Post, Horario, SeccionInformativa, Suscriptor
-from app.routes import like, auth, admin_info, admin, posts, dev, auth_google, healthcheck
+
+# ------------------------- Utilidades del proyecto -------------------------
+from app.routes.embedder import generar_embed
+from app.routes.auth import check_admin_logged
+from app.utils.email_utils import enviar_correo_bienvenida, notificar_admin_suscripcion
+
+# ------------------------- Rutas personalizadas -------------------------
+from app.routes import (
+    like,
+    auth,
+    admin_info,
+    admin,
+    posts,
+    dev,
+    auth_google,
+    healthcheck
+)
 from app.routes.suscripcion import router as suscripcion_router
+
 
 # Inicialización
 app = FastAPI()
