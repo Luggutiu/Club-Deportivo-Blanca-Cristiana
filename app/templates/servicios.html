@@ -1,4 +1,4 @@
-{% extends {% extends "base_public.html" %}
+{% extends "base_public.html" %}
 {% block title %}Nuestros Servicios{% endblock %}
 
 {% block content %}
@@ -22,5 +22,5 @@
 {% endblock %}
 
 {% block extra_css %}
-{% include "partials/estilo_seccion.html" %}
+<link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
 {% endblock %}
