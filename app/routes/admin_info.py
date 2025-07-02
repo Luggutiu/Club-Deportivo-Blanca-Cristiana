@@ -8,11 +8,12 @@
 # Todos los derechos reservados
 # ========================================
 
-from fastapi import APIRouter, Request, Form, UploadFile, File, Depends, HTTPException
+from fastapi import APIRouter,  Form, UploadFile, File, Depends, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from starlette.status import HTTP_303_SEE_OTHER
+from fastapi import Request
 
 from app.models import Suscriptor, SeccionInformativa, Horario, Post
 from app.database import get_db
@@ -209,7 +210,7 @@ async def publicar_post(
 
 @router.get("/admin/reporte-suscriptores", response_class=HTMLResponse)
 async def ver_reporte_suscriptores(
-    request: Request,
+    request: Request = Depends(),
     db: Session = Depends(get_db),
     admin: bool = Depends(check_admin_logged)
 ):
