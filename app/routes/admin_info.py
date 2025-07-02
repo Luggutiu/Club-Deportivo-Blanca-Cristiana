@@ -9,27 +9,23 @@
 # ========================================
 
 from fastapi import APIRouter, Request, Form, UploadFile, File, Depends, HTTPException
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
-import os, shutil
-from fastapi.responses import StreamingResponse
-from io import BytesIO
-from openpyxl import Workbook
-from openpyxl.styles import Font, Alignment
-from app.models import Suscriptor
+from starlette.status import HTTP_303_SEE_OTHER
+
+from app.models import Suscriptor, SeccionInformativa, Horario, Post
 from app.database import get_db
-from app.models import SeccionInformativa, Horario, Post
 from app.routes.auth import check_admin_logged
 from app.routes.embedder import generar_embed
-from fastapi import APIRouter, Request, Depends
-from sqlalchemy.orm import Session
-from app.models import Suscriptor
-from app.database import get_db
-from app.routes.auth import check_admin_logged
-from fastapi.templating import Jinja2Templates
-from starlette.status import HTTP_303_SEE_OTHER
-from fastapi import Request
+
+from openpyxl import Workbook
+from openpyxl.styles import Font, Alignment
+import openpyxl
+from io import BytesIO
+import os
+import shutil
+
 
 
 
@@ -207,11 +203,14 @@ async def publicar_post(
 
 
 
+# ============================
+# Reporte de Suscriptores - Vista HTML
+# ============================
 
 @router.get("/admin/reporte-suscriptores", response_class=HTMLResponse)
 async def ver_reporte_suscriptores(
-    request: Request, 
-    db: Session = Depends(get_db), 
+    request: Request,
+    db: Session = Depends(get_db),
     admin: bool = Depends(check_admin_logged)
 ):
     suscriptores = db.query(Suscriptor).all()
@@ -220,25 +219,44 @@ async def ver_reporte_suscriptores(
         "suscriptores": suscriptores
     })
 
-# Descargar en Excel
+# ============================
+# Descargar Suscriptores en Excel (.xlsx)
+# ============================
+
 @router.get("/admin/descargar-suscriptores")
-async def descargar_excel_suscriptores(db: Session = Depends(get_db), admin: bool = Depends(check_admin_logged)):
+async def descargar_excel_suscriptores(
+    db: Session = Depends(get_db),
+    admin: bool = Depends(check_admin_logged)
+):
     suscriptores = db.query(Suscriptor).all()
 
     wb = openpyxl.Workbook()
     ws = wb.active
     ws.title = "Suscriptores"
 
+    # Encabezados
     headers = ["ID", "Nombre", "Correo", "Teléfono", "Fecha de Suscripción"]
     ws.append(headers)
 
+    # Agregar datos
     for s in suscriptores:
-        ws.append([s.id, s.nombre, s.correo, s.telefono, s.fecha.strftime("%Y-%m-%d %H:%M:%S")])
+        ws.append([
+            s.id,
+            s.nombre,
+            s.correo,
+            s.telefono,
+            s.fecha.strftime("%Y-%m-%d %H:%M:%S")
+        ])
 
+    # Preparar archivo para descarga
     output = BytesIO()
     wb.save(output)
     output.seek(0)
 
-    return StreamingResponse(output, media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", headers={
-        "Content-Disposition": "attachment; filename=suscriptores.xlsx"
-    })
+    return StreamingResponse(
+        output,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={
+            "Content-Disposition": "attachment; filename=suscriptores.xlsx"
+        }
+    )
