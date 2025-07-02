@@ -5,6 +5,9 @@ from starlette.middleware.sessions import SessionMiddleware
 from starlette.status import HTTP_303_SEE_OTHER
 from sqlalchemy.orm import Session
 from app.routes import auth
+from fastapi.responses import Response
+from datetime import datetime
+
 
 
 from app.utils.email_utils import enviar_correo_bienvenida, notificar_admin_suscripcion  # si aún no lo tienes importado
@@ -502,3 +505,35 @@ def servicios(request: Request, db=Depends(get_db)):
         "secciones": secciones
     })
     
+
+@app.get("/sitemap.xml", include_in_schema=False)
+def sitemap(db: Session = Depends(get_db)):
+    urls = [
+        {"loc": "/", "priority": "1.0"},
+        {"loc": "/mision"},
+        {"loc": "/vision"},
+        {"loc": "/quienes-somos"},
+        {"loc": "/contacto"},
+        {"loc": "/servicios"},
+    ]
+
+    # Opcional: incluir también las secciones dinámicas
+    secciones = db.query(SeccionInformativa).all()
+    for s in secciones:
+        if s.slug != "suscribirse":
+            urls.append({"loc": f"/{s.slug}"})
+
+    today = datetime.today().strftime("%Y-%m-%d")
+    xml_items = ""
+    for url in urls:
+        xml_items += f"""
+  <url>
+    <loc>https://club-deportivo-blanca-cristiana.onrender.com{url['loc']}</loc>
+    <lastmod>{today}</lastmod>""" + (f"\n    <priority>{url['priority']}</priority>" if "priority" in url else "") + """
+  </url>"""
+
+    xml = f"""<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{xml_items}
+</urlset>"""
+
+    return Response(content=xml.strip(), media_type="application/xml")
