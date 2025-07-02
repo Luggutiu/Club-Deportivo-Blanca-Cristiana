@@ -26,10 +26,10 @@ from fastapi.responses import Response
 from datetime import datetime
 from sqlalchemy.orm import Session
 from app.database import get_db
-from app.models import Post
+from app.models import Post, SeccionInformativa
 from fastapi.responses import FileResponse
 from app.routes import admin_info
-from models import Post, Seccion
+
 
 # Rutas
 from app.routes import like, auth, admin_info, admin, posts, dev, auth_google, healthcheck
@@ -63,7 +63,7 @@ def sitemap(request: Request, db: Session = Depends(get_db)):
     urls = [{"loc": f"{base_url}/", "priority": "1.0"}]
 
     # 🔄 Agregar secciones informativas dinámicamente desde la base
-    secciones = db.query(Seccion).all()
+    secciones = db.query(SeccionInformativa).all()
     for seccion in secciones:
         urls.append({"loc": f"{base_url}/{seccion.slug}"})
 
