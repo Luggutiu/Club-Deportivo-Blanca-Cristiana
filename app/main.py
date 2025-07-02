@@ -51,6 +51,8 @@ from fastapi.templating import Jinja2Templates
 from starlette.status import HTTP_303_SEE_OTHER
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
+from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
 
 from app.routes.embedder import generar_embed
 from app.database import get_db
@@ -127,6 +129,13 @@ app.include_router(dev.router)
 
 
 
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request, exc):
+    return JSONResponse(
+        status_code=422,
+        content={"detail": exc.errors(), "body": exc.body})
 
 # --------------------- Rutas Públicas ---------------------
 
