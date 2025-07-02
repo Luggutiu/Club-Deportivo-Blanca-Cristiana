@@ -39,6 +39,16 @@ from app.routes.suscripcion import router as suscripcion_router
 # Inicialización
 app = FastAPI()
 
+from fastapi.responses import FileResponse
+
+@app.get("/sitemap.xml", include_in_schema=False)
+def sitemap():
+    return FileResponse("static/sitemap.xml", media_type="application/xml")
+
+@app.get("/robots.txt", include_in_schema=False)
+def robots():
+    return FileResponse("static/robots.txt", media_type="text/plain")
+
 
 app.add_middleware(
     SessionMiddleware,
@@ -485,3 +495,4 @@ def servicios(request: Request, db=Depends(get_db)):
         "contenido": seccion,
         "secciones": secciones
     })
+    
