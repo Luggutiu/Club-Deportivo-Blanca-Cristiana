@@ -22,7 +22,11 @@ from app.models import Post, Horario, SeccionInformativa, Suscriptor
 from app.routes.embedder import generar_embed
 from app.routes.auth import check_admin_logged
 from datetime import date
-
+from fastapi.responses import Response
+from datetime import datetime
+from sqlalchemy.orm import Session
+from app.database import get_db
+from app.models import Post
 from fastapi.responses import FileResponse
 
 # Rutas
@@ -51,33 +55,38 @@ templates = Jinja2Templates(directory="app/templates")
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 @app.get("/sitemap.xml", include_in_schema=False)
-def sitemap():
-    today = date.today().isoformat()
-    base_url = "https://club-deportivo-blanca-cristiana.onrender.com"
-    
+def sitemap(db: Session = Depends(get_db)):
     urls = [
-        {"loc": f"{base_url}/", "priority": "1.0"},
-        {"loc": f"{base_url}/mision"},
-        {"loc": f"{base_url}/vision"},
-        {"loc": f"{base_url}/quienes-somos"},
-        {"loc": f"{base_url}/contacto"},
-        {"loc": f"{base_url}/servicios"},
+        {"loc": "https://club-deportivo-blanca-cristiana.onrender.com/", "priority": "1.0"},
+        {"loc": "https://club-deportivo-blanca-cristiana.onrender.com/mision"},
+        {"loc": "https://club-deportivo-blanca-cristiana.onrender.com/vision"},
+        {"loc": "https://club-deportivo-blanca-cristiana.onrender.com/quienes-somos"},
+        {"loc": "https://club-deportivo-blanca-cristiana.onrender.com/contacto"},
+        {"loc": "https://club-deportivo-blanca-cristiana.onrender.com/servicios"},
     ]
-    
-    sitemap_xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
-    sitemap_xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
 
+    # Añadir posts dinámicamente
+    posts = db.query(Post).all()
+    for post in posts:
+        urls.append({
+            "loc": f"https://club-deportivo-blanca-cristiana.onrender.com/post/{post.id}",
+            "lastmod": datetime.utcnow().date().isoformat()
+        })
+
+    # Generar XML
+    xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
     for url in urls:
-        sitemap_xml += "  <url>\n"
-        sitemap_xml += f"    <loc>{url['loc']}</loc>\n"
-        sitemap_xml += f"    <lastmod>{today}</lastmod>\n"
+        xml += "  <url>\n"
+        xml += f"    <loc>{url['loc']}</loc>\n"
+        if "lastmod" in url:
+            xml += f"    <lastmod>{url['lastmod']}</lastmod>\n"
         if "priority" in url:
-            sitemap_xml += f"    <priority>{url['priority']}</priority>\n"
-        sitemap_xml += "  </url>\n"
+            xml += f"    <priority>{url['priority']}</priority>\n"
+        xml += "  </url>\n"
+    xml += "</urlset>"
 
-    sitemap_xml += "</urlset>"
-
-    return Response(content=sitemap_xml, media_type="application/xml")
+    return Response(content=xml, media_type="application/xml")
 
 @app.get("/robots.txt", include_in_schema=False)
 def robots():
