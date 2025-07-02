@@ -592,16 +592,24 @@ async def descargar_excel_suscriptores(
     ws = wb.active
     ws.title = "Suscriptores"
 
-    headers = ["ID", "Nombre", "Correo", "Teléfono", "Fecha de Suscripción"]
+    headers = [
+        "ID",
+        "Tipo de Documento",
+        "Número de Documento",
+        "Nombre Completo",
+        "Celular",
+        "Correo"
+    ]
     ws.append(headers)
 
     for s in suscriptores:
         ws.append([
             s.id,
-            s.nombre,
-            s.correo,
-            s.telefono,
-            s.fecha.strftime("%Y-%m-%d %H:%M:%S")
+            s.tipo_documento,
+            s.numero_documento,
+            s.nombre_completo,
+            s.celular,
+            s.correo
         ])
 
     output = BytesIO()

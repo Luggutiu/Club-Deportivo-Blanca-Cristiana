@@ -2,6 +2,8 @@ from sqlalchemy import Column, Integer, String, Text, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, DateTime
 from datetime import datetime
+from sqlalchemy import Column, Integer, String
+from app.database import Base
 
 Base = declarative_base()
 
@@ -53,8 +55,7 @@ class Horario(Base):
     
     fecha_creacion = Column(DateTime, default=datetime.utcnow)
     
-from sqlalchemy import Column, Integer, String
-from app.database import Base
+
 
 class Suscriptor(Base):
     __tablename__ = "suscriptores"
