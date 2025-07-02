@@ -14,6 +14,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.exceptions import RequestValidationError
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.status import HTTP_303_SEE_OTHER
+from app.routes import admin_info
 
 # ------------------------- Utilidades estándar -------------------------
 from datetime import datetime, date
@@ -35,7 +36,6 @@ from app.utils.email_utils import enviar_correo_bienvenida, notificar_admin_susc
 from app.routes import (
     like,
     auth,
-    admin_info,
     admin,
     posts,
     dev,
@@ -50,6 +50,17 @@ app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
+
+# Montar rutas
+app.include_router(auth.router)
+app.include_router(like.router)
+app.include_router(healthcheck.router)
+app.include_router(auth_google.router)
+app.include_router(suscripcion_router)
+app.include_router(admin_info.router)
+app.include_router(admin.router)
+app.include_router(posts.router)
+app.include_router(dev.router)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -101,16 +112,7 @@ app.add_middleware(
 
 
 
-# Montar rutas
-app.include_router(auth.router)
-app.include_router(like.router)
-app.include_router(healthcheck.router)
-app.include_router(auth_google.router)
-app.include_router(suscripcion_router)
-app.include_router(admin_info.router)
-app.include_router(admin.router)
-app.include_router(posts.router)
-app.include_router(dev.router)
+
 
 
 
