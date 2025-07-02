@@ -3,6 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Google Search Console Verification -->
+  <meta name="google-site-verification" content="JSxPDq2cVyWz0V_gkmTJ1m87kAeJH1Qo5A73NjXJncY" />
+
   <title>{% block title %}Club Deportivo Blanca Cristiana{% endblock %}</title>
 
   <link rel="icon" href="{{ url_for('static', path='favicon.ico') }}" type="image/x-icon" />
@@ -174,7 +178,7 @@
         <!-- Respaldo estático -->
         <a href="/mision">Misión</a>
         <a href="/vision">Visión</a>
-         <a href="/servicios">Nuestros Servicios</a>
+        <a href="/servicios">Nuestros Servicios</a>
         <a href="/quienes-somos">¿Quiénes somos?</a>
         <a href="/contacto">Contáctenos</a>
       </nav>
@@ -197,14 +201,12 @@
       sidebar.classList.toggle("open");
     }
 
-    // Cierra menú en móvil al hacer clic en un enlace
     document.querySelectorAll("aside nav a").forEach(link => {
       link.addEventListener("click", function () {
         document.getElementById("sidebar").classList.remove("open");
       });
     });
 
-    // Navegación tipo SPA (puedes quitar si prefieres carga completa)
     document.querySelectorAll("aside nav a").forEach(link => {
       link.addEventListener("click", function (e) {
         const url = this.getAttribute("href");

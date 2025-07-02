@@ -1,0 +1,4 @@
+User-agent: *
+Disallow:
+
+Sitemap: https://club-deportivo-blanca-cristiana.onrender.com/sitemap.xml
