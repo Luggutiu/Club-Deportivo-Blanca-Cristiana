@@ -23,13 +23,13 @@ from app.models import SeccionInformativa, Horario, Post
 from app.routes.auth import check_admin_logged
 from app.routes.embedder import generar_embed
 from fastapi import APIRouter, Request, Depends
-from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.orm import Session
 from app.models import Suscriptor
 from app.database import get_db
 from app.routes.auth import check_admin_logged
 from fastapi.templating import Jinja2Templates
 from starlette.status import HTTP_303_SEE_OTHER
+from fastapi import Request
 
 
 
@@ -204,8 +204,16 @@ async def publicar_post(
         }, status_code=500)
         
 
+
+
+
+
 @router.get("/admin/reporte-suscriptores", response_class=HTMLResponse)
-async def ver_reporte_suscriptores(request: Request, db: Session = Depends(get_db), admin: bool = Depends(check_admin_logged)):
+async def ver_reporte_suscriptores(
+    request: Request, 
+    db: Session = Depends(get_db), 
+    admin: bool = Depends(check_admin_logged)
+):
     suscriptores = db.query(Suscriptor).all()
     return templates.TemplateResponse("reporte_suscriptores.html", {
         "request": request,
