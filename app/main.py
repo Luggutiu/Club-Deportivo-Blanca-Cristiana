@@ -29,6 +29,7 @@ from app.database import get_db
 from app.models import Post
 from fastapi.responses import FileResponse
 from app.routes import admin_info
+from models import Post, Seccion
 
 # Rutas
 from app.routes import like, auth, admin_info, admin, posts, dev, auth_google, healthcheck
@@ -56,38 +57,40 @@ templates = Jinja2Templates(directory="app/templates")
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 @app.get("/sitemap.xml", include_in_schema=False)
-def sitemap(db: Session = Depends(get_db)):
-    urls = [
-        {"loc": "https://club-deportivo-blanca-cristiana.onrender.com/", "priority": "1.0"},
-        {"loc": "https://club-deportivo-blanca-cristiana.onrender.com/mision"},
-        {"loc": "https://club-deportivo-blanca-cristiana.onrender.com/vision"},
-        {"loc": "https://club-deportivo-blanca-cristiana.onrender.com/quienes-somos"},
-        {"loc": "https://club-deportivo-blanca-cristiana.onrender.com/contacto"},
-        {"loc": "https://club-deportivo-blanca-cristiana.onrender.com/servicios"},
-    ]
+def sitemap(request: Request, db: Session = Depends(get_db)):
+    base_url = str(request.base_url).rstrip("/")
 
-    # Añadir posts dinámicamente
-    posts = db.query(Post).all()
+    urls = [{"loc": f"{base_url}/", "priority": "1.0"}]
+
+    # 🔄 Agregar secciones informativas dinámicamente desde la base
+    secciones = db.query(Seccion).all()
+    for seccion in secciones:
+        urls.append({"loc": f"{base_url}/{seccion.slug}"})
+
+    # 📰 Agregar los posts dinámicamente
+    posts = db.query(Post).order_by(Post.id.desc()).all()
     for post in posts:
         urls.append({
-            "loc": f"https://club-deportivo-blanca-cristiana.onrender.com/post/{post.id}",
-            "lastmod": datetime.utcnow().date().isoformat()
+            "loc": f"{base_url}/post/{post.id}",
+            "lastmod": post.fecha_creacion.strftime("%Y-%m-%d") if post.fecha_creacion else None
         })
 
-    # Generar XML
-    xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
-    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-    for url in urls:
-        xml += "  <url>\n"
-        xml += f"    <loc>{url['loc']}</loc>\n"
-        if "lastmod" in url:
-            xml += f"    <lastmod>{url['lastmod']}</lastmod>\n"
-        if "priority" in url:
-            xml += f"    <priority>{url['priority']}</priority>\n"
-        xml += "  </url>\n"
-    xml += "</urlset>"
+    # 🛠️ Generar XML
+    xml_content = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    xml_content += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
 
-    return Response(content=xml, media_type="application/xml")
+    for url in urls:
+        xml_content += "  <url>\n"
+        xml_content += f"    <loc>{url['loc']}</loc>\n"
+        if "priority" in url:
+            xml_content += f"    <priority>{url['priority']}</priority>\n"
+        if "lastmod" in url and url["lastmod"]:
+            xml_content += f"    <lastmod>{url['lastmod']}</lastmod>\n"
+        xml_content += "  </url>\n"
+
+    xml_content += "</urlset>"
+
+    return Response(content=xml_content, media_type="application/xml")
 
 @app.get("/robots.txt", include_in_schema=False)
 def robots():
