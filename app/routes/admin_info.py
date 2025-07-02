@@ -210,7 +210,7 @@ async def publicar_post(
 
 @router.get("/admin/reporte-suscriptores", response_class=HTMLResponse)
 async def ver_reporte_suscriptores(
-    request: Request = Depends(),
+    request: Request,
     db: Session = Depends(get_db),
     admin: bool = Depends(check_admin_logged)
 ):
