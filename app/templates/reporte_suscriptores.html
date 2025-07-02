@@ -10,28 +10,26 @@
     <thead>
       <tr style="background-color: #ff5e78;">
         <th style="padding: 12px; border: 1px solid #444;">ID</th>
+        <th style="padding: 12px; border: 1px solid #444;">Tipo Doc</th>
+        <th style="padding: 12px; border: 1px solid #444;">Número Doc</th>
         <th style="padding: 12px; border: 1px solid #444;">Nombre</th>
         <th style="padding: 12px; border: 1px solid #444;">Correo</th>
-        <th style="padding: 12px; border: 1px solid #444;">Teléfono</th>
-        <th style="padding: 12px; border: 1px solid #444;">Edad</th>
-        <th style="padding: 12px; border: 1px solid #444;">Género</th>
-        <th style="padding: 12px; border: 1px solid #444;">Fecha</th>
+        <th style="padding: 12px; border: 1px solid #444;">Celular</th>
       </tr>
     </thead>
     <tbody>
       {% for s in suscriptores %}
       <tr style="text-align: center;">
         <td style="padding: 10px; border: 1px solid #444;">{{ s.id }}</td>
-        <td style="padding: 10px; border: 1px solid #444;">{{ s.nombre }}</td>
-        <td style="padding: 10px; border: 1px solid #444;">{{ s.email }}</td>
-        <td style="padding: 10px; border: 1px solid #444;">{{ s.telefono }}</td>
-        <td style="padding: 10px; border: 1px solid #444;">{{ s.edad }}</td>
-        <td style="padding: 10px; border: 1px solid #444;">{{ s.genero }}</td>
-        <td style="padding: 10px; border: 1px solid #444;">{{ s.fecha.strftime('%Y-%m-%d') if s.fecha else 'N/A' }}</td>
+        <td style="padding: 10px; border: 1px solid #444;">{{ s.tipo_documento }}</td>
+        <td style="padding: 10px; border: 1px solid #444;">{{ s.numero_documento }}</td>
+        <td style="padding: 10px; border: 1px solid #444;">{{ s.nombre_completo }}</td>
+        <td style="padding: 10px; border: 1px solid #444;">{{ s.correo }}</td>
+        <td style="padding: 10px; border: 1px solid #444;">{{ s.celular }}</td>
       </tr>
       {% else %}
       <tr>
-        <td colspan="7" style="padding: 15px; text-align: center; color: #aaa;">No hay suscriptores registrados.</td>
+        <td colspan="6" style="padding: 15px; text-align: center; color: #aaa;">No hay suscriptores registrados.</td>
       </tr>
       {% endfor %}
     </tbody>
