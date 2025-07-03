@@ -657,66 +657,68 @@ async def descargar_excel_suscriptores(
     ws = wb.active
     ws.title = "Suscriptores"
 
-    # Logo del club
+    # --- Insertar imagen/logo si existe
     logo_path = "app/static/logo.png"
-    if os.path.isfile(logo_path):
+    if os.path.exists(logo_path):
         img = ExcelImage(logo_path)
-        img.width = 120
-        img.height = 120
+        img.width = 100
+        img.height = 100
         ws.add_image(img, "A1")
 
-    # Nombre del club
-    ws.merge_cells("B2:D2")
-    ws["B2"] = "Club Deportivo Blanca Cristiana"
-    ws["B2"].font = Font(size=14, bold=True)
-    ws["B2"].alignment = Alignment(horizontal="left")
+    # --- Título del club
+    ws.merge_cells("B2:F2")
+    ws["B2"] = "Deportivo Blanca Cristiana"
+    ws["B2"].font = Font(size=16, bold=True)
+    ws["B2"].alignment = Alignment(horizontal="left", vertical="center")
 
-    # Título del reporte
-    ws.merge_cells("C4:F4")
-    ws["C4"] = "Planilla de Suscriptores"
-    ws["C4"].font = Font(size=16, bold=True, color="FFFFFF")
-    ws["C4"].alignment = Alignment(horizontal="center")
-    ws["C4"].fill = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid")
+    # --- Subtítulo
+    ws.merge_cells("B4:F4")
+    ws["B4"] = "Planilla de Suscriptores"
+    ws["B4"].font = Font(size=14, bold=True, color="FFFFFF")
+    ws["B4"].alignment = Alignment(horizontal="center", vertical="center")
+    ws["B4"].fill = PatternFill(start_color="4F81BD", end_color="4F81BD", fill_type="solid")
 
-    # Fecha
-    ws.merge_cells("C5:F5")
-    ws["C5"] = f"Generado el {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}"
-    ws["C5"].font = Font(size=10, italic=True, color="888888")
-    ws["C5"].alignment = Alignment(horizontal="center")
+    # --- Fecha de generación
+    ws.merge_cells("B5:F5")
+    fecha = datetime.datetime.now().strftime("Generado el %d/%m/%Y %H:%M:%S")
+    ws["B5"] = fecha
+    ws["B5"].font = Font(italic=True, color="888888")
+    ws["B5"].alignment = Alignment(horizontal="center")
 
-    # Encabezados
-    start_row = 7
+    # --- Encabezados
     headers = ["ID", "Tipo Documento", "Número Documento", "Nombre Completo", "Correo", "Celular"]
-    header_fill = PatternFill(start_color="D9E1F2", end_color="D9E1F2", fill_type="solid")
+    ws.append([])
+    ws.append([])
+    ws.append(headers)
+    header_row = ws.max_row
 
-    for col_num, header in enumerate(headers, 1):
-        cell = ws.cell(row=start_row, column=col_num, value=header)
-        cell.font = Font(bold=True)
-        cell.fill = header_fill
+    for col in range(1, len(headers) + 1):
+        cell = ws.cell(row=header_row, column=col)
+        cell.font = Font(bold=True, color="FFFFFF")
+        cell.fill = PatternFill(start_color="B7D7F7", end_color="B7D7F7", fill_type="solid")
         cell.alignment = Alignment(horizontal="center")
 
-    # Cuerpo
-    for i, s in enumerate(suscriptores, start=start_row + 1):
-        ws.cell(row=i, column=1, value=s.id)
-        ws.cell(row=i, column=2, value=s.tipo_documento)
-        ws.cell(row=i, column=3, value=s.numero_documento)
-        ws.cell(row=i, column=4, value=s.nombre_completo)
-        ws.cell(row=i, column=5, value=s.correo)
-        ws.cell(row=i, column=6, value=s.celular)
+    # --- Datos
+    for s in suscriptores:
+        ws.append([
+            s.id,
+            s.tipo_documento,
+            s.numero_documento,
+            s.nombre_completo,
+            s.correo,
+            s.celular
+        ])
 
-    # Ajustar anchos
-    columnas = [10, 20, 25, 30, 35, 20]
-    for i, ancho in enumerate(columnas, 1):
-        ws.column_dimensions[chr(64 + i)].width = ancho
+    # Ajustar ancho de columnas automáticamente
+    for col in ws.columns:
+        max_length = 0
+        col_letter = col[0].column_letter
+        for cell in col:
+            if cell.value:
+                max_length = max(max_length, len(str(cell.value)))
+        ws.column_dimensions[col_letter].width = max_length + 2
 
-    # Firma del desarrollador
-    last_row = ws.max_row + 2
-    ws.merge_cells(f"A{last_row}:F{last_row}")
-    ws[f"A{last_row}"] = "Desarrollado por Luis Gutierrez – Club Deportivo Blanca Cristiana"
-    ws[f"A{last_row}"].font = Font(italic=True, color="888888")
-    ws[f"A{last_row}"].alignment = Alignment(horizontal="center")
-
-    # Guardar
+    # Exportar Excel
     output = BytesIO()
     wb.save(output)
     output.seek(0)
@@ -724,8 +726,23 @@ async def descargar_excel_suscriptores(
     return StreamingResponse(
         output,
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers={"Content-Disposition": "attachment; filename=planilla_suscriptores.xlsx"}
+        headers={"Content-Disposition": "attachment; filename=suscriptores.xlsx"}
     )
     
-    
 
+@app.post("/admin/eliminar-suscriptor/{suscriptor_id}")
+def eliminar_suscriptor(
+    suscriptor_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    admin: bool = Depends(check_admin_logged)
+):
+    suscriptor = db.query(Suscriptor).filter(Suscriptor.id == suscriptor_id).first()
+    if suscriptor:
+        db.delete(suscriptor)
+        db.commit()
+        request.session["mensaje"] = f"✅ Suscriptor con ID {suscriptor_id} eliminado exitosamente."
+    else:
+        request.session["mensaje"] = f"⚠️ No se encontró el suscriptor con ID {suscriptor_id}."
+    
+    return RedirectResponse(url="/admin/reporte-suscriptores", status_code=303)

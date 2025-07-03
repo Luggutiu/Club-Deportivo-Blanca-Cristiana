@@ -205,19 +205,3 @@ async def publicar_post(
         
 
 
-@router.post("/admin/eliminar-suscriptor/{suscriptor_id}")
-async def eliminar_suscriptor(
-    suscriptor_id: int,
-    request: Request,
-    db: Session = Depends(get_db),
-    admin: bool = Depends(check_admin_logged)
-):
-    suscriptor = db.query(Suscriptor).filter_by(id=suscriptor_id).first()
-    if suscriptor:
-        db.delete(suscriptor)
-        db.commit()
-        request.session["mensaje"] = f"✅ Suscriptor '{suscriptor.nombre_completo}' eliminado correctamente."
-    else:
-        request.session["mensaje"] = "❌ El suscriptor no fue encontrado."
-    
-    return RedirectResponse(url="/admin/reporte-suscriptores", status_code=303)
