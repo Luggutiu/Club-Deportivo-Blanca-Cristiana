@@ -67,7 +67,9 @@ async def notificar_admin_suscripcion(
     documento: str,
     tipo: str,
     celular: str,
-    archivo_path: str = None
+    archivo_path: str = None,
+    archivo_bytes: bytes = None,
+    archivo_nombre: str = None
 ):
     try:
         # Validar correo del suscriptor
@@ -85,8 +87,16 @@ async def notificar_admin_suscripcion(
         </ul>
         """
 
-        # Adjuntar solo si el archivo existe
-        attachments = [archivo_path] if archivo_path and os.path.isfile(archivo_path) else None
+        # Preparar adjunto si se recibió en memoria
+        attachments = None
+        if archivo_bytes and archivo_nombre:
+            attachments = [{
+                "file": archivo_bytes,
+                "filename": archivo_nombre,
+                "mime_type": "application/octet-stream"
+            }]
+        elif archivo_path and os.path.isfile(archivo_path):
+            attachments = [archivo_path]
 
         mensaje = MessageSchema(
             subject=asunto,

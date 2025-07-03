@@ -119,6 +119,63 @@ app.add_middleware(
 ) # Reemplaza por variable de entorno
 
 
+@app.post("/registrar-google-suscriptor")
+async def registrar_google_suscriptor(
+    request: Request,
+    correo: str = Form(...),
+    nombre_completo: str = Form(...),
+    tipo_documento: str = Form(...),
+    numero_documento: str = Form(...),
+    celular: str = Form(...),
+    archivo: UploadFile = File(...),
+    db: Session = Depends(get_db)
+):
+    try:
+        # Verificar si ya está registrado
+        existe = db.query(Suscriptor).filter(Suscriptor.numero_documento == numero_documento).first()
+        if existe:
+            return templates.TemplateResponse("error.html", {
+                "request": request,
+                "error_message": "Este número de documento ya está registrado."
+            })
+
+        # Crear el suscriptor
+        nuevo = Suscriptor(
+            nombre_completo=nombre_completo,
+            correo=correo,
+            tipo_documento=tipo_documento,
+            numero_documento=numero_documento,
+            celular=celular
+        )
+        db.add(nuevo)
+        db.commit()
+
+        # Leer el archivo en memoria (sin guardar en disco)
+        contenido_bytes = await archivo.read()
+        extension = archivo.filename.split('.')[-1].lower()
+        filename = f"{numero_documento}.{extension}"
+
+        # Enviar correos
+        await enviar_correo_bienvenida(nombre_completo, correo)
+        await notificar_admin_suscripcion(
+            nombre=nombre_completo,
+            correo=correo,
+            tipo=tipo_documento,
+            documento=numero_documento,
+            celular=celular,
+            archivo_path=None,
+            archivo_bytes=contenido_bytes,
+            archivo_nombre=filename
+        )
+
+        return RedirectResponse(url="/confirmacion-suscripcion", status_code=303)
+
+    except Exception as e:
+        print("❌ Error al registrar vía Google:", e)
+        return templates.TemplateResponse("error.html", {
+            "request": request,
+            "error_message": "Ocurrió un error al procesar tu registro."
+        })
 
 
 
