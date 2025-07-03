@@ -6,7 +6,7 @@
 
   <!-- Google Search Console Verification -->
   <meta name="google-site-verification" content="JSxPDq2cVyWz0V_gkmTJ1m87kAeJH1Qo5A73NjXJncY" />
-  <meta name="description" content="Club Deportivo Blanca Cristiana ofrece formación deportiva en fútbol, voleibol y actividades recreativas para niños, jóvenes y adultos en Colombia.">
+  <meta name="description" content="Club Deportivo Blanca Cristiana ofrece formación deportiva en fútbol, voleibol y actividades recreativas para niños, jóvenes, adultos y madres de familia en Colombia. ¡Únete a nuestra familia deportiva!">
 
   <title>{% block title %}Club Deportivo Blanca Cristiana{% endblock %}</title>
   <link type="text/plain" rel="author" href="{{ url_for('static', path='humans.txt') }}" />
@@ -202,6 +202,14 @@
     </aside>
 
     <main id="main-content">
+      <!-- Bienvenida SEO -->
+      <div class="bienvenida-seo" style="margin-bottom: 2rem; background: rgba(255, 255, 255, 0.05); padding: 1.5rem; border-radius: 12px; border: 1px solid #ff5e78;">
+        <h2 style="color: #ff91a4;">Bienvenidos al Club Deportivo Blanca Cristiana</h2>
+        <p style="color: #eee; font-size: 1rem;">
+          En el <strong>Club Deportivo Blanca Cristiana</strong> formamos deportistas con valores, disciplina y pasión. Ofrecemos entrenamientos en <strong>fútbol</strong>, <strong>voleibol</strong> y actividades recreativas dirigidas a <strong>niños</strong>, <strong>jóvenes</strong>, <strong>adultos</strong> y <strong>madres de familia</strong>. Nuestro objetivo es promover el bienestar físico, mental y social a través del deporte para toda la comunidad. ¡Únete a nuestra familia deportiva y vive la experiencia del deporte con nosotros!
+        </p>
+      </div>
+
       {% block content %}{% endblock %}
     </main>
   </div>
