@@ -140,7 +140,7 @@ def mostrar_formulario_datos(request: Request, correo: str, nombre: str):
             <h1 style="color: #ff5e78;">Completa tu registro</h1>
             <p>Gracias, <strong>{nombre}</strong> (<span style="color:#ccc;">{correo}</span>). Solo faltan unos datos para finalizar:</p>
 
-            <form action="/auth/google/complete" method="post">
+            <form action="/auth/google/complete" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="correo" value="{correo}">
                 <input type="hidden" name="nombre_completo" value="{nombre}">
 
@@ -158,6 +158,9 @@ def mostrar_formulario_datos(request: Request, correo: str, nombre: str):
 
                 <label for="celular">Número de celular:</label>
                 <input type="text" id="celular" name="celular" required pattern="3\\d{{9}}" placeholder="Ej: 3001234567">
+
+                <label for="archivo">Adjuntar foto para carnet:</label>
+                <input type="file" name="archivo" accept=".jpg,.jpeg,.png,.pdf" required>
 
                 <button type="submit">Registrarme</button>
             </form>
