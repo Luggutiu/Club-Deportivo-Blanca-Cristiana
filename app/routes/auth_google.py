@@ -74,29 +74,94 @@ async def google_callback(request: Request):
 @router.get("/auth/google/register", response_class=HTMLResponse)
 def mostrar_formulario_datos(request: Request, correo: str, nombre: str):
     html = f"""
-    <html>
-    <body style='font-family: sans-serif; max-width: 600px; margin: auto;'>
-        <h2>Completa tu registro</h2>
-        <form action="/auth/google/complete" method="post">
-            <input type="hidden" name="correo" value="{correo}">
-            <input type="hidden" name="nombre_completo" value="{nombre}">
-            
-            <label>Tipo de documento:</label>
-            <select name="tipo_documento" required>
-                <option value="Cédula">Cédula</option>
-                <option value="Cédula de extranjería">Cédula de extranjería</option>
-                <option value="Tarjeta de identidad">Tarjeta de identidad</option>
-                <option value="Pasaporte">Pasaporte</option>
-            </select><br><br>
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <title>Completa tu registro - Club Deportivo Blanca Cristiana</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="/static/styles.css">
+        <style>
+            body {{
+                background-color: #0e0e0e;
+                color: white;
+                font-family: 'Segoe UI', sans-serif;
+                padding: 2rem;
+            }}
+            .form-card {{
+                max-width: 600px;
+                margin: auto;
+                background-color: #1e1e1e;
+                padding: 2rem;
+                border-radius: 12px;
+                box-shadow: 0 0 15px rgba(255, 105, 180, 0.2);
+            }}
+            input, select {{
+                width: 100%;
+                padding: 0.7rem;
+                margin-top: 0.5rem;
+                margin-bottom: 1.5rem;
+                border: none;
+                border-radius: 8px;
+                background-color: #2c2c2c;
+                color: white;
+            }}
+            label {{
+                font-weight: bold;
+            }}
+            button {{
+                background-color: #ff5e78;
+                color: white;
+                padding: 0.8rem 1.2rem;
+                border: none;
+                border-radius: 8px;
+                font-weight: bold;
+                width: 100%;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }}
+            button:hover {{
+                background-color: #ff2c4d;
+            }}
+            a.volver {{
+                display: inline-block;
+                margin-bottom: 2rem;
+                color: #ff5e78;
+                text-decoration: none;
+                font-weight: bold;
+            }}
+        </style>
+    </head>
+    <body>
 
-            <label>Número de documento:</label>
-            <input type="text" name="numero_documento" required><br><br>
+        <a href="/" class="volver">⬅ Ir al inicio</a>
 
-            <label>Número de celular:</label>
-            <input type="text" name="celular" required><br><br>
+        <div class="form-card">
+            <h1 style="color: #ff5e78;">Completa tu registro</h1>
+            <p>Gracias, <strong>{nombre}</strong> (<span style="color:#ccc;">{correo}</span>). Solo faltan unos datos para finalizar:</p>
 
-            <button type="submit">Registrarme</button>
-        </form>
+            <form action="/auth/google/complete" method="post">
+                <input type="hidden" name="correo" value="{correo}">
+                <input type="hidden" name="nombre_completo" value="{nombre}">
+
+                <label for="tipo_documento">Tipo de documento:</label>
+                <select id="tipo_documento" name="tipo_documento" required>
+                    <option value="">Selecciona una opción</option>
+                    <option value="Cédula">Cédula</option>
+                    <option value="Cédula de extranjería">Cédula de extranjería</option>
+                    <option value="Tarjeta de identidad">Tarjeta de identidad</option>
+                    <option value="Pasaporte">Pasaporte</option>
+                </select>
+
+                <label for="numero_documento">Número de documento:</label>
+                <input type="text" id="numero_documento" name="numero_documento" required pattern="\\d{{6,15}}" placeholder="Ej: 1234567890">
+
+                <label for="celular">Número de celular:</label>
+                <input type="text" id="celular" name="celular" required pattern="3\\d{{9}}" placeholder="Ej: 3001234567">
+
+                <button type="submit">Registrarme</button>
+            </form>
+        </div>
     </body>
     </html>
     """
