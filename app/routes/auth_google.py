@@ -149,4 +149,7 @@ async def completar_suscripcion(
     await enviar_correo_bienvenida(correo, nombre_completo)
     await notificar_admin_suscripcion(nombre_completo, correo, numero_documento, tipo_documento, celular)
 
-    return HTMLResponse(f"<h3>Gracias por registrarte, {nombre_completo}. Revisa tu correo.</h3>")
+    return templates.TemplateResponse("confirmacion_suscripcion.html", {
+        "request": request,
+        "nombre": nombre_completo
+    })
