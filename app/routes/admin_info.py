@@ -8,6 +8,12 @@
 # Todos los derechos reservados
 # ========================================
 
+from fastapi import APIRouter, Request, Depends
+from fastapi.responses import RedirectResponse
+from sqlalchemy.orm import Session
+from app.database import get_db
+from app.models import Suscriptor
+
 from fastapi import APIRouter, Form, UploadFile, File, Depends, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
@@ -199,4 +205,19 @@ async def publicar_post(
         
 
 
-
+@router.post("/admin/eliminar-suscriptor/{suscriptor_id}")
+async def eliminar_suscriptor(
+    suscriptor_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    admin: bool = Depends(check_admin_logged)
+):
+    suscriptor = db.query(Suscriptor).filter_by(id=suscriptor_id).first()
+    if suscriptor:
+        db.delete(suscriptor)
+        db.commit()
+        request.session["mensaje"] = f"✅ Suscriptor '{suscriptor.nombre_completo}' eliminado correctamente."
+    else:
+        request.session["mensaje"] = "❌ El suscriptor no fue encontrado."
+    
+    return RedirectResponse(url="/admin/reporte-suscriptores", status_code=303)

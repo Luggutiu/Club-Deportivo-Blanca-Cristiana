@@ -20,6 +20,8 @@ from openpyxl.styles import Font, Alignment, PatternFill
 from fastapi.responses import StreamingResponse
 from io import BytesIO
 from datetime import datetime
+from fastapi import status
+from fastapi.responses import RedirectResponse
 import os
 from sqlalchemy.orm import Session
 from io import BytesIO
@@ -724,3 +726,6 @@ async def descargar_excel_suscriptores(
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         headers={"Content-Disposition": "attachment; filename=planilla_suscriptores.xlsx"}
     )
+    
+    
+
