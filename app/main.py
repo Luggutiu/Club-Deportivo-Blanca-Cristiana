@@ -25,6 +25,7 @@ import os
 from sqlalchemy.orm import Session
 from io import BytesIO
 from openpyxl import Workbook
+from openpyxl.utils import get_column_letter
 
 from app.database import get_db
 from app.models import Suscriptor
@@ -712,12 +713,16 @@ async def descargar_excel_suscriptores(
         ])
 
     # --- Ajustar ancho de columnas
-    for col in ws.columns:
+    for i, column_cells in enumerate(ws.columns, start=1):
         max_length = 0
-        col_letter = col[0].column_letter
-        for cell in col:
-            if cell.value:
-                max_length = max(max_length, len(str(cell.value)))
+        for cell in column_cells:
+            try:
+                if cell.value:
+                    max_length = max(max_length, len(str(cell.value)))
+            except AttributeError:
+            # Omitir celdas fusionadas sin valor
+                continue
+        col_letter = get_column_letter(i)
         ws.column_dimensions[col_letter].width = max_length + 2
 
     # --- Generar archivo
