@@ -87,17 +87,19 @@ async def notificar_admin_suscripcion(
         </ul>
         """
 
-        # Preparar adjunto si se recibió en memoria
-        attachments = None
+        # Adjuntos: siempre enviar una lista, aunque esté vacía
+        attachments = []
+
         if archivo_bytes and archivo_nombre:
-            attachments = [{
+            attachments.append({
                 "file": archivo_bytes,
                 "filename": archivo_nombre,
                 "mime_type": "application/octet-stream"
-            }]
+            })
         elif archivo_path and os.path.isfile(archivo_path):
-            attachments = [archivo_path]
+            attachments.append(archivo_path)
 
+        # Construir mensaje
         mensaje = MessageSchema(
             subject=asunto,
             recipients=["clubdeportivoblancacristiana@gmail.com"],
