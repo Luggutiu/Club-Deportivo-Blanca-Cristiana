@@ -20,13 +20,16 @@ REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI")  # ej. https://tu-dominio.com/au
 
 @router.get("/auth/google/login")
 async def login_via_google():
-    google_auth_url = (
-        "https://accounts.google.com/o/oauth2/v2/auth"
-        f"?client_id={GOOGLE_CLIENT_ID}"
-        f"&response_type=code"
-        f"&redirect_uri={REDIRECT_URI}"
-        "&scope=openid%20email%20profile"
-    )
+    params = {
+        "client_id": GOOGLE_CLIENT_ID,
+        "response_type": "code",
+        "redirect_uri": REDIRECT_URI,
+        "scope": "openid email profile",
+        "access_type": "offline",
+        "prompt": "consent"
+    }
+
+    google_auth_url = "https://accounts.google.com/o/oauth2/v2/auth?" + urlencode(params)
     return RedirectResponse(google_auth_url)
 
 
