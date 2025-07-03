@@ -14,7 +14,13 @@ from fastapi.templating import Jinja2Templates
 from fastapi.exceptions import RequestValidationError
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.status import HTTP_303_SEE_OTHER
-
+from openpyxl import Workbook
+from openpyxl.drawing.image import Image as ExcelImage
+from openpyxl.styles import Font, Alignment, PatternFill
+from fastapi.responses import StreamingResponse
+from io import BytesIO
+from datetime import datetime
+import os
 from sqlalchemy.orm import Session
 from io import BytesIO
 from openpyxl import Workbook
@@ -649,26 +655,59 @@ async def descargar_excel_suscriptores(
     ws = wb.active
     ws.title = "Suscriptores"
 
-    headers = [
-        "ID",
-        "Tipo de Documento",
-        "Número de Documento",
-        "Nombre Completo",
-        "Celular",
-        "Correo"
-    ]
-    ws.append(headers)
+    # Añadir logo si existe
+    logo_path = "app/static/logo.png"
+    if os.path.isfile(logo_path):
+        img = ExcelImage(logo_path)
+        img.width = 120
+        img.height = 120
+        ws.add_image(img, "A1")
 
-    for s in suscriptores:
-        ws.append([
-            s.id,
-            s.tipo_documento,
-            s.numero_documento,
-            s.nombre_completo,
-            s.celular,
-            s.correo
-        ])
+    # Nombre del club
+    ws.merge_cells("B2:D2")
+    ws["B2"] = "Club Deportivo Blanca Cristiana"
+    ws["B2"].font = Font(size=14, bold=True)
+    ws["B2"].alignment = Alignment(horizontal="left")
 
+    # Título principal
+    ws.merge_cells("C4:F4")
+    ws["C4"] = "Planilla de Suscriptores"
+    ws["C4"].font = Font(size=16, bold=True, color="FFFFFF")
+    ws["C4"].alignment = Alignment(horizontal="center")
+    ws["C4"].fill = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid")
+
+    # Fecha del reporte
+    ws.merge_cells("C5:F5")
+    ws["C5"] = f"Generado el {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}"
+    ws["C5"].font = Font(size=10, italic=True, color="888888")
+    ws["C5"].alignment = Alignment(horizontal="center")
+
+    # Encabezados
+    start_row = 7
+    headers = ["ID", "Tipo Documento", "Número Documento", "Nombre Completo", "Correo", "Celular"]
+    header_fill = PatternFill(start_color="D9E1F2", end_color="D9E1F2", fill_type="solid")
+
+    for col_num, header in enumerate(headers, 1):
+        cell = ws.cell(row=start_row, column=col_num, value=header)
+        cell.font = Font(bold=True)
+        cell.fill = header_fill
+        cell.alignment = Alignment(horizontal="center")
+
+    # Datos
+    for i, s in enumerate(suscriptores, start=start_row + 1):
+        ws.cell(row=i, column=1, value=s.id)
+        ws.cell(row=i, column=2, value=s.tipo_documento)
+        ws.cell(row=i, column=3, value=s.numero_documento)
+        ws.cell(row=i, column=4, value=s.nombre_completo)
+        ws.cell(row=i, column=5, value=s.correo)
+        ws.cell(row=i, column=6, value=s.celular)
+
+    # Ajustar anchos de columna
+    columnas = [10, 20, 25, 30, 35, 20]
+    for i, ancho in enumerate(columnas, 1):
+        ws.column_dimensions[chr(64 + i)].width = ancho
+
+    # Guardar en memoria
     output = BytesIO()
     wb.save(output)
     output.seek(0)
@@ -676,5 +715,5 @@ async def descargar_excel_suscriptores(
     return StreamingResponse(
         output,
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers={"Content-Disposition": "attachment; filename=suscriptores.xlsx"}
+        headers={"Content-Disposition": "attachment; filename=planilla_suscriptores.xlsx"}
     )
