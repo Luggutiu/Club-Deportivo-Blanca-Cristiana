@@ -149,22 +149,24 @@
       }
     }
   </style>
+
   <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "SportsOrganization",
-  "name": "Club Deportivo Blanca Cristiana",
-  "url": "https://club-deportivo-blanca-cristiana.onrender.com",
-  "logo": "https://club-deportivo-blanca-cristiana.onrender.com/static/logo.png",
-  "description": "Formación deportiva en fútbol, voleibol y actividades recreativas para todas las edades.",
-  "email": "clubdeportivoblancacristiana@gmail.com",
-  "address": {
-    "@type": "PostalAddress",
-    "addressLocality": "Colombia"
+  {
+    "@context": "https://schema.org",
+    "@type": "SportsOrganization",
+    "name": "Club Deportivo Blanca Cristiana",
+    "url": "https://club-deportivo-blanca-cristiana.onrender.com",
+    "logo": "https://club-deportivo-blanca-cristiana.onrender.com/static/logo.png",
+    "description": "Formación deportiva en fútbol, voleibol y actividades recreativas para todas las edades.",
+    "email": "clubdeportivoblancacristiana@gmail.com",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Colombia"
+    }
   }
-}
-</script>
+  </script>
 </head>
+
 <!-- Desarrollado por Luis Gutierrez | https://club-deportivo-blanca-cristiana.onrender.com -->
 <body>
 
@@ -192,7 +194,6 @@
             <a href="/{{ s.slug }}">{{ s.titulo }}</a>
           {% endif %}
         {% endfor %}
-        <!-- Respaldo estático -->
         <a href="/mision">Misión</a>
         <a href="/vision">Visión</a>
         <a href="/servicios">Nuestros Servicios</a>
@@ -209,13 +210,6 @@
   <a href="https://wa.me/573045532258" target="_blank" class="whatsapp-float" title="Contáctanos por WhatsApp" rel="noopener">
     <i class="fab fa-whatsapp"></i>
   </a>
-
-  <!-- Botón de Política de Privacidad -->
-  <div style="text-align: center; padding: 1.5rem 1rem 2rem;">
-    <a href="/politica-privacidad" style="color: #aaa; text-decoration: none; font-size: 0.9rem;">
-      Política de Privacidad
-    </a>
-  </div>
 
   <script src="https://platform.twitter.com/widgets.js" charset="utf-8" defer></script>
 
@@ -255,8 +249,21 @@
   </script>
 
   {% block extra_js %}{% endblock %}
-  <footer style="text-align: center; padding: 1rem; color: #999; font-size: 0.8rem;">
-  Desarrollado por <a href="https://tusitio.dev" target="_blank" style="color: #ccc; text-decoration: underline;">Luis Gutierrez</a>
-</footer>
+
+  <footer style="margin-top: auto; padding: 2rem 1rem; background-color: #000; text-align: center; font-size: 0.9rem; color: #aaa; border-top: 1px solid #222;">
+    <div style="margin-bottom: 0.5rem;">
+      <a href="/politica-privacidad" style="color: #aaa; text-decoration: none;">Política de Privacidad</a>
+    </div>
+    <div style="margin-bottom: 0.5rem;">
+      © 2025 Club Deportivo Blanca Cristiana. Todos los derechos reservados.
+    </div>
+    <div>
+      Desarrollado por 
+      <a href="https://club-deportivo-blanca-cristiana.onrender.com" target="_blank" style="color: #ff5e78; text-decoration: underline;">
+        Luis Gutierrez
+      </a>
+    </div>
+  </footer>
+
 </body>
 </html>
