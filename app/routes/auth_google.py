@@ -16,7 +16,7 @@ templates = Jinja2Templates(directory="app/templates")
 # Cargar desde variables de entorno (.env)
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
-REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI")  # ej. https://tu-dominio.com/auth/google/callback
+REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI")
 
 @router.get("/auth/google/login")
 async def login_via_google():
@@ -28,7 +28,6 @@ async def login_via_google():
         "access_type": "offline",
         "prompt": "consent"
     }
-
     google_auth_url = "https://accounts.google.com/o/oauth2/v2/auth?" + urlencode(params)
     return RedirectResponse(google_auth_url)
 
@@ -75,94 +74,45 @@ async def google_callback(request: Request):
 def mostrar_formulario_datos(request: Request, correo: str, nombre: str):
     html = f"""
     <!DOCTYPE html>
-    <html lang="es">
+    <html lang=\"es\">
     <head>
-        <meta charset="UTF-8">
+        <meta charset=\"UTF-8\">
         <title>Completa tu registro - Club Deportivo Blanca Cristiana</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="/static/styles.css">
+        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+        <link rel=\"stylesheet\" href=\"/static/styles.css\">
         <style>
-            body {{
-                background-color: #0e0e0e;
-                color: white;
-                font-family: 'Segoe UI', sans-serif;
-                padding: 2rem;
-            }}
-            .form-card {{
-                max-width: 600px;
-                margin: auto;
-                background-color: #1e1e1e;
-                padding: 2rem;
-                border-radius: 12px;
-                box-shadow: 0 0 15px rgba(255, 105, 180, 0.2);
-            }}
-            input, select {{
-                width: 100%;
-                padding: 0.7rem;
-                margin-top: 0.5rem;
-                margin-bottom: 1.5rem;
-                border: none;
-                border-radius: 8px;
-                background-color: #2c2c2c;
-                color: white;
-            }}
-            label {{
-                font-weight: bold;
-            }}
-            button {{
-                background-color: #ff5e78;
-                color: white;
-                padding: 0.8rem 1.2rem;
-                border: none;
-                border-radius: 8px;
-                font-weight: bold;
-                width: 100%;
-                cursor: pointer;
-                transition: background-color 0.3s ease;
-            }}
-            button:hover {{
-                background-color: #ff2c4d;
-            }}
-            a.volver {{
-                display: inline-block;
-                margin-bottom: 2rem;
-                color: #ff5e78;
-                text-decoration: none;
-                font-weight: bold;
-            }}
+            body {{ background-color: #0e0e0e; color: white; font-family: 'Segoe UI', sans-serif; padding: 2rem; }}
+            .form-card {{ max-width: 600px; margin: auto; background-color: #1e1e1e; padding: 2rem; border-radius: 12px; box-shadow: 0 0 15px rgba(255, 105, 180, 0.2); }}
+            input, select {{ width: 100%; padding: 0.7rem; margin-top: 0.5rem; margin-bottom: 1.5rem; border: none; border-radius: 8px; background-color: #2c2c2c; color: white; }}
+            label {{ font-weight: bold; }}
+            button {{ background-color: #ff5e78; color: white; padding: 0.8rem 1.2rem; border: none; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; transition: background-color 0.3s ease; }}
+            button:hover {{ background-color: #ff2c4d; }}
+            a.volver {{ display: inline-block; margin-bottom: 2rem; color: #ff5e78; text-decoration: none; font-weight: bold; }}
         </style>
     </head>
     <body>
-
-        <a href="/" class="volver">⬅ Ir al inicio</a>
-
-        <div class="form-card">
-            <h1 style="color: #ff5e78;">Completa tu registro</h1>
-            <p>Gracias, <strong>{nombre}</strong> (<span style="color:#ccc;">{correo}</span>). Solo faltan unos datos para finalizar:</p>
-
-            <form action="/auth/google/complete" method="post" enctype="multipart/form-data">
-                <input type="hidden" name="correo" value="{correo}">
-                <input type="hidden" name="nombre_completo" value="{nombre}">
-
-                <label for="tipo_documento">Tipo de documento:</label>
-                <select id="tipo_documento" name="tipo_documento" required>
-                    <option value="">Selecciona una opción</option>
-                    <option value="Cédula">Cédula</option>
-                    <option value="Cédula de extranjería">Cédula de extranjería</option>
-                    <option value="Tarjeta de identidad">Tarjeta de identidad</option>
-                    <option value="Pasaporte">Pasaporte</option>
+        <a href=\"/\" class=\"volver\">⬅ Ir al inicio</a>
+        <div class=\"form-card\">
+            <h1 style=\"color: #ff5e78;\">Completa tu registro</h1>
+            <p>Gracias, <strong>{nombre}</strong> (<span style=\"color:#ccc;\">{correo}</span>). Solo faltan unos datos para finalizar:</p>
+            <form action=\"/auth/google/complete\" method=\"post\" enctype=\"multipart/form-data\">
+                <input type=\"hidden\" name=\"correo\" value=\"{correo}\">
+                <input type=\"hidden\" name=\"nombre_completo\" value=\"{nombre}\">
+                <label for=\"tipo_documento\">Tipo de documento:</label>
+                <select id=\"tipo_documento\" name=\"tipo_documento\" required>
+                    <option value=\"\">Selecciona una opción</option>
+                    <option value=\"Cédula\">Cédula</option>
+                    <option value=\"Cédula de extranjería\">Cédula de extranjería</option>
+                    <option value=\"Tarjeta de identidad\">Tarjeta de identidad</option>
+                    <option value=\"Pasaporte\">Pasaporte</option>
                 </select>
-
-                <label for="numero_documento">Número de documento:</label>
-                <input type="text" id="numero_documento" name="numero_documento" required pattern="\\d{{6,15}}" placeholder="Ej: 1234567890">
-
-                <label for="celular">Número de celular:</label>
-                <input type="text" id="celular" name="celular" required pattern="3\\d{{9}}" placeholder="Ej: 3001234567">
-
-                <label for="archivo">Adjuntar foto para carnet:</label>
-                <input type="file" name="archivo" accept=".jpg,.jpeg,.png,.pdf" required>
-
-                <button type="submit">Registrarme</button>
+                <label for=\"numero_documento\">Número de documento:</label>
+                <input type=\"text\" id=\"numero_documento\" name=\"numero_documento\" required pattern=\"\\d{{6,15}}\" placeholder=\"Ej: 1234567890\">
+                <label for=\"celular\">Número de celular:</label>
+                <input type=\"text\" id=\"celular\" name=\"celular\" required pattern=\"3\\d{{9}}\" placeholder=\"Ej: 3001234567\">
+                <label for=\"archivo\">Adjuntar foto para carnet:</label>
+                <input type=\"file\" name=\"archivo\" accept=\".jpg,.jpeg,.png,.pdf\" required>
+                <button type=\"submit\">Registrarme</button>
             </form>
         </div>
     </body>
@@ -181,13 +131,13 @@ async def completar_suscripcion(
     celular: str = Form(...),
     db: Session = Depends(get_db)
 ):
-    existente = db.query(Suscriptor).filter_by(correo=correo).first()
-    if existente:
-        return HTMLResponse(f"<h3>El correo {correo} ya está registrado.</h3>")
+    # Validar si el número de documento ya está registrado
+    doc_existente = db.query(Suscriptor).filter_by(numero_documento=numero_documento).first()
+    if doc_existente:
+        return HTMLResponse(f"<h3>El número de documento {numero_documento} ya está registrado.</h3>")
 
     suscriptor = Suscriptor(
         correo=correo,
-        nombre=nombre_completo,
         tipo_documento=tipo_documento,
         numero_documento=numero_documento,
         nombre_completo=nombre_completo,
