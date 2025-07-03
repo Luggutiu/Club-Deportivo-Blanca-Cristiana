@@ -19,7 +19,6 @@ from openpyxl.drawing.image import Image as ExcelImage
 from openpyxl.styles import Font, Alignment, PatternFill
 from fastapi.responses import StreamingResponse
 from io import BytesIO
-from datetime import datetime
 from fastapi import status
 from fastapi.responses import RedirectResponse
 import os
@@ -33,7 +32,7 @@ from app.routes.auth import check_admin_logged
 from app.routes import admin_info
 
 # ------------------------- Utilidades estándar -------------------------
-from datetime import datetime, date
+from datetime import datetime
 import os
 import shutil
 
@@ -680,7 +679,7 @@ async def descargar_excel_suscriptores(
 
     # --- Fecha de generación
     ws.merge_cells("B5:F5")
-    fecha = datetime.datetime.now().strftime("Generado el %d/%m/%Y %H:%M:%S")
+    fecha = datetime.now().strftime("Generado el %d/%m/%Y %H:%M:%S")
     ws["B5"] = fecha
     ws["B5"].font = Font(italic=True, color="888888")
     ws["B5"].alignment = Alignment(horizontal="center")
