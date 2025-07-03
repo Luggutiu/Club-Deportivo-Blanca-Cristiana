@@ -65,4 +65,4 @@ class Suscriptor(Base):
     numero_documento = Column(String, unique=True, nullable=False)
     nombre_completo = Column(String, nullable=False)
     celular = Column(String, nullable=False)
-    correo = Column(String, unique=True, nullable=False)
+    correo = Column(String, nullable=False)
