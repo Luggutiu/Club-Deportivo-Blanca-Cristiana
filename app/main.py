@@ -655,7 +655,7 @@ async def descargar_excel_suscriptores(
     ws = wb.active
     ws.title = "Suscriptores"
 
-    # Añadir logo si existe
+    # Logo del club
     logo_path = "app/static/logo.png"
     if os.path.isfile(logo_path):
         img = ExcelImage(logo_path)
@@ -669,14 +669,14 @@ async def descargar_excel_suscriptores(
     ws["B2"].font = Font(size=14, bold=True)
     ws["B2"].alignment = Alignment(horizontal="left")
 
-    # Título principal
+    # Título del reporte
     ws.merge_cells("C4:F4")
     ws["C4"] = "Planilla de Suscriptores"
     ws["C4"].font = Font(size=16, bold=True, color="FFFFFF")
     ws["C4"].alignment = Alignment(horizontal="center")
     ws["C4"].fill = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid")
 
-    # Fecha del reporte
+    # Fecha
     ws.merge_cells("C5:F5")
     ws["C5"] = f"Generado el {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}"
     ws["C5"].font = Font(size=10, italic=True, color="888888")
@@ -693,7 +693,7 @@ async def descargar_excel_suscriptores(
         cell.fill = header_fill
         cell.alignment = Alignment(horizontal="center")
 
-    # Datos
+    # Cuerpo
     for i, s in enumerate(suscriptores, start=start_row + 1):
         ws.cell(row=i, column=1, value=s.id)
         ws.cell(row=i, column=2, value=s.tipo_documento)
@@ -702,12 +702,19 @@ async def descargar_excel_suscriptores(
         ws.cell(row=i, column=5, value=s.correo)
         ws.cell(row=i, column=6, value=s.celular)
 
-    # Ajustar anchos de columna
+    # Ajustar anchos
     columnas = [10, 20, 25, 30, 35, 20]
     for i, ancho in enumerate(columnas, 1):
         ws.column_dimensions[chr(64 + i)].width = ancho
 
-    # Guardar en memoria
+    # Firma del desarrollador
+    last_row = ws.max_row + 2
+    ws.merge_cells(f"A{last_row}:F{last_row}")
+    ws[f"A{last_row}"] = "Desarrollado por Luis Gutierrez – Club Deportivo Blanca Cristiana"
+    ws[f"A{last_row}"].font = Font(italic=True, color="888888")
+    ws[f"A{last_row}"].alignment = Alignment(horizontal="center")
+
+    # Guardar
     output = BytesIO()
     wb.save(output)
     output.seek(0)
