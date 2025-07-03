@@ -1,0 +1,21 @@
+{
+  "name": "Club Deportivo Blanca Cristiana",
+  "short_name": "Club Blanca",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#6B5B95",
+  "description": "Formación deportiva para niños, jóvenes y adultos",
+  "icons": [
+    {
+      "src": "/static/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/static/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

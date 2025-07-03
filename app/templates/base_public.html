@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+  <link rel="manifest" href="{{ url_for('static', path='manifest.json') }}">
+  <meta name="theme-color" content="#6B5B95">
+
   <!-- Google Search Console Verification -->
   <meta name="google-site-verification" content="JSxPDq2cVyWz0V_gkmTJ1m87kAeJH1Qo5A73NjXJncY" />
   <meta name="description" content="Club Deportivo Blanca Cristiana ofrece formación deportiva en fútbol, voleibol y actividades recreativas para niños, jóvenes y adultos en Colombia.">
@@ -18,7 +21,9 @@
   {% block head_extra %}{% endblock %}
   {% block extra_css %}{% endblock %}
 
+
   <style>
+    
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
@@ -266,6 +271,14 @@
       Con apoyo de la inteligencia artificial de <a href="https://openai.com/chatgpt" target="_blank" style="color: #aaa;">OpenAI</a>.
     </div>
   </footer>
+
+ <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/static/sw.js')
+      .then(reg => console.log("✅ Service Worker registrado"))
+      .catch(err => console.error("❌ Error al registrar Service Worker:", err));
+  }
+</script>
 
 </body>
 </html>
