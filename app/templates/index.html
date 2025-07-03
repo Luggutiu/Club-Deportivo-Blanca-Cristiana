@@ -44,6 +44,13 @@
     font-size: 0.85rem;
     color: #ccc;
   }
+
+  .creditos {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #aaa;
+    margin-top: 3rem;
+  }
 </style>
 {% endblock %}
 
@@ -60,14 +67,6 @@
   <h2>📣 Últimas Publicaciones</h2>
 
   <div id="publicaciones-container">
-
-    <div class="debug-tipos">
-      <ul>
-        {% for item in publicaciones %}
-          <li>{{ item.__class__.__name__ }}</li>
-        {% endfor %}
-      </ul>
-    </div>
 
     {% for item in posts %}
       <div class="post" data-plataforma="{{ item.plataforma or 'Texto' }}" data-id="{{ item.id }}">
@@ -101,40 +100,19 @@
         {% endif %}
 
         <div class="plataforma">Plataforma: {{ item.plataforma or 'Texto' }}</div>
-
-        <div class="acciones-post">
-          <div class="likes" id="likes-{{ item.id }}">
-            ❤️ {{ item.likes or 0 }} Me gusta
-          </div>
-          <button onclick="darLike('{{ item.id }}')" class="btn-like">
-            ❤️ Me gusta
-          </button>
-        </div>
       </div>
     {% else %}
       <p class="no-publicaciones">No hay publicaciones disponibles.</p>
     {% endfor %}
   </div>
+
+  <!-- Créditos -->
+  <div class="creditos">
+    Desarrollado por Luis Gutierrez con apoyo de la inteligencia artificial de <a href="https://openai.com/chatgpt" target="_blank" style="color: #ccc;">OpenAI</a>.
+  </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
-<script>
-  function darLike(postId) {
-    fetch(`/like/${postId}`, {
-      method: 'POST'
-    })
-    .then(response => {
-      if (response.ok) return response.json();
-      throw new Error("Error al dar like");
-    })
-    .then(data => {
-      const likesDiv = document.getElementById(`likes-${postId}`);
-      if (likesDiv) {
-        likesDiv.innerText = `❤️ ${data.likes} Me gusta`;
-      }
-    })
-    .catch(error => console.error("Error al dar like:", error));
-  }
-</script>
+<!-- Puedes dejar aquí scripts si los necesitas más adelante -->
 {% endblock %}
