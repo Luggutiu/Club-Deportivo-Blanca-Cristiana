@@ -290,25 +290,25 @@
 <script>
   window.OneSignalDeferred = window.OneSignalDeferred || [];
   OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-      appId: "e88384a9-5e13-4818-b5b9-51547d241d55",
-      serviceWorkerPath: "/OneSignalSDKWorker.js",
-      serviceWorkerUpdaterPath: "/OneSignalSDKUpdaterWorker.js"
-    });
+  try {
+    const isPushSupported = await OneSignal.isPushSupported();
+    if (isPushSupported) {
+      const isSubscribed = await OneSignal.isPushNotificationsEnabled();
+      console.log("¿Está suscrito?", isSubscribed);
 
-    // Obtener el ID del usuario (modo clásico)
-    try {
-      const userId = await OneSignal.User.getId();
-      if (userId) {
-        console.log("🟢 Usuario registrado en OneSignal");
-        console.log("🔑 User ID:", userId);
+      if (isSubscribed) {
+        const user = await OneSignal.getUser();
+        console.log("🟢 Usuario suscrito:", user);
       } else {
-        console.warn("⚠️ Aún no hay User ID disponible (usuario no suscrito o pendiente)");
+        console.log("⚠️ Usuario no está suscrito todavía");
       }
-    } catch (err) {
-      console.error("❌ Error al obtener User ID:", err);
+    } else {
+      console.warn("🔕 Notificaciones Push no son compatibles con este navegador.");
     }
-  });
+  } catch (err) {
+    console.error("❌ Error con OneSignal:", err);
+  }
+});
 </script>
 <button id="installBtn" style="
   display: none;
