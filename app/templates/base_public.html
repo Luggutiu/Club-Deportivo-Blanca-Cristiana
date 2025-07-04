@@ -172,6 +172,7 @@
   </script>
 </head>
 
+
 <body>
 
   <div style="text-align: right; padding: 1rem;">
@@ -309,6 +310,56 @@
     }
   });
 </script>
+<button id="installBtn" style="
+  display: none;
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  background-color: #ff5e78;
+  color: white;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+  z-index: 1000;
+  cursor: pointer;
+">
+  📲 Instalar App
+</button>
 
+<style>
+  @media (min-width: 769px) {
+    #installBtn {
+      display: none !important;
+    }
+  }
+</style>
+<script>
+  let deferredPrompt;
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+
+    const installBtn = document.getElementById('installBtn');
+    installBtn.style.display = 'block';
+
+    installBtn.addEventListener('click', async () => {
+      installBtn.style.display = 'none';
+      deferredPrompt.prompt();
+
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        console.log("✅ App instalada");
+      } else {
+        console.log("❌ Instalación cancelada");
+      }
+
+      deferredPrompt = null;
+    });
+  });
+</script>
 </body>
 </html>
