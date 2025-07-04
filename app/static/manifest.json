@@ -1,8 +1,10 @@
 {
   "name": "Club Deportivo Blanca Cristiana",
-  "short_name": "Club Blanca",
+  "short_name": "C.D Blanca Critiana",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#000000",
   "theme_color": "#6B5B95",
   "description": "Formación deportiva para niños, jóvenes y adultos",
@@ -16,6 +18,12 @@
       "src": "/static/logo.png",
       "sizes": "512x512",
       "type": "image/png"
+    },
+    {
+      "src": "/static/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
