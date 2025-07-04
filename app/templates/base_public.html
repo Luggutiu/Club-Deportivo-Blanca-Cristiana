@@ -292,30 +292,34 @@
   window.OneSignalDeferred = window.OneSignalDeferred || [];
   OneSignalDeferred.push(async function (OneSignal) {
     try {
+      // Verifica que el objeto Notifications existe (evita el TypeError)
+      if (!OneSignal.Notifications || !OneSignal.Notifications.isSupported) {
+        console.warn("⚠️ OneSignal.Notifications aún no disponible. Esperando carga completa...");
+        return;
+      }
+
       const isPushSupported = await OneSignal.Notifications.isSupported();
       console.log("📲 ¿Push compatible?", isPushSupported);
 
       if (isPushSupported) {
         const permission = await OneSignal.Notifications.permission;
-        console.log("🔐 Permiso actual:", permission); // "granted", "default", "denied"
+        console.log("🔐 Permiso actual:", permission);
 
         const isSubscribed = await OneSignal.Notifications.isSubscribed();
         console.log("🔔 ¿Está suscrito?", isSubscribed);
 
-        if (isSubscribed) {
+        if (isSubscribed && OneSignal.User?.getId) {
           const userId = await OneSignal.User.getId();
-          console.log("🟢 Suscrito. User ID:", userId);
-        } else {
-          console.warn("⚠️ Usuario aún no está suscrito");
+          console.log("🟢 User ID:", userId);
         }
-      } else {
-        console.warn("❌ Push NO compatible con este navegador");
       }
     } catch (err) {
       console.error("❌ Error en OneSignal:", err);
     }
   });
 </script>
+
+
 <button id="installBtn" style="
   display: none;
   position: fixed;
