@@ -64,7 +64,6 @@ from app.routes.suscripcion import router as suscripcion_router
 # Inicialización
 app = FastAPI()
 
-app.mount("/", StaticFiles(directory=os.path.dirname(__file__), html=True), name="root")
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
