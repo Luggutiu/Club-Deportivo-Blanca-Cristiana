@@ -190,21 +190,18 @@
 
   <div class="layout">
     <aside id="sidebar" aria-label="Navegación principal">
-      <h2>🏠 Navegación</h2>
-      <nav>
-        <a href="/">Inicio</a>
-        {% for s in secciones %}
-          {% if s.slug != 'suscribirse' %}
-            <a href="/{{ s.slug }}">{{ s.titulo }}</a>
-          {% endif %}
-        {% endfor %}
-        <a href="/mision">Misión</a>
-        <a href="/vision">Visión</a>
-        <a href="/servicios">Nuestros Servicios</a>
-        <a href="/quienes-somos">¿Quiénes somos?</a>
-        <a href="/contacto">Contáctenos</a>
-      </nav>
-    </aside>
+  <h2>🏠 Navegación</h2>
+  <nav>
+    <a href="/">Inicio</a>
+    {% set slugs_renderizados = [] %}
+    {% for s in secciones %}
+      {% if s.slug != 'suscribirse' and s.slug not in slugs_renderizados %}
+        <a href="/{{ s.slug }}">{{ s.titulo }}</a>
+        {% set _ = slugs_renderizados.append(s.slug) %}
+      {% endif %}
+    {% endfor %}
+  </nav>
+</aside>
 
     <main id="main-content">
       {% block content %}{% endblock %}
@@ -290,14 +287,28 @@
   }
 </script>
 
-<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
   window.OneSignalDeferred = window.OneSignalDeferred || [];
   OneSignalDeferred.push(async function(OneSignal) {
     await OneSignal.init({
       appId: "e88384a9-5e13-4818-b5b9-51547d241d55",
       serviceWorkerPath: "/OneSignalSDKWorker.js",
+      serviceWorkerUpdaterPath: "/OneSignalSDKUpdaterWorker.js"
     });
+
+    // Obtener el ID del usuario (modo clásico)
+    try {
+      const userId = await OneSignal.getUserId();
+      if (userId) {
+        console.log("🟢 Usuario registrado en OneSignal");
+        console.log("🔑 User ID:", userId);
+      } else {
+        console.warn("⚠️ Aún no hay User ID disponible (usuario no suscrito o pendiente)");
+      }
+    } catch (err) {
+      console.error("❌ Error al obtener User ID:", err);
+    }
   });
 </script>
 
