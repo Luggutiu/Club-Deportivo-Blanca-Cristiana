@@ -193,14 +193,12 @@
   <h2>🏠 Navegación</h2>
   <nav>
     <a href="/">Inicio</a>
-    {% set slugs_renderizados = [] %}
-    {% for s in secciones %}
-      {% if s.slug != 'suscribirse' and s.slug not in slugs_renderizados %}
-        <a href="/{{ s.slug }}">{{ s.titulo }}</a>
-        {% set _ = slugs_renderizados.append(s.slug) %}
-      {% endif %}
-    {% endfor %}
-  </nav>
+    <a href="/mision">Misión</a>
+    <a href="/vision">Visión</a>
+    <a href="/servicios">Nuestros Servicios</a>
+    <a href="/quienes-somos">¿Quiénes somos?</a>
+    <a href="/contacto">Contáctenos</a>
+     </nav>
 </aside>
 
     <main id="main-content">
