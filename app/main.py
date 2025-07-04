@@ -128,6 +128,20 @@ app.add_middleware(
 ) # Reemplaza por variable de entorno
 
 
+@app.get("/OneSignalSDKWorker.js")
+def serve_worker():
+    return FileResponse(os.path.join(BASE_DIR, "OneSignalSDKWorker.js"))
+
+@app.get("/OneSignalSDKUpdaterWorker.js")
+def serve_updater():
+    return FileResponse(os.path.join(BASE_DIR, "OneSignalSDKUpdaterWorker.js"))
+
+@app.get("/OneSignalSDK.sw.js")
+def serve_sw():
+    return FileResponse(os.path.join(BASE_DIR, "OneSignalSDK.sw.js"))
+
+
+
 @app.post("/registrar-google-suscriptor")
 async def registrar_google_suscriptor(
     request: Request,
