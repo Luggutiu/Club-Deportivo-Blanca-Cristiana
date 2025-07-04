@@ -287,28 +287,34 @@
 </script>
 
 <<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+
 <script>
   window.OneSignalDeferred = window.OneSignalDeferred || [];
-  OneSignalDeferred.push(async function(OneSignal) {
-  try {
-    const isPushSupported = await OneSignal.isPushSupported();
-    if (isPushSupported) {
-      const isSubscribed = await OneSignal.isPushNotificationsEnabled();
-      console.log("¿Está suscrito?", isSubscribed);
+  OneSignalDeferred.push(async function (OneSignal) {
+    try {
+      const isPushSupported = await OneSignal.Notifications.isSupported();
+      console.log("📲 ¿Push compatible?", isPushSupported);
 
-      if (isSubscribed) {
-        const user = await OneSignal.getUser();
-        console.log("🟢 Usuario suscrito:", user);
+      if (isPushSupported) {
+        const permission = await OneSignal.Notifications.permission;
+        console.log("🔐 Permiso actual:", permission); // "granted", "default", "denied"
+
+        const isSubscribed = await OneSignal.Notifications.isSubscribed();
+        console.log("🔔 ¿Está suscrito?", isSubscribed);
+
+        if (isSubscribed) {
+          const userId = await OneSignal.User.getId();
+          console.log("🟢 Suscrito. User ID:", userId);
+        } else {
+          console.warn("⚠️ Usuario aún no está suscrito");
+        }
       } else {
-        console.log("⚠️ Usuario no está suscrito todavía");
+        console.warn("❌ Push NO compatible con este navegador");
       }
-    } else {
-      console.warn("🔕 Notificaciones Push no son compatibles con este navegador.");
+    } catch (err) {
+      console.error("❌ Error en OneSignal:", err);
     }
-  } catch (err) {
-    console.error("❌ Error con OneSignal:", err);
-  }
-});
+  });
 </script>
 <button id="installBtn" style="
   display: none;
