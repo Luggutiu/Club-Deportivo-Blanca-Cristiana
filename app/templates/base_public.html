@@ -280,5 +280,26 @@
   }
 </script>
 
+<script>
+  if ('Notification' in window && navigator.serviceWorker) {
+    Notification.requestPermission().then(permission => {
+      if (permission === "granted") {
+        console.log("Permiso para notificaciones otorgado");
+      }
+    });
+  }
+</script>
+
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "e88384a9-5e13-4818-b5b9-51547d241d55",
+      serviceWorkerPath: "/OneSignalSDKWorker.js",
+    });
+  });
+</script>
+
 </body>
 </html>
